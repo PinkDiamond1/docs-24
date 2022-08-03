@@ -1,5 +1,8 @@
-Kurtosis Modules
-================
+---
+title: Kurtosis Modules
+sidebar_label: Introduction
+---
+
 ### What is a module?
 A Kurtosis module is a set of instructions for setting up an environment, written in any programming language that [the Kurtosis SDK][kurtosis-core_enclave-context] supports (Golang and Typescript as of 2022-07-27). The instructions are packaged inside a Docker image, so that anybody who has the image can execute the module and get a running environment. 
 
