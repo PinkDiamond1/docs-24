@@ -2,20 +2,20 @@
 
 >📖 Kurtosis documentation site codebase.
 >
->👉 Read at [docs.kurtosis.io](https://docs.kurtosis.io)
+>👉 Read at [docs.kurtosis.io](https://docs.kurtosis.com)
 
 ---
 
 ## Installation
 
 ```shell
-$ npm install
+$ yarn
 ```
 
 ## Local Development
 
 ```shell
-$ npm start
+$ yarn start
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
@@ -23,7 +23,15 @@ This command starts a local development server and opens up a browser window. Mo
 ## Build
 
 ```shell
-$ npm run build
+$ yarn build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## Serve
+
+```shell
+$ yarn serve
+```
+
+This command serves `build` directory. This is useful to verifying the production build locally.
