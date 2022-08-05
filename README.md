@@ -2,7 +2,7 @@
 
 >📖 Kurtosis documentation site codebase.
 >
->👉 Read at [docs.kurtosis.io](https://docs.kurtosis.com)
+>👉 Read at [docs.kurtosis.com](https://docs.kurtosis.com)
 
 ---
 
