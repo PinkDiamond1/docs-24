@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/vsDark');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Kurtosis Docs',
-  tagline: 'Development and test environments for blockchain engineers.',
-  url: 'https://docs.kurtosis.io',
+  tagline: 'Next-gen developer experience for building, testing, and running distributed systems.',
+  url: 'https://docs.kurtosis.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
