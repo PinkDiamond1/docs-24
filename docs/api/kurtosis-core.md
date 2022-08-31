@@ -160,6 +160,8 @@ Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
 ### `uploadFiles(String pathToUpload)`
 Takes a filepath or directory path that will be compressed and uploaded to the Kurtosis filestore for use with [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints].
 
+If a directory is specified, the contents of the directory will be uploaded to the archive without additional nesting. Empty directories cannot be uploaded.
+
 **Args**
 
 * `pathToUpload`: Filepath or dirpath on the local machine to compress and upload to Kurtosis.
