@@ -207,7 +207,7 @@ Unpauses all paused processes in the specified service. Specified service must h
 
 * `serviceId`: The ID of the service to unpause.
 
-### renderTemplates(Map<String, TemplateAndData> templateAndDataByDestinationRelFilepaths)
+### `renderTemplates(Map<String, TemplateAndData> templateAndDataByDestinationRelFilepaths)`
 Renders templates and stores them in an archive that gets uploaded to the Kurtosis filestore for use with [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints].
 
 The destination relative filepaths are relative to the root of the archive that gets stored in the filestore.
@@ -330,7 +330,6 @@ The template that needs to be rendered. We support Golang [templates](https://pk
 ### Any templateData
 The data that needs to be rendered in the template. This will be converted into a JSON string before it gets sent over the wire. The elements inside the object should exactly match the keys in the template. 
 
----
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
