@@ -326,9 +326,9 @@ This is an object that gets used by the [renderTemplates][enclavecontext_rendert
 It has two properties.
 
 ### String template
-The template that needs to be rendered. We support Golang [templates](https://pkg.go.dev/text/template). The casing of the keys inside the template and data doesn't matter.
+The template that needs to be rendered. We support Golang [templates](https://pkg.go.dev/text/template). The casing of the `keys` or `fields` inside the template must match the casing of the `fields` or the `keys` inside the data.
 ### Any templateData
-The data that needs to be rendered in the template. This will be converted into a JSON string before it gets sent over the wire. The elements inside the object should exactly match the keys in the template. 
+The data that needs to be rendered in the template. This will be converted into a JSON string before it gets sent over the wire. The elements inside the object should exactly match the keys in the template. If you are using a struct for `templateData` then the field names must start with an upper case letter to ensure that the field names are accessible outside of the structs own package. If you are using a map then you can keys that begin with lower case letters as well.
 
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
