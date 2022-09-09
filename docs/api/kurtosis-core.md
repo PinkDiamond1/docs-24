@@ -214,7 +214,7 @@ The destination relative filepaths are relative to the root of the archive that 
 
 **Args**
 
-* `templateAndDataByDestinationRelFilepaths`: A map of [TemplateAndData](#templateanddata) by the destination relative file path.
+* `templateAndDataByDestinationRelFilepaths`: A map of [TemplateAndData][templateanddata] by the destination relative file path.
 
 **Returns**
 
@@ -322,7 +322,7 @@ Uses [Docker exec](https://docs.docker.com/engine/reference/commandline/exec/) f
 TemplateAndData
 ------------------
 
-This is an object that gets used by the [renderTemplates](#rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths) function.
+This is an object that gets used by the [renderTemplates][rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths] function.
 It has two properties.
 
 ### String template
