@@ -322,7 +322,7 @@ Uses [Docker exec](https://docs.docker.com/engine/reference/commandline/exec/) f
 TemplateAndData
 ------------------
 
-This is an object that gets used by the [renderTemplates][rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths] function.
+This is an object that gets used by the [renderTemplates][enclavecontext_rendertemplates] function.
 It has two properties.
 
 ### String template
