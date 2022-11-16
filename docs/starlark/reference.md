@@ -237,7 +237,7 @@ artifact_uuid = upload_files(
 
 Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specification.
 
-### store_file_form_service
+### store_file_from_service
 
 Copy a file or folder from a service container to the Kurtosis filestore for use with `files_artifacts` in [`add_service`](#addservice) mentioned above. The syntax looks like
 
