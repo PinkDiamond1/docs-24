@@ -237,7 +237,7 @@ artifact_uuid = upload_files(
 
 Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specification.
 
-### Starlark Standard Libraries
+## Starlark Standard Libraries
 
 The following Starlark libraries that ship with the `starlark-go` are included 
 in Kurtosis Starlark by default
