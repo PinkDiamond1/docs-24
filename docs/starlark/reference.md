@@ -166,7 +166,7 @@ fact_recipe = struct(
 )
 ```
 
-Learn more about the [jq](https://stedolan.github.io/jq/manual/) syntax here. Any valid `jq` syntax should be valid for the `field_extractor`.
+Learn more about the [jq syntax here](https://stedolan.github.io/jq/manual/). Any valid `jq` syntax should be valid for the `field_extractor`.
 
 ### wait
 
