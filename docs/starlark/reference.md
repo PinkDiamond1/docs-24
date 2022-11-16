@@ -237,16 +237,6 @@ artifact_uuid = upload_files(
 
 Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specification.
 
-## Starlark Standard Libraries
-
-The following Starlark libraries that ship with the `starlark-go` are included 
-in Kurtosis Starlark by default
-
-1. The Starlark [time](https://github.com/google/starlark-go/blob/master/lib/time/time.go#L18-L52) is a collection of time-related functions
-2. The Starlark [json](https://github.com/google/starlark-go/blob/master/lib/json/json.go#L28-L74) module allows you `encode`, `decode` and `indent` JSON
-3. The Starlark [proto](https://github.com/google/starlark-go/blob/master/lib/proto/proto.go) module allows you to define and interact with `proto` objects
-4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) allows you to create `structs` like the one used in [`add_service`](#addservice)
-
 ### store_file_form_service
 
 Copy a file or folder from a service container to the Kurtosis filestore for use with `files_artifacts` in [`add_service`](#addservice) mentioned above. The syntax looks like
@@ -259,6 +249,16 @@ artifact_uuid = store_file_from_service(
 	src_path="/tmp/foo"
 )
 ```
+
+## Starlark Standard Libraries
+
+The following Starlark libraries that ship with the `starlark-go` are included 
+in Kurtosis Starlark by default
+
+1. The Starlark [time](https://github.com/google/starlark-go/blob/master/lib/time/time.go#L18-L52) is a collection of time-related functions
+2. The Starlark [json](https://github.com/google/starlark-go/blob/master/lib/json/json.go#L28-L74) module allows you `encode`, `decode` and `indent` JSON
+3. The Starlark [proto](https://github.com/google/starlark-go/blob/master/lib/proto/proto.go) module allows you to define and interact with `proto` objects
+4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) allows you to create `structs` like the one used in [`add_service`](#addservice)
 
 ## More About Starlark
 
