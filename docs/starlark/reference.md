@@ -177,8 +177,50 @@ enr = wait(service_id = "service_id", fact_name = "example-fact-name")
 print(enr)
 ```
 
-The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd_args`, `env_vars` or `entry_point_args` it
-would get replaced with the actual value during execution time.
+The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd_args`, `env_vars` or `entry_point_args` (inside of the `add_service` `config`) it would get replaced with the actual value during execution time.
+
+### render_templates
+
+Renders templates and stores them in an archive that gets uploaded to the Kurtosis filestore for use with the `files_artifact_mount_dirpaths` within the
+`config` in `add_service`.
+
+The destination relative filepaths are relative to the root of the archive that gets stored in the filestore.
+
+```py
+
+template_data = {
+			"Name" : "Stranger",
+			"Answer": 6,
+			"Numbers": [1, 2, 3],
+			"UnixTimeStamp": 1257894000,
+			"LargeFloat": 1231231243.43,
+			"Alive": True
+}
+
+# json.encode & json.decode can be used within Starlark
+data_encoded_json = json.encode(template_data)
+
+data = {
+	"/foo/bar/test.txt" : {
+#The template that needs to be rendered. We support Golang templates. The casing of the keys inside the template and data doesn’t matter. Mandatory
+		"template": "Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
+# The data that needs to be rendered in the template. The elements inside the JSON should exactly match the keys in the template.
+		"template_data_json": data_encoded_json
+    }
+}
+artifact_uuid = render_templates(
+# A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template. Mandatory
+    template_and_data_by_dest_rel_filepath = data,
+# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you
+    artifact_uuid = "my-favorite-active"
+)
+# this would print the automatically generated artifact uuid or the one passed in
+print(artifact_uuid)
+```
+
+The `artifact_uuid` can be used in the `files_artifact_mount_dirpaths` as the key of the dictionary to mount it on a service thats being launched.
+
+We support Golang templates, you can read more about that [here](https://pkg.go.dev/text/template#pkg-overview).
 
 ## More About Starlark
 
