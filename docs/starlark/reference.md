@@ -4,7 +4,6 @@ sidebar_label: Reference
 ---
 :warning: **Starlark at Kurotsis is rapidly evolving, this page might not always reflect the truth. We encourage users to messages us [here](https://discord.com/channels/783719264308953108/783719264308953111) in case they run into any problems.**
 
-
 ### add_service
 
 The `add_service` instruction allows you to add a service to the Kurtosis enclave within which the script executes. The add service instruction
@@ -77,7 +76,7 @@ remove_service(
 )
 ```
 
-Note that the `remove_service` instruction takes one argument `service_id`, you don't have to name the . The arguments have been named
+Note that the `remove_service` instruction takes one argument `service_id`, you don't have to name it. The arguments have been named
 in the example for clarity.
 
 ### exec
