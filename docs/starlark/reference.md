@@ -1,0 +1,63 @@
+---
+title: Starlark Reference Guide
+sidebar_label: Reference
+---
+
+### add_service
+
+The `add_service` instruction allows you to add a service to the Kurtosis enclave within which the script executes. The add service instruction
+looks like
+
+```py
+add_service(
+# The service id of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. Mandatory
+    service_id = "example-datastore-server-2"
+	config = struct(
+# The name of the container image that Kurtosis should use when creating the service’s container. Mandatory
+		image = "kurtosistech/example-datastore-server",
+# The ports that the container will be listening on, identified by a user-friendly ID that can be used to select the port again in the future. Optional
+		used_ports={
+			"grpc": struct(
+				number=1234,
+				protocol="TCP"
+			)
+		},
+# Kurtosis allows you to specify gzipped TAR files that Kurtosis will decompress and mount at locations on your service containers. These “files artifacts” will need to have been stored in Kurtosis beforehand using methods like upload_files, render_templates, store_files_from_service etc. Optional       
+		files_artifact_mount_dirpaths={
+			"file_1": "path/to/file/1",
+			"file_2": "path/to/file/2"
+		},
+# CMD statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary. Optional
+        cmd_args=[
+            "bash",
+            "sleep",
+            "99"
+		],
+# ENTRYPOINT statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary. Optional
+		entry_point_args=[
+			"127.0.0.0",
+			1234
+		],
+# Defines environment variables that should be set inside the Docker container running the service. This can be necessary for starting containers from Docker images you don’t control, as they’ll often be parameterized with environment variables. Optional
+		env_vars={
+			"VAR_1": "VALUE_1",
+			"VAR_2": "VALUE_2"
+		},
+	)
+)
+```
+
+Note that the `add_service` instruction takes two arguments `service_id` and
+`config`, you don't have to name the arguments. The arguments have been named
+in the example for clarity.
+
+### remove_service
+
+The `remove_service` instruction allows you to remove a function from the enclave in which the instruction executes in.
+
+```py
+remove_service(
+    # The service id of the service to be removed
+    service_id = service_id
+)
+```
