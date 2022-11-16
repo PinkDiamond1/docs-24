@@ -109,14 +109,68 @@ The syntax looks like
 
  ```py
 contents = read_file(
-    # The path to the file to read
+    # The path to the file to read. Mandatory
     src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  print(contents)
  ```
 
-Like the other methods above, you don't have to name the parameter. The
- paths within Starlark are similar to Golang paths. See the [paths in Starlark](#paths-in-starlark) section for more.
+Like the other methods above, you don't have to name the parameter. The paths within Starlark are similar to Golang paths. See the [paths in Starlark](#paths-in-starlark) section for more.
+
+### define_fact
+
+Facts are primitive to Starlark. Facts allow you to create a `curl` request
+or an `exec` that runs on your container every few seconds. You can extract
+output from a `fact` to use elsewhere in your code.
+
+Here are a few sample facts
+
+```py
+define_fact(
+    # The service id to which this fact is applicable. Mandatory
+    service_id = "example-service-id", 
+    # The name of the fact
+    fact_name = "example-fact-name",
+    # The curl request to run to populate the facts
+    fact_recipe = struct(
+        # The http method can be GET or POST. Mandatory
+        method= "GET", 
+        # The endpoint to talk to on the service. Mandatory
+        endpoint = "/eth/v1/node/health", 
+        # The content-type header to set while talking to the service. Mandatory
+        content_type = "application/json",
+        # The port id to connect to, this should be a valid id on the service. Mandatory
+        port_id = HTTP_PORT_ID,
+        # A `jq` query to fetch output out of the JSON. Optional
+        field_extractor = ".data.enr"
+    )
+)
+```
+
+If you are using a `POST` request, you'll have to supply the `body` parameter as well, so your recipe would look like
+
+```py
+fact_recipe = struct(
+    # The http method can be GET or POST. Mandatory
+    method= "GET", 
+    # The endpoint to talk to on the service. Mandatory
+    endpoint = "/eth/v1/node/health", 
+    # The content-type header to set while talking to the service. Mandatory
+    content_type = "application/json",
+    # The port id to connect to, this should be a valid id on the service. Mandatory
+    port_id = HTTP_PORT_ID,
+    # The body of the post request. Mandatory
+    body = '{"data": "data to post"}'
+    # A `jq` query to fetch output out of the JSON. Optional
+    field_extractor = ".data.enr"
+)
+```
+
+Learn more about the [jq](https://stedolan.github.io/jq/manual/) syntax here. Any valid `jq` syntax should be valid for the `field_extractor`.
+
+### wait
+
+Expand on the wait request
 
 ## More About Starlark
 
