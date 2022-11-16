@@ -32,11 +32,18 @@ In case you already haven't, you first need to install the Kurtosis cli using th
 To run httpd via Starlark, save the following to a file with a `.star` extension, say `main.star`
 
 ```py
-service = add_service(service_id = "httpd-service", config = struct(image = "httpd:2.4.54", ports = {"http" : struct(number = 80, protocol = "TCP" )}))
-print("httpd has been added successfully")```
+service = add_service(
+    service_id = "httpd-service", 
+    config = struct(
+        image = "httpd:2.4.54", 
+        ports = {"http" : struct(number = 80, protocol = "TCP" )}
+    )
+)
+print("httpd has been added successfully")
+```
 
 Execute it using the `kurtosis-cli`
 
-```
+```bash
 kurtosis exec main.star
 ```
