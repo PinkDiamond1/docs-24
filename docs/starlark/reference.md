@@ -4,6 +4,8 @@ sidebar_label: Reference
 ---
 :warning: **Starlark at Kurotsis is rapidly evolving, this page might not always reflect the truth. We encourage users to messages us [here](https://discord.com/channels/783719264308953108/783719264308953111) in case they run into any problems.**
 
+## Instructions
+
 ### add_service
 
 The `add_service` instruction allows you to add a service to the Kurtosis enclave within which the script executes. The add service instruction
@@ -71,7 +73,7 @@ The `remove_service` instruction allows you to remove a function from the enclav
 
 ```py
 remove_service(
-    # The service id of the service to be removed
+# The service id of the service to be removed. Mandatory
     service_id = service_id
 )
 ```
@@ -85,9 +87,104 @@ The `exec` instruction allows you to execute commands on a given service. It loo
 
 ```py
 exec(service_id = service_id, cmd_args = ["echo", "hello"])
-exec(service_id = service_id, cmd_args = ["echo", "hello"], expected_exit_code = 0)
+exec(  
+# The service to execute the command on. Mandatory
+    service_id = service_id,
+# The actual command to execute, the array will be concatenated with " " between the entries. Mandatory
+    cmd_args = ["echo", "hello"], 
+# The expected exit code of the command. Optional. Default: 0
+    expected_exit_code = 0
+)
 ```
 
 The `service_id` and `cmd_args` are required arguments. The `expected_exit_code` is an optional argument that defaults to 0. If the 
 `exec` leads to any thing other than the `expected_exit_code` you'll get
  an execution error in Starlark.
+
+### read_file
+
+The `read_file` built in allows you to read a file into a variable. This executes during interpretation time and you won't see it in the dry run.
+
+The syntax looks like
+
+ ```py
+contents = read_file(
+    # The path to the file to read
+    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
+)
+ print(contents)
+ ```
+
+Like the other methods above, you don't have to name the parameter. The
+ paths within Starlark are similar to Golang paths. See the [paths in Starlark](#paths-in-starlark) section for more.
+
+
+### Modules in Starlark
+
+Modules in Starlark, are a package of Starlark scripts, meta data files, static files & type definitions. The most basic module would look like below,
+
+```
+/kurtosis.mod
+/main.star
+```
+
+The paths here are relative to the root of the folder.
+
+Where the `kurtosis.mod` is a YAML that would look like
+
+```yaml
+module:
+  name: github.com/<your-github-org-or-user-name>/<repo-name>
+```
+
+To execute locally, the module name doesn't have to exist on Github, you can plugin whatever you want for the `<your-github-org-or-user-name>` & `<repo-name>`.
+
+Inside the module while referring to other files, make sure that you use the same `module.name` in the `Kurtosis.mod` followed by the path of the file from the root of the module.
+
+```
+/kurtosis.mod
+/main.star
+/static/example.txt
+```
+
+For `main.star` to read contents of `example.txt` the code would look like.
+
+```py
+# main.star
+
+# The main method is mandatory and can optionally contain arguments
+def main():
+    contents = read_file("github.com/foo/bar/static/example.txt)
+    print(contents)
+```
+
+```yaml
+# kurtosis.mod
+module:
+  name: github.com/foo/bar
+```
+
+To execute the above module, you could run from the root of the module
+
+```bash
+kurtosis exec ${PWD}
+```
+
+## More About Starlark
+
+### Paths in Starlark
+
+Paths in Starlark are Golang like paths. At the time of writing Starlark 
+ at Kurtosis supports only GitHub paths, the paths can be used for reading files, importing other modules or importing types.
+
+The structure of a valid path looks like
+
+ ```
+ github.com/moduleAuthor/moduleName/path/on/repo/file.star
+ ```
+
+If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor/moduleName/` to the enclave and then it will read the file at
+ `/path/on/repo/file.star` relative to the root of the cloned repository.
+
+If you are executing a module make sure that all referred paths, are referred
+by the `module id` where the `module id` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
