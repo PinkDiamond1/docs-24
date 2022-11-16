@@ -170,7 +170,15 @@ Learn more about the [jq](https://stedolan.github.io/jq/manual/) syntax here. An
 
 ### wait
 
-Expand on the wait request
+The `wait` method allows you to wait for the `fact` to have a valid value. The `wait` syntax looks like
+
+```py
+enr = wait(service_id = "service_id", fact_name = "example-fact-name")
+print(enr)
+```
+
+The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd_args`, `env_vars` or `entry_point_args` it
+would get replaced with the actual value during execution time.
 
 ## More About Starlark
 
