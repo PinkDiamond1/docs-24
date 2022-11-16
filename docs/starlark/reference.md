@@ -26,7 +26,7 @@ service = add_service(
 			)
 		},
 # Kurtosis allows you to specify gzipped TAR files that Kurtosis will decompress and mount at locations on your service containers. These “files artifacts” will need to have been stored in Kurtosis beforehand using methods like upload_files, render_templates, store_files_from_service etc. Optional       
-		files_artifacts={
+		files={
 			"file_1": "path/to/file/1",
 			"file_2": "path/to/file/2"
 		},
@@ -181,7 +181,7 @@ The `enr` above would contain a reference to the value extracted in the fact. If
 
 ### render_templates
 
-Renders templates and stores them in an archive that gets uploaded to the Kurtosis filestore for use with the `files_artifacts` within the
+Renders templates and stores them in an archive that gets uploaded to the Kurtosis filestore for use with the `files` within the
 `config` in `add_service`.
 
 The destination relative filepaths are relative to the root of the archive that gets stored in the filestore.
@@ -218,7 +218,7 @@ artifact_uuid = render_templates(
 print(artifact_uuid)
 ```
 
-The `artifact_uuid` can be used in the `files_artifacts` as the key of the dictionary to mount it on a service thats being launched.
+The `artifact_uuid` can be used in the `files` as the key of the dictionary to mount it on a service thats being launched.
 
 We support Golang templates, you can read more about that [here](https://pkg.go.dev/text/template#pkg-overview).
 
@@ -239,7 +239,7 @@ Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specifi
 
 ### store_file_from_service
 
-Copy a file or folder from a service container to the Kurtosis filestore for use with `files_artifacts` in [`add_service`](#addservice) mentioned above. The syntax looks like
+Copy a file or folder from a service container to the Kurtosis filestore for use with `files` in [`add_service`](#addservice) mentioned above. The syntax looks like
 
 ```py
 artifact_uuid = store_file_from_service(
