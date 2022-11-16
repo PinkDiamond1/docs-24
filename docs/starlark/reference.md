@@ -118,6 +118,7 @@ contents = read_file(
 Like the other methods above, you don't have to name the parameter. The
  paths within Starlark are similar to Golang paths. See the [paths in Starlark](#paths-in-starlark) section for more.
 
+## More About Starlark
 
 ### Modules in Starlark
 
@@ -169,8 +170,6 @@ To execute the above module, you could run from the root of the module
 ```bash
 kurtosis exec ${PWD}
 ```
-
-## More About Starlark
 
 ### Paths in Starlark
 
