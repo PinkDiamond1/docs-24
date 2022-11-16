@@ -211,7 +211,7 @@ data = {
 artifact_uuid = render_templates(
 # A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template. Mandatory
     template_and_data_by_dest_rel_filepath = data,
-# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you
+# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional
     artifact_uuid = "my-favorite-active"
 )
 # this would print the automatically generated artifact uuid or the one passed in
@@ -223,6 +223,19 @@ The `artifact_uuid` can be used in the `files_artifacts` as the key of the dicti
 We support Golang templates, you can read more about that [here](https://pkg.go.dev/text/template#pkg-overview).
 
 ### upload_files
+
+The `upload_files` instruction allows you to upload a file to the file store. This is useful if you are using a [module](#modules-in-starlark) and you want the one of the files to be available inside of a container that you are starting. The syntax looks like
+
+```py
+artifact_uuid = upload_files(
+# The path to upload, follows Kurtosis Starlark Paths
+    src_path = "github.com/foo/bar/static/example.txt",
+# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional    
+    artifact_uuid = "my-favorite-artifact-id",
+)
+```
+
+Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specification.
 
 ## More About Starlark
 
