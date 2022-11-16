@@ -330,7 +330,7 @@ If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor
 If you are executing a module make sure that all referred paths, are referred
 by the `module id` where the `module id` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
 
-### Using definitions from other files
+### Using symbols from other files
 
 At the time of writing Kurtosis Starlark supports the `load` syntax that comes with `Starlark`. Kurtosis Starlark disallows relative or absolute paths, and forces users to use the Kurtosis Starlark [path](#paths-in-starlark) specification.
 
