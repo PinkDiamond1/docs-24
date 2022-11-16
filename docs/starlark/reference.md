@@ -228,7 +228,7 @@ The `upload_files` instruction allows you to upload a file to the file store. Th
 
 ```py
 artifact_uuid = upload_files(
-# The path to upload, follows Kurtosis Starlark Paths
+# The path to upload, follows Kurtosis Starlark Paths. Mandatory
     src_path = "github.com/foo/bar/static/example.txt",
 # The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional    
     artifact_uuid = "my-favorite-artifact-id",
@@ -246,6 +246,19 @@ in Kurtosis Starlark by default
 2. The Starlark [json](https://github.com/google/starlark-go/blob/master/lib/json/json.go#L28-L74) module allows you `encode`, `decode` and `indent` JSON
 3. The Starlark [proto](https://github.com/google/starlark-go/blob/master/lib/proto/proto.go) module allows you to define and interact with `proto` objects
 4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) allows you to create `structs` like the one used in [`add_service`](#addservice)
+
+### store_file_form_service
+
+Copy a file or folder from a service container to the Kurtosis filestore for use with `files_artifacts` in [`add_service`](#addservice) mentioned above. The syntax looks like
+
+```py
+artifact_uuid = store_file_from_service(
+# The service id of the service from which the file needs to be copied from. Mandatory
+	service_id="example-service-id",
+# The path on the service's container that needs to be copied. Mandatory
+	src_path="/tmp/foo"
+)
+```
 
 ## More About Starlark
 
