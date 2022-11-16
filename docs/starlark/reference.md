@@ -329,3 +329,30 @@ If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor
 
 If you are executing a module make sure that all referred paths, are referred
 by the `module id` where the `module id` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
+
+### Using definitions from other files
+
+At the time of writing Kurtosis Starlark supports the `load` syntax that comes with `Starlark`. Kurtosis Starlark disallows relative or absolute paths, and forces users to use the Kurtosis Starlark [path](#paths-in-starlark) specification.
+
+You can use aliasing as you'd in a normal Starlark import. This would look like
+
+```py
+# Note that this uses Kurtosis Starlark paths
+load("github.com/foo/bar/src/lib.star", "function_to_import", aliased_function="my_function")
+
+# Can now call function to import
+function_to_import()
+
+# Can now call aliased_function but
+aliased_function()
+```
+
+We're considering switching the `load` with `import_module`, that would work as follows.
+
+```py
+lib_module = import_module("github.com/foo/bar/src/lib.star")
+lib_module.function_to_import()
+function_to_import.my_function()
+```
+
+As this is namespaced, you'd not need aliasing. When `import_module` becomes the standard `load` would start throwing errors and redirecting the user to `import_module`.
