@@ -201,7 +201,7 @@ enr = wait(service_id = "service_id", fact_name = "example-fact-name")
 print(enr)
 ```
 
-The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd_args`, `env_vars` or `entry_point_args` (inside of the `add_service` `config`) it would get replaced with the actual value during execution time.
+The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd`, `env_vars` or `entrypoint` (inside of the `add_service` `config`) it would get replaced with the actual value during execution time.
 
 ### render_templates
 
