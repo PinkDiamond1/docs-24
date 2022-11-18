@@ -49,7 +49,7 @@ kurtosis exec main.star
 
 You should see output that looks like
 
-![expected output](/static/img/starlark/exec-output.png)
+![expected output](/img/starlark/exec-output.png)
 
 On the second line you can see that Kurtosis created an [enclave](/docs/reference/architecture.md#enclaves) with the randomly chosen name `winter-mountain`
 
