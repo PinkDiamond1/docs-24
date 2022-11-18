@@ -53,7 +53,7 @@ service = add_service(
 			"VAR_1": "VALUE_1",
 			"VAR_2": "VALUE_2"
 		},
-        # The placeholder string used within `entry_point_args`, `cmd_args`, and `env_vars` that gets replaced with the private IP address of the container inside Docker/Kubernetes before the container starts. This defaults to `KURTOSIS_IP_ADDR_PLACEHOLDER` if this isn't set. The user needs to make sure that they provide the same placeholder string for this field that they use in `entry_point_args`, `cmd_args`, and `env_vars`.
+        # entrypoint, cmd, and env_vars sometimes need to refer to the container's own IP address. Referencing this placeholder string in entrypoint, cmd, or env_vars will be replaced by Kurtosis with the container's actual IP address
         # OPTIONAL Default: KURTOSIS_IP_ADDR_PLACEHOLDER
         private_ip_address_placeholder = "KURTOSIS_IP_ADDRESS_PLACEHOLDER"
 	)
