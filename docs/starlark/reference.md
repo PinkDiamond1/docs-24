@@ -106,9 +106,7 @@ exec(
 )
 ```
 
-The `service_id` and `cmd_args` are required arguments. The `expected_exit_code` is an optional argument that defaults to 0. If the 
-`exec` leads to any thing other than the `expected_exit_code` you'll get
- an execution error in Starlark.
+If the `exec` leads to any thing other than the `expected_exit_code` you'll get an execution error in Starlark.
 
 ### read_file
 
