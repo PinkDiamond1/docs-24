@@ -166,9 +166,9 @@ If you are using a `POST` request, you'll have to supply the `body` parameter as
 
 ```py
 fact_recipe = struct(
-    # The http method can be GET or POST.
+    # The http method.
     # MANDATORY
-    method= "GET", 
+    method= "POST",
     # The endpoint to talk to on the service.
     # MANDATORY
     endpoint = "/eth/v1/node/health", 
