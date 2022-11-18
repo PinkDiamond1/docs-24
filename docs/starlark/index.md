@@ -50,3 +50,12 @@ kurtosis exec main.star
 You should see output that looks like
 
 ![expected output](/static/img/starlark/exec-output.png)
+
+On the second line you can see that Kurtosis created an [enclave](/docs/reference/architecture.md#enclaves) with the randomly chosen name `winter-mountain`
+
+On the third line you can see the exact instruction that was executed. Starlark
+at Kurtosis executes in two phases, interpretation followed by execution. If
+you had a more complex program with multiple files, if conditions etc, Kurtosis
+would first interpret everything and then execute a flattened list of Kurtosis
+
+On the fifth line you can see what the output of the module was.
