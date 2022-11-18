@@ -15,8 +15,8 @@ looks like
 service = add_service(
     # The service ID of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. 
     # MANDATORY
-    service_id = "example-datastore-server-2"
-	config = struct(
+    service_id = "example-datastore-server-1",
+    config = struct(
         # The name of the container image that Kurtosis should use when creating the service’s container.
         # MANDATORY
 		image = "kurtosistech/example-datastore-server",
