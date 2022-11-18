@@ -60,9 +60,8 @@ service = add_service(
 )
 ```
 
-Note that the `add_service` instruction takes two arguments `service_id` and
-`config`, you don't have to name the arguments. The arguments have been named
-in the example for clarity.
+Note that the `add_service` instruction takes two arguments: `service_id` and
+`config`. The arguments can be explicitly named (e.g. `service_id`=....) or they can be used positionally. The arguments have been named here for clarity.
 
 The `add_service` has a return value of type `service`. You can use it like below
 
