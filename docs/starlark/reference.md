@@ -99,7 +99,7 @@ exec(
     service_id = service_id,
     # The actual command to execute, the array will be concatenated with " " between the entries.
     # MANDATORY
-    cmd_args = ["echo", "hello"], 
+    command = ["echo", "hello"],
     # The expected exit code of the command.
     # OPTIONAL Default: 0
     expected_exit_code = 0
