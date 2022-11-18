@@ -77,7 +77,7 @@ and the other is a child node.
 
 ### remove_service
 
-The `remove_service` instruction allows you to remove a function from the enclave in which the instruction executes in.
+The `remove_service` instruction allows you to remove a service from the enclave in which the instruction executes in.
 
 ```py
 remove_service(
