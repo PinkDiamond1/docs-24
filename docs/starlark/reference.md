@@ -13,40 +13,48 @@ looks like
 
 ```py
 service = add_service(
-# The service ID of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. Mandatory
+    # The service ID of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. 
+    # MANDATORY
     service_id = "example-datastore-server-2"
 	config = struct(
-# The name of the container image that Kurtosis should use when creating the service’s container. Mandatory
+        # The name of the container image that Kurtosis should use when creating the service’s container.
+        # MANDATORY
 		image = "kurtosistech/example-datastore-server",
-# The ports that the container will be listening on, identified by a user-friendly ID that can be used to select the port again in the future. Optional
-		used_ports={
+        # The ports that the container will be listening on, identified by a user-friendly ID that can be used to select the port again in the future.
+        # OPTIONAL Default: {}
+		ports={
 			"grpc": struct(
 				number=1234,
 				protocol="TCP"
 			)
 		},
-# Kurtosis allows you to specify gzipped TAR files that Kurtosis will decompress and mount at locations on your service containers. These “files artifacts” will need to have been stored in Kurtosis beforehand using methods like upload_files, render_templates, store_files_from_service etc. Optional       
+        # Kurtosis allows you to specify gzipped TAR files that Kurtosis will decompress and mount at locations on your service containers. These “files artifacts” will need to have been stored in Kurtosis beforehand using methods like upload_files, render_templates, store_files_from_service etc.
+        # OPTIONAL Default: {}
 		files={
 			"file_1": "path/to/file/1",
 			"file_2": "path/to/file/2"
 		},
-# CMD statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary. Optional
+        # CMD statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary.
+        # OPTIONAL Default: []
         cmd_args=[
             "bash",
             "sleep",
             "99"
 		],
-# ENTRYPOINT statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary. Optional
+        # ENTRYPOINT statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary.
+        # OPTIONAL Default: []
 		entry_point_args=[
 			"127.0.0.0",
 			1234
 		],
-# Defines environment variables that should be set inside the Docker container running the service. This can be necessary for starting containers from Docker images you don’t control, as they’ll often be parameterized with environment variables. Optional
+        # Defines environment variables that should be set inside the Docker container running the service. This can be necessary for starting containers from Docker images you don’t control, as they’ll often be parameterized with environment variables.
+        # OPTIONAL Default: {}
 		env_vars={
 			"VAR_1": "VALUE_1",
 			"VAR_2": "VALUE_2"
 		},
-# The placeholder string used within `entry_point_args`, `cmd_args`, and `env_vars` that gets replaced with the private IP address of the container inside Docker/Kubernetes before the container starts. This defaults to `KURTOSIS_IP_ADDR_PLACEHOLDER` if this isn't set. The user needs to make sure that they provide the same placeholder string for this field that they use in `entry_point_args`, `cmd_args`, and `env_vars`. Optional
+        # The placeholder string used within `entry_point_args`, `cmd_args`, and `env_vars` that gets replaced with the private IP address of the container inside Docker/Kubernetes before the container starts. This defaults to `KURTOSIS_IP_ADDR_PLACEHOLDER` if this isn't set. The user needs to make sure that they provide the same placeholder string for this field that they use in `entry_point_args`, `cmd_args`, and `env_vars`.
+        # OPTIONAL Default: KURTOSIS_IP_ADDR_PLACEHOLDER
         private_ip_address_placeholder = "KURTOSIS_IP_ADDRESS_PLACEHOLDER"
 	)
 )
@@ -73,7 +81,8 @@ The `remove_service` instruction allows you to remove a function from the enclav
 
 ```py
 remove_service(
-# The service ID of the service to be removed. Mandatory
+    # The service ID of the service to be removed.
+    # MANDATORY
     service_id = service_id
 )
 ```
@@ -86,13 +95,15 @@ in the example for clarity.
 The `exec` instruction allows you to execute commands on a given service. It looks like
 
 ```py
-exec(service_id = service_id, cmd_args = ["echo", "hello"])
 exec(  
-# The service to execute the command on. Mandatory
+    # The service to execute the command on.
+    # MANDATORY
     service_id = service_id,
-# The actual command to execute, the array will be concatenated with " " between the entries. Mandatory
+    # The actual command to execute, the array will be concatenated with " " between the entries.
+    # MANDATORY
     cmd_args = ["echo", "hello"], 
-# The expected exit code of the command. Optional. Default: 0
+    # The expected exit code of the command.
+    # OPTIONAL Default: 0
     expected_exit_code = 0
 )
 ```
@@ -109,7 +120,8 @@ The syntax looks like
 
  ```py
 contents = read_file(
-    # The path to the file to read. Mandatory
+    # The path to the file to read. 
+    # MANDATORY
     src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  print(contents)
@@ -127,21 +139,28 @@ Here are a few sample facts
 
 ```py
 define_fact(
-    # The service ID to which this fact is applicable. Mandatory
+    # The service ID to which this fact is applicable.
+    # MANDATORY
     service_id = "example-service-id", 
     # The name of the fact
+    # MANDATORY
     fact_name = "example-fact-name",
     # The curl request to run to populate the facts
+    # MANDATORY
     fact_recipe = struct(
-        # The http method can be GET or POST. Mandatory
+        # The http method can be GET or POST.
+        # MANDATORY
         method= "GET", 
-        # The endpoint to talk to on the service. Mandatory
+        # The endpoint to talk to on the service.
+        # MANDATORY
         endpoint = "/eth/v1/node/health", 
-        # The content-type header to set while talking to the service. Mandatory
+        # The content-type header to set while talking to the service.
+        # MANDATORY
         content_type = "application/json",
-        # The port ID to connect to, this should be a valid ID on the service. Mandatory
+        # The port ID to connect to, this should be a valid ID on the service # MANDATORY
         port_id = HTTP_PORT_ID,
-        # A `jq` query to fetch output out of the JSON. Optional
+        # A `jq` query to fetch output out of the JSON
+        # OPTIONAL Default: '.'
         field_extractor = ".data.enr"
     )
 )
@@ -151,17 +170,23 @@ If you are using a `POST` request, you'll have to supply the `body` parameter as
 
 ```py
 fact_recipe = struct(
-    # The http method can be GET or POST. Mandatory
+    # The http method can be GET or POST.
+    # MANDATORY
     method= "GET", 
-    # The endpoint to talk to on the service. Mandatory
+    # The endpoint to talk to on the service.
+    # MANDATORY
     endpoint = "/eth/v1/node/health", 
-    # The content-type header to set while talking to the service. Mandatory
+    # The content-type header to set while talking to the service.
+    # MANDATORY
     content_type = "application/json",
-    # The port ID to connect to, this should be a valid ID on the service. Mandatory
+    # The port ID to connect to, this should be a valid ID on the service.
+    # MANDATORY
     port_id = HTTP_PORT_ID,
-    # The body of the post request. Mandatory
+    # The body of the post request.
+    # MANDATORY
     body = '{"data": "data to post"}'
-    # A `jq` query to fetch output out of the JSON. Optional
+    # A `jq` query to fetch output out of the JSON.
+    # OPTIONAL Default: '.'
     field_extractor = ".data.enr"
 )
 ```
@@ -202,18 +227,23 @@ data_encoded_json = json.encode(template_data)
 
 data = {
 	"/foo/bar/test.txt" : {
-#The template that needs to be rendered. We support Golang templates. The casing of the keys inside the template and data doesn’t matter. Mandatory
+        #The template that needs to be rendered. We support Golang templates. The casing of the keys inside the template and data doesn’t matter.
+        # MANDATORY
 		"template": "Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
-# The data that needs to be rendered in the template. The elements inside the JSON should exactly match the keys in the template.
+        # The data that needs to be rendered in the template. The elements inside the JSON should exactly match the keys in the template.
+        # MANDATORY
 		"template_data_json": data_encoded_json
     }
 }
 artifact_uuid = render_templates(
-# A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template. Mandatory
+    # A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template.
+    # MANDATORY
     template_and_data_by_dest_rel_filepath = data,
-# The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional
+    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
+    # OPTIONAL Default: 36bit-hex-uuid
     artifact_uuid = "my-favorite-active"
 )
+
 # this would print the automatically generated artifact uuid or the one passed in
 print(artifact_uuid)
 ```
@@ -228,9 +258,11 @@ The `upload_files` instruction allows you to upload a file to the file store. Th
 
 ```py
 artifact_uuid = upload_files(
-# The path to upload, follows Kurtosis Starlark Paths. Mandatory
+    # The path to upload, follows Kurtosis Starlark Paths.
+    # MANDATORY
     src_path = "github.com/foo/bar/static/example.txt",
-# The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional    
+    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
+    # OPTIONAL Default: 36bit-hex-uuid
     artifact_uuid = "my-favorite-artifact-id",
 )
 ```
@@ -243,10 +275,15 @@ Copy a file or folder from a service container to the Kurtosis filestore for use
 
 ```py
 artifact_uuid = store_file_from_service(
-# The service ID of the service from which the file needs to be copied from. Mandatory
+    # The service ID of the service from which the file needs to be copied from.
+    # MANDATORY
 	service_id="example-service-id",
-# The path on the service's container that needs to be copied. Mandatory
+    # The path on the service's container that needs to be copied.
+    # MANDATORY
 	src_path="/tmp/foo"
+    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
+    # OPTIONAL Default: 36bit-hex-uuid
+    artifact_uuid = "my-favorite-artifact-id",    
 )
 ```
 
