@@ -13,7 +13,7 @@ looks like
 
 ```py
 service = add_service(
-# The service id of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. Mandatory
+# The service ID of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. Mandatory
     service_id = "example-datastore-server-2"
 	config = struct(
 # The name of the container image that Kurtosis should use when creating the service’s container. Mandatory
@@ -73,7 +73,7 @@ The `remove_service` instruction allows you to remove a function from the enclav
 
 ```py
 remove_service(
-# The service id of the service to be removed. Mandatory
+# The service ID of the service to be removed. Mandatory
     service_id = service_id
 )
 ```
@@ -127,7 +127,7 @@ Here are a few sample facts
 
 ```py
 define_fact(
-    # The service id to which this fact is applicable. Mandatory
+    # The service ID to which this fact is applicable. Mandatory
     service_id = "example-service-id", 
     # The name of the fact
     fact_name = "example-fact-name",
@@ -139,7 +139,7 @@ define_fact(
         endpoint = "/eth/v1/node/health", 
         # The content-type header to set while talking to the service. Mandatory
         content_type = "application/json",
-        # The port id to connect to, this should be a valid id on the service. Mandatory
+        # The port ID to connect to, this should be a valid ID on the service. Mandatory
         port_id = HTTP_PORT_ID,
         # A `jq` query to fetch output out of the JSON. Optional
         field_extractor = ".data.enr"
@@ -157,7 +157,7 @@ fact_recipe = struct(
     endpoint = "/eth/v1/node/health", 
     # The content-type header to set while talking to the service. Mandatory
     content_type = "application/json",
-    # The port id to connect to, this should be a valid id on the service. Mandatory
+    # The port ID to connect to, this should be a valid ID on the service. Mandatory
     port_id = HTTP_PORT_ID,
     # The body of the post request. Mandatory
     body = '{"data": "data to post"}'
@@ -211,7 +211,7 @@ data = {
 artifact_uuid = render_templates(
 # A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template. Mandatory
     template_and_data_by_dest_rel_filepath = data,
-# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional
+# The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional
     artifact_uuid = "my-favorite-active"
 )
 # this would print the automatically generated artifact uuid or the one passed in
@@ -230,7 +230,7 @@ The `upload_files` instruction allows you to upload a file to the file store. Th
 artifact_uuid = upload_files(
 # The path to upload, follows Kurtosis Starlark Paths. Mandatory
     src_path = "github.com/foo/bar/static/example.txt",
-# The id of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional    
+# The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you. Optional    
     artifact_uuid = "my-favorite-artifact-id",
 )
 ```
@@ -243,7 +243,7 @@ Copy a file or folder from a service container to the Kurtosis filestore for use
 
 ```py
 artifact_uuid = store_file_from_service(
-# The service id of the service from which the file needs to be copied from. Mandatory
+# The service ID of the service from which the file needs to be copied from. Mandatory
 	service_id="example-service-id",
 # The path on the service's container that needs to be copied. Mandatory
 	src_path="/tmp/foo"
@@ -339,4 +339,4 @@ If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor
  `/path/on/repo/file.star` relative to the root of the cloned repository.
 
 If you are executing a module make sure that all referred paths, are referred
-by the `module id` where the `module id` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
+by the `module ID` where the `module ID` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
