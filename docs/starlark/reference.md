@@ -208,7 +208,6 @@ Renders templates and stores them in an archive that gets uploaded to the Kurtos
 The destination relative filepaths are relative to the root of the archive that gets stored in the filestore.
 
 ```py
-
 template_data = {
 			"Name" : "Stranger",
 			"Answer": 6,
@@ -247,6 +246,8 @@ print(artifact_uuid)
 The `artifact_uuid` can be used in the `files` as the key of the dictionary to mount it on a service thats being launched.
 
 We support Golang templates, you can read more about that [here](https://pkg.go.dev/text/template#pkg-overview).
+
+The `render_templates` command is useful if you have a configuration template that you want to write to a bunch of services, allowing reusability.
 
 ### upload_files
 
