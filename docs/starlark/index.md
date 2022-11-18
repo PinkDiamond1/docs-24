@@ -15,7 +15,7 @@ Starlark, though very similar to Python, differs from Python in certain ways tha
 In this [page](https://bazel.build/rules/language#differences_with_python) the
 reader can see a list of differences to Python.
 
-### Why Kurtosis Chose Starlark over other programming languages?
+### Why Kurtosis chose Starlark over other programming languages?
 
 The reason Kurtosis chose Starlark is:
 
