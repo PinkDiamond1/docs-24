@@ -72,8 +72,7 @@ print(service.ports["grpc"].number)
 print(service.ports["grpc"].protocol)
 ```
 
-Referring to a services IP address might be useful if one of the upcoming services depends on the current services IP address, say one is a boot node
-and the other is a child node.
+Referring to a service's IP address might be useful if an upcoming service depends an existing service's IP address (e.g. in the case of dependencies between services).
 
 ### remove_service
 
