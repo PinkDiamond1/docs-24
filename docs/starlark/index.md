@@ -10,8 +10,7 @@ sidebar_label: Introduction
 Starlark is a programming language similar to Python that was developed
 by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language).
 
-Starlark though very similar to Python differs from Python in certain ways
-that makes it hermetic & deterministic. The Starlark spec [here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language.
+Starlark, though very similar to Python, differs from Python in certain ways that make it hermetic & deterministic. The Starlark spec [here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language.
 
 In this [page](https://bazel.build/rules/language#differences_with_python) the
 reader can see a list of differences to Python.
@@ -20,16 +19,16 @@ reader can see a list of differences to Python.
 
 The reason Kurtosis chose Starlark is:
 
-1. Minimal, meaning you can’t do crazy complex things with it, meaning it’s easy to read
-2. Guaranteed to have finite execution as there are no infinite loops
-3. Safe (user can't access network, os, filesystem, etc. by default) so you can run untrusted code
-4. Deterministic - the same parameters to the same program are guaranteed to give the same results (even down to, "they rebuilt Python dicts so that iteration order is deterministic")
+1. Minimal, meaning it's difficult to write complex code, meaning it’s easy to read
+2. Guaranteed to have finite execution as there are no infinite loops or recursion
+3. Safe (user can't access network, OS, filesystem, etc. by default) so untrusted code can be run
+4. Deterministic - the same parameters to the same program are guaranteed to give the same results (even down to the dict iteration order being deterministic)
 
 ### How do I get started with Starlark?
 
-In case you already haven't, you first need to install the Kurtosis cli using the guide [here](https://docs.kurtosis.com/install).
+First need to install the Kurtosis CLI using the guide [here](https://docs.kurtosis.com/install).
 
-To run httpd via Starlark, save the following to a file with a `.star` extension, say `main.star`
+To run httpd via Starlark, save the following to a file with a called `main.star`
 
 ```py
 service = add_service(
@@ -47,3 +46,7 @@ Execute it using the `kurtosis-cli`
 ```bash
 kurtosis exec main.star
 ```
+
+You should see output that looks like
+
+![expected output](/static/img/starlark/exec-output.png)
