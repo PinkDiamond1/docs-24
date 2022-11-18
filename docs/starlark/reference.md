@@ -2,7 +2,7 @@
 title: Starlark Reference Guide
 sidebar_label: Reference
 ---
-:warning: **Starlark at Kurotsis is rapidly evolving, this page might not always reflect the truth. We encourage users to message us [here](https://discord.com/channels/783719264308953108/783719264308953111) in case they run into any problems.**
+:warning: **Starlark at Kurotsis is in an alpha state. Message us on discord [here](https://discord.com/channels/783719264308953108/783719264308953111) in case you run into problems.**
 
 ## Instructions
 
