@@ -34,16 +34,16 @@ service = add_service(
 			"file_1": "path/to/file/1",
 			"file_2": "path/to/file/2"
 		},
-        # CMD statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary.
+        # CMD statement hardcoded the image's Dockerfile might not be suitable for what you need. This attribute allows you to override these statements when necessary.
         # OPTIONAL Default: []
-        cmd_args=[
+        cmd=[
             "bash",
             "sleep",
             "99"
 		],
-        # ENTRYPOINT statement hardcoded in their Dockerfiles might not be suitable for what you need. This attribute allows you to override these statements when necessary.
+        # ENTRYPOINT statement hardcoded the image's Dockerfile might not be suitable for what you need. This attribute allows you to override these statements when necessary.
         # OPTIONAL Default: []
-		entry_point_args=[
+		entrypoint=[
 			"127.0.0.0",
 			1234
 		],
