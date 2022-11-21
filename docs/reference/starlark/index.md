@@ -7,28 +7,28 @@ sidebar_label: Starlark
 
 ### What is Starlark?
 
-Starlark is a programming language similar to Python that was developed
-by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language).
+Starlark is a programming language similar to Python that was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language).
 
-Starlark, though very similar to Python, differs from Python in certain ways that make it hermetic & deterministic. The Starlark spec [here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language.
+Though very similar to Python, Starlark removes many Python features so that it's hermetic (meaning each Starlark script is self-contained), deterministic (meaning the same input gives the same output), and easy-to-read. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page](https://bazel.build/rules/language#differences_with_python) lists the differences between Starlark and Python.
 
-In this [page](https://bazel.build/rules/language#differences_with_python) the
-reader can see a list of differences to Python.
+### How is Starlark used at Kurtosis?
 
-### Why Kurtosis chose Starlark over other programming languages?
+Kurtosis uses Starlark as the definition language for environment changes. Users write Starlark scripts representing a series of environment transformations (e.g. setting up an Elasticsearch cluster), and the transformations can be executed against any given [enclave][enclave]. Starlark scripts are also parameterizable and shareable, so users can leverage each others' work.
 
-The reason Kurtosis chose Starlark is:
+### Why did Kurtosis choose Starlark over other programming languages?
+
+Kurtosis chose Starlark to define environment changes because it's:
 
 1. Minimal, meaning it's difficult to write complex code, meaning it’s easy to read
-2. Guaranteed to have finite execution as there are no infinite loops or recursion
+2. Guaranteed to have finite execution as the Starlark interpreter forbids infinite loops and recursion
 3. Safe (user can't access network, OS, filesystem, etc. by default) so untrusted code can be run
 4. Deterministic - the same parameters to the same program are guaranteed to give the same results (even down to the dict iteration order being deterministic)
 
 ### How do I get started with Starlark?
 
-First need to install the Kurtosis CLI using the guide [here](https://docs.kurtosis.com/install).
+First, install the Kurtosis CLI using [the guide here](https://docs.kurtosis.com/install).
 
-To run httpd via Starlark, save the following to a file with a called `main.star`
+Next, save the following to a file named `main.star`:
 
 ```py
 service = add_service(
@@ -41,7 +41,7 @@ service = add_service(
 print("httpd has been added successfully")
 ```
 
-Execute it using the `kurtosis-cli`
+Finally, execute it using the Kurtosis CLI:
 
 ```bash
 kurtosis exec main.star
@@ -51,11 +51,17 @@ You should see output that looks like
 
 ![expected output](/img/starlark/exec-output.png)
 
-On the second line you can see that Kurtosis created an [enclave](/docs/reference/architecture.md#enclaves) with the randomly chosen name `winter-mountain`
+Kurtosis scripts execute in three phases: 
 
-On the third line you can see the exact instruction that was executed. Starlark
-at Kurtosis executes in two phases, interpretation followed by execution. If
-you had a more complex program with multiple files, if conditions etc, Kurtosis
-would first interpret everything and then execute a flattened list of Kurtosis
+1. The Starlark script is interpreted, and each command is pushed to a queue of instructions to execute
+1. The "flattened" list of commands are validated, which allows Kurtosis to report misconfigurations like typo'd ports or IP addresses before any execution happens
+1. The list of commands are executed
 
-On the fifth line you can see what the output of the module was.
+On the second line you can see that Kurtosis created an [enclave][enclave] with the randomly chosen name `winter-mountain` for the script to execute in.
+
+On the third line you can see the flattened list of commands that Kurtosis validated (which only contains `add_service`).
+
+On the fifth line you can see the output of the script.
+
+<!--------------- ONLY LINKS BELOW HERE --------------------------->
+[enclave]: /docs/reference/architecture.md#enclaves
