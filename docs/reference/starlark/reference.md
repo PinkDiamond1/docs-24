@@ -181,22 +181,6 @@ exec(
 
 If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error at execution time.
 
-### read_file
-
-The `read_file` function reads the contents of a file into a variable. This executes at interpretation time and the file contents won't be displayed in the list of flattened commands to run.
-
-The syntax looks like:
-
- ```python
-contents = read_file(
-    # The path to the file to read, which must obey Kurtosis package syntax. 
-    # MANDATORY
-    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
-)
- ```
-
-To understand the syntax of the source path, see [the "Dependencies in Starlark" section][dependencies-in-starlark].
-
 ### render_templates
 
 `render_templates` combines a template and data to produce a files artifact stored in the Kurtosis enclave. Files artifacts can be used with the `files` property in the service config of `add_service`, allowing for reuse of config files across services.
@@ -247,7 +231,7 @@ The result of `render_templates` is the ID of the files artifact that was genera
 
 ### upload_files
 
-`upload_files` uploads stores files as a files artifact inside the enclave. This is particularly useful when you have a static file in your [module](#modules-in-starlark) that you'd like to push to a service you're starting. The syntax looks like:
+`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when you have a static file that you'd like to push to a service you're starting. The syntax looks like:
 
 ```python
 artifact_id = upload_files(
@@ -263,7 +247,7 @@ artifact_id = upload_files(
 )
 ```
 
-Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specification.
+Note that the `src_path` needs to be a resource identifier as defined in [the "Dependencies" section][dependencies].
 
 ### store_file_from_service
 
@@ -285,6 +269,22 @@ artifact_id = store_file_from_service(
     artifact_uuid = "my-favorite-artifact-id",
 )
 ```
+
+### read_file
+
+The `read_file` function reads the contents of a file into a variable. This executes at interpretation time and the file contents won't be displayed in the list of flattened commands to run.
+
+The syntax looks like:
+
+ ```python
+contents = read_file(
+    # The path to the file to read, which must obey Kurtosis package syntax. 
+    # MANDATORY
+    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
+)
+ ```
+
+To understand the syntax of the source path, see [the "Dependencies" section][dependencies].
 
 
 ### define_fact
@@ -378,15 +378,63 @@ Dependencies
 ------------
 A Starlark script can depend on and use other resources, including static files and other Starlark scripts. Static file contents are imported using the `read_file` command, while other Starlark scripts are imported using the `import_module` command.
 
-In both cases, the external file is referenced using a fully-qualified URL-like path like so:
+In both cases, the external file is referenced using a fully-qualified URL like so:
 
 ```
-github.com/moduleAuthor/moduleName/path/in/repo/file.star
+github.com/moduleAuthor/moduleName/path/in/repo/some-file.star
 ```
 
 (Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system)
 
-This path will give the Kurtosis engine all the information it needs to e 
+All import paths are URLs; there is no notion of relative imports in Kurtosis even for local paths. We made this choice to allow for performance optimizations: the result of loading any given resource can be cached based on the resource URL.
+
+However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.mod` file like so:
+
+```yaml
+module:
+    # Should correspond to URL to locate this kurtosis.mod file on Github.
+    # If the kurtosis.mod file lives at a subpath of the repo, that subpath should be appended here, e.g.:
+    #    github.com/author/repo-name/sub/path
+    name: "github.com/<your-github-org-or-user-name>/<repo-name>"
+```
+
+The module name will tell Kurtosis that any imports using that name should be resolved locally, rather than by cloning a remote Github URL.
+
+For example, if we have a repo with these contents:
+
+```
+/
+    kurtosis.mod
+    main.star
+    public-key.json
+```
+
+
+with a `kurtosis.mod` file like so:
+
+```yaml
+module:
+    name: "github.com/kurtosis/example"
+```
+
+and a `main.star` like so:
+
+```python
+public_key = read_file(src_path = "github.com/kurtosis/example/public-key.json")
+
+def main():
+
+    print(public_key)
+```
+
+then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.mod` file (due to the shared module name).
+
+To execute the module, it's enough to run the following in the directory with the `kurtosis.mod` file:
+
+```
+kurtosis exec .
+```
+
 
 Starlark Standard Libraries
 ---------------------------
@@ -400,93 +448,5 @@ in Kurtosis Starlark by default
 4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) builtin allows you to create `structs` like the one used in [`add_service`](#addservice)
 
 
-
-
-
-
-
-
-
-
-More About Starlark
--------------------
-
-### Dependencies in Starlark
-
-A Starlark script can depend on and use other resources, including static files and other Starlark scripts. Static file contents are imported using the `read_file` command, while other Starlark scripts are imported using the `import_module` command.
-
-In both cases, the external file is referenced using a fully-qualified URL-like path like so:
-
-```
-github.com/moduleAuthor/moduleName/path/in/repo/file.star
-```
-
-This system was inspired by Go's module system, and behaves similarly: 
-
-. At the time of writing Starlark 
- at Kurtosis supports only GitHub paths, the paths can be used for reading files, importing other modules or importing types.
-
-The structure of a valid path looks like
-
-
-If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor/moduleName/` to the enclave and then it will read the file at
- `/path/on/repo/file.star` relative to the root of the cloned repository.
-
-If you are executing a module make sure that all referred paths, are referred
-by the `module ID` where the `module ID` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
-
-### Modules in Starlark
-
-Modules in Starlark, are a package of Starlark scripts, meta data files, static files & type definitions. The most basic module would look like below,
-
-```
-/kurtosis.mod
-/main.star
-```
-
-The paths here are relative to the root of the folder.
-
-Where the `kurtosis.mod` is a YAML that would look like
-
-```yaml
-module:
-  name: github.com/<your-github-org-or-user-name>/<repo-name>
-```
-
-To execute locally, the module name doesn't have to exist on Github, you can plugin whatever you want for the `<your-github-org-or-user-name>` & `<repo-name>`.
-
-Inside the module while referring to other files, make sure that you use the same `module.name` in the `Kurtosis.mod` followed by the path of the file from the root of the module.
-
-```
-/kurtosis.mod
-/main.star
-/static/example.txt
-```
-
-For `main.star` to read contents of `example.txt` the code would look like.
-
-```py
-# main.star
-
-# The main method is mandatory and can optionally contain arguments
-def main():
-    contents = read_file("github.com/foo/bar/static/example.txt)
-    print(contents)
-```
-
-```yaml
-# kurtosis.mod
-module:
-  name: github.com/foo/bar
-```
-
-To execute the above module, you could run from the root of the module
-
-```bash
-kurtosis exec ${PWD}
-```
-
-
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
-[modules-in-starlark]: #modules-in-starlark
-[dependencies-in-starlark]: #dependencies-in-starlark
+[dependencies]: #dependencies
