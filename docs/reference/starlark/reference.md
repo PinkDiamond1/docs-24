@@ -17,13 +17,13 @@ In Kurtosis Starlark, all parameters can be referenced by name regardless of whe
 
 Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
 
-```
+```python
 def make_pizza(size, topping = "pepperoni")
 ```
 
 Can be called in any of the following ways:
 
-```
+```python
 # 1. Only the required argument filled, positionally
 make_pizza("16cm")
 
@@ -160,7 +160,7 @@ remove_service(
 
 ### exec
 
-The `exec` instruction executes commands on a given service as if they were running in a shell on the container. It looks like
+The `exec` instruction executes commands on a given service as if they were running in a shell on the container. Its syntax is:
 
 ```python
 exec(
@@ -298,10 +298,10 @@ The output of a fact can be used later in Starlark, and facts are the way to ret
 For example:
 
 ```python
-define_fact(
+enr = define_fact(
     # The service ID of the service from which data will be extracted.
     # MANDATORY
-    service_id = "example-service-id",
+    service_id = "bootnode",
 
     # The name of the fact, which can be used to reference it later.
     # MANDATORY
@@ -338,6 +338,18 @@ define_fact(
         #   https://stedolan.github.io/jq/manual/
         # OPTIONAL (Default: '.')
         field_extractor = ".data.enr"
+    )
+)
+
+add_service(
+    service_id = "child-node",
+
+    config = struct(
+        image = "ethereum/geth",
+        cmd = [
+            "--bootnode-enr",
+            enr,
+        ]
     )
 )
 ```
