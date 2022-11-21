@@ -4,263 +4,262 @@ sidebar_label: Reference
 ---
 :warning: **Starlark at Kurotsis is in an alpha state. Message us on discord [here](https://discord.com/channels/783719264308953108/783719264308953111) in case you run into problems.**
 
-## Instructions
+Instructions
+------------
+
+**GENERAL NOTE:** In Python, it is very common to name function parameters that are optional. E.g.:
+
+```py
+def do_something(required_arg, optional_arg="default_value")
+```
+
+In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required are not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
+
+Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
+
+```
+def make_pizza(size, topping = "pepperoni")
+```
+
+Can be called in any of the following ways:
+
+```
+# 1. Only the required argument filled, positionally
+make_pizza("16cm")
+
+# 2. Only the required argument filled, by name 
+make_pizza(size = "16cm)
+
+# 3. Both arguments filled, positionally
+make_pizza("16cm", "mushroom")
+
+# 4. Both arguments filled, mixing position and name
+make_pizza("16cm", topping = "mushrom")
+
+# 5. Both arguments filled, by name
+make_pizza(size = "16cm", topping = "mushroom")
+```
+
+We recommend the last style, for its reading clarity.
 
 ### add_service
 
-The `add_service` instruction allows you to add a service to the Kurtosis enclave within which the script executes. The add service instruction
-looks like
+The `add_service` instruction adds a service to the Kurtosis enclave within which the script executes. The instruction
+looks like:
 
-```py
+```python
 service = add_service(
-    # The service ID of the service being created, you can use this in the future to reference in facts & waits and other parts of your Starlark code. 
+    # The service ID of the service being created.
+    # The service ID is a reference to the service, which can be used in the future to refer to the service.
+    # Service IDs are unique per enclave.
     # MANDATORY
     service_id = "example-datastore-server-1",
+
     config = struct(
         # The name of the container image that Kurtosis should use when creating the service’s container.
         # MANDATORY
-		image = "kurtosistech/example-datastore-server",
-        # The ports that the container will be listening on, identified by a user-friendly ID that can be used to select the port again in the future.
-        # OPTIONAL Default: {}
-		ports={
-			"grpc": struct(
-				number=1234,
-				protocol="TCP"
-			)
-		},
-        # Kurtosis allows you to specify gzipped TAR files that Kurtosis will decompress and mount at locations on your service containers. These “files artifacts” will need to have been stored in Kurtosis beforehand using methods like upload_files, render_templates, store_files_from_service etc.
-        # OPTIONAL Default: {}
-		files={
-			"file_1": "path/to/file/1",
-			"file_2": "path/to/file/2"
-		},
-        # CMD statement hardcoded the image's Dockerfile might not be suitable for what you need. This attribute allows you to override these statements when necessary.
-        # OPTIONAL Default: []
-        cmd=[
-            "bash",
-            "sleep",
-            "99"
-		],
-        # ENTRYPOINT statement hardcoded the image's Dockerfile might not be suitable for what you need. This attribute allows you to override these statements when necessary.
-        # OPTIONAL Default: []
-		entrypoint=[
-			"127.0.0.0",
-			1234
-		],
-        # Defines environment variables that should be set inside the Docker container running the service. This can be necessary for starting containers from Docker images you don’t control, as they’ll often be parameterized with environment variables.
-        # OPTIONAL Default: {}
-		env_vars={
-			"VAR_1": "VALUE_1",
-			"VAR_2": "VALUE_2"
-		},
-        # entrypoint, cmd, and env_vars sometimes need to refer to the container's own IP address. Referencing this placeholder string in entrypoint, cmd, or env_vars will be replaced by Kurtosis with the container's actual IP address
-        # OPTIONAL Default: KURTOSIS_IP_ADDR_PLACEHOLDER
+        image = "kurtosistech/example-datastore-server",
+
+        # The ports that the container should listen on, identified by a user-friendly ID that can be used to select the port again in the future.
+        # OPTIONAL (Default: {})
+        ports = {
+            "grpc": struct(
+                # The port number.
+                # MANDATORY
+                number = 1234,
+
+                # The port transport protocol (can be "TCP" or "UDP")
+                # OPTIONAL (Default: "TCP")
+                protocol = "TCP",
+            )
+        },
+
+        # Kurtosis enclaves can store gzipped TAR files, called "files artifacts", via functions like upload_files, render_templates, and store_files_from_service.
+        # Each files artifact is identified by an ID which is returned when the files artifact is created.
+        # This map specifies files artifacts that should be mounted on the service container when it starts.
+        # OPTIONAL (Default: {})
+        files = {
+            "files_artifact_1": "path/to/file/1",
+            "files_artifact_2": "path/to/file/2"
+        },
+
+        # The ENTRYPOINT statement hardcoded in a container image's Dockerfile might not be suitable for your needs.
+        # This field allows you to override the ENTRYPOINT when the container starts.
+        # OPTIONAL (Default: [])
+        entrypoint = [
+            "bash"
+        ],
+
+        # The CMD statement hardcoded in a container image's Dockerfile might not be suitable for your needs.
+        # This field allows you to override the CMD when the container starts.
+        # OPTIONAL (Default: [])
+        cmd = [
+            "-c",
+            "sleep 99",
+        ],
+
+        # Defines environment variables that should be set inside the Docker container running the service. 
+        # This can be necessary for starting containers from Docker images you don’t control, as they’ll often be parameterized with environment variables.
+        # OPTIONAL (Default: {})
+        env_vars = {
+            "VAR_1": "VALUE_1",
+            "VAR_2": "VALUE_2",
+        },
+
+        # ENTRYPOINT, CMD, and ENV variables sometimes need to refer to the container's own IP address. 
+        # If this placeholder string is referenced inside the 'entrypoint', 'cmd', or 'env_vars' properties, the Kurtosis engine will replace it at launch time
+        # with the container's actual IP address.
+        # OPTIONAL (Default: "KURTOSIS_IP_ADDR_PLACEHOLDER")
         private_ip_address_placeholder = "KURTOSIS_IP_ADDRESS_PLACEHOLDER"
-	)
 )
 ```
 
-Note that the `add_service` instruction takes two arguments: `service_id` and
-`config`. The arguments can be explicitly named (e.g. `service_id`=....) or they can be used positionally. The arguments have been named here for clarity.
+The `add_service` function returns a `service` object that contains information about the service that can be used later in the script. The `service` struct has:
 
-The `add_service` has a return value of type `service`. You can use it like below
+- An `ip_address` property representing the service's IP address
+- A `ports` dictionary containing information about each port that the service is listening on
 
-```py
-print(service.ip_address)
-print(service.ports["grpc"].number)
-print(service.ports["grpc"].protocol)
-```
+The value of the `ports` dictionary is an object with two fields, `number` and `protocol`. 
 
-Referring to a service's IP address might be useful if an upcoming service depends an existing service's IP address (e.g. in the case of dependencies between services).
+E.g.:
 
-### remove_service
-
-The `remove_service` instruction allows you to remove a service from the enclave in which the instruction executes in.
-
-```py
-remove_service(
-    # The service ID of the service to be removed.
-    # MANDATORY
-    service_id = service_id
+```python
+dependency = add_service(
+    service_id = "dependency",
+    config = struct(
+        image = "dependency",
+        ports = {
+            "http": struct(number = 80),
+        },
+    ),
 )
-```
 
-Note that the `remove_service` instruction takes one argument `service_id`, you don't have to name it. The arguments have been named
-in the example for clarity.
+dependency_http_port = dependency.ports["http"]
 
-### exec
-
-The `exec` instruction allows you to execute commands on a given service. It looks like
-
-```py
-exec(  
-    # The service to execute the command on.
-    # MANDATORY
-    service_id = service_id,
-    # The actual command to execute, the array will be concatenated with " " between the entries.
-    # MANDATORY
-    command = ["echo", "hello"],
-    # The expected exit code of the command.
-    # OPTIONAL Default: 0
-    expected_exit_code = 0
-)
-```
-
-If the `exec` leads to any thing other than the `expected_exit_code` you'll get an execution error in Starlark.
-
-### read_file
-
-The `read_file` built in allows you to read a file into a variable. This executes during interpretation time and you won't see it in the dry run.
-
-The syntax looks like
-
- ```py
-contents = read_file(
-    # The path to the file to read. 
-    # MANDATORY
-    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
-)
- print(contents)
- ```
-
-Like the other methods above, you don't have to name the parameter. The paths within Starlark are similar to Golang paths. See the [paths in Starlark](#paths-in-starlark) section for more.
-
-### define_fact
-
-Facts are primitive to Starlark. Facts allow you to create a `curl` request
-or an `exec` that runs on your container every few seconds. You can extract
-output from a `fact` to use elsewhere in your code.
-
-Here are a few sample facts
-
-```py
-define_fact(
-    # The service ID to which this fact is applicable.
-    # MANDATORY
-    service_id = "example-service-id", 
-    # The name of the fact
-    # MANDATORY
-    fact_name = "example-fact-name",
-    # The curl request to run to populate the facts
-    # MANDATORY
-    fact_recipe = struct(
-        # The http method can be GET or POST.
-        # MANDATORY
-        method= "GET", 
-        # The endpoint to talk to on the service.
-        # MANDATORY
-        endpoint = "/eth/v1/node/health", 
-        # The content-type header to set while talking to the service.
-        # MANDATORY
-        content_type = "application/json",
-        # The port ID to connect to, this should be a valid ID on the service # MANDATORY
-        port_id = HTTP_PORT_ID,
-        # A `jq` query to fetch output out of the JSON
-        # OPTIONAL Default: '.'
-        field_extractor = ".data.enr"
+add_service(
+    service_id = "dependant",
+    config = struct(
+        env_vars = {
+            "DEPENDENCY_URL": "http://{}:{}".format(dependency.ip_address, dependency_http_port.number),
+        },
     )
 )
 ```
 
-If you are using a `POST` request, you'll have to supply the `body` parameter as well, so your recipe would look like
+### remove_service
 
-```py
-fact_recipe = struct(
-    # The http method.
+The `remove_service` instruction removes a service from the enclave in which the instruction executes in.
+
+```python
+remove_service(
+    # The service ID of the service to be removed.
     # MANDATORY
-    method= "POST",
-    # The endpoint to talk to on the service.
-    # MANDATORY
-    endpoint = "/eth/v1/node/health", 
-    # The content-type header to set while talking to the service.
-    # MANDATORY
-    content_type = "application/json",
-    # The port ID to connect to, this should be a valid ID on the service.
-    # MANDATORY
-    port_id = HTTP_PORT_ID,
-    # The body of the post request.
-    # MANDATORY
-    body = '{"data": "data to post"}'
-    # A `jq` query to fetch output out of the JSON.
-    # OPTIONAL Default: '.'
-    field_extractor = ".data.enr"
+    service_id = "my_service"
 )
 ```
 
-Learn more about the [jq syntax here](https://stedolan.github.io/jq/manual/). Any valid `jq` syntax should be valid for the `field_extractor`.
+### exec
 
-### wait
+The `exec` instruction executes commands on a given service as if they were running in a shell on the container. It looks like
 
-The `wait` method allows you to wait for the `fact` to have a valid value. The `wait` syntax looks like
+```python
+exec(
+    # The service ID to execute the command on.
+    # MANDATORY
+    service_id = "my_service",
 
-```py
-enr = wait(service_id = "service_id", fact_name = "example-fact-name")
-print(enr)
+    # The actual command to execute. 
+    # Each item corresponds to one shell argument, so ["echo", "Hello world"] behaves as if you ran "echo" "Hello world" in the shell.
+    # MANDATORY
+    command = ["echo", "Hello, world"],
+
+    # The expected exit code of the command.
+    # OPTIONAL (Default: 0)
+    expected_exit_code = 0
+)
 ```
 
-The `enr` above would contain a reference to the value extracted in the fact. If you use this reference in `cmd`, `env_vars` or `entrypoint` (inside of the `add_service` `config`) it would get replaced with the actual value during execution time.
+If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error at execution time.
+
+### read_file
+
+The `read_file` function reads the contents of a file into a variable. This executes at interpretation time and the file contents won't be displayed in the list of flattened commands to run.
+
+The syntax looks like:
+
+ ```python
+contents = read_file(
+    # The path to the file to read, which must obey Kurtosis package syntax. 
+    # MANDATORY
+    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
+)
+ ```
+
+To understand the syntax of the source path, see [the "Dependencies in Starlark" section][dependencies-in-starlark].
 
 ### render_templates
 
-Renders templates and stores them in an archive that gets uploaded to the Kurtosis filestore for use with the `files` within the
-`config` in `add_service`.
+`render_templates` combines a template and data to produce a files artifact stored in the Kurtosis enclave. Files artifacts can be used with the `files` property in the service config of `add_service`, allowing for reuse of config files across services.
 
-The destination relative filepaths are relative to the root of the archive that gets stored in the filestore.
-
-```py
+```python
+# Example data to slot into the template
 template_data = {
-			"Name" : "Stranger",
-			"Answer": 6,
-			"Numbers": [1, 2, 3],
-			"UnixTimeStamp": 1257894000,
-			"LargeFloat": 1231231243.43,
-			"Alive": True
+    "Name" : "Stranger",
+    "Answer": 6,
+    "Numbers": [1, 2, 3],
+    "UnixTimeStamp": 1257894000,
+    "LargeFloat": 1231231243.43,
+    "Alive": True
 }
 
+# Template data must be JSON-encoded
 # json.encode & json.decode can be used within Starlark
-data_encoded_json = json.encode(template_data)
+json_encoded_template_data = json.encode(template_data)
 
-data = {
-	"/foo/bar/test.txt" : {
-        #The template that needs to be rendered. We support Golang templates. The casing of the keys inside the template and data doesn’t matter.
-        # MANDATORY
-		"template": "Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
-        # The data that needs to be rendered in the template. The elements inside the JSON should exactly match the keys in the template.
-        # MANDATORY
-		"template_data_json": data_encoded_json
-    }
-}
-artifact_uuid = render_templates(
-    # A dictionary where the key is the path of the rendered file relative to the root of the archive. The value contains the template & the data that needs to be inserted into the template.
+artifact_id = render_templates(
+    # A dictionary where:
+    #  - Each key is a filepath that will be produced inside the output files artifact
+    #  - Each value is the template + data required to produce the filepath
+    # Multiple filepaths can be specified to produce a files artifact with multiple files inside.
     # MANDATORY
-    template_and_data_by_dest_rel_filepath = data,
-    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
-    # OPTIONAL Default: 36bit-hex-uuid
-    artifact_uuid = "my-favorite-active"
-)
+    template_and_data_by_dest_rel_filepath = {
+        "/foo/bar/output.txt": {
+            # The template to render, which should be formatted in Go template format:
+            #   https://pkg.go.dev/text/template#pkg-overview
+            # MANDATORY
+            "template": "Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
 
-# this would print the automatically generated artifact uuid or the one passed in
-print(artifact_uuid)
+            # The data to slot into the template, serialized into JSON. 
+            # The JSON object properties should exactly match the keys in the template.
+            # MANDATORY
+            "template_data_json": json_encoded_template_data,
+        }
+    }
+
+    # The ID to give the files artifact that will be produced.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # OPTIONAL (Default: "")
+    artifact_uuid = "my-artifact"
+)
 ```
 
-The `artifact_uuid` can be used in the `files` as the key of the dictionary to mount it on a service thats being launched.
-
-We support Golang templates, you can read more about that [here](https://pkg.go.dev/text/template#pkg-overview).
-
-The `render_templates` command is useful if you have a configuration template that you want to write to a bunch of services, allowing reusability.
+The result of `render_templates` is the ID of the files artifact that was generated, which can be used with the `files` property of service config in the `add_service` command.
 
 ### upload_files
 
-The `upload_files` instruction allows you to upload a file to the file store. This is useful if you are using a [module](#modules-in-starlark) and you want the one of the files to be available inside of a container that you are starting. The syntax looks like
+`upload_files` uploads stores files as a files artifact inside the enclave. This is particularly useful when you have a static file in your [module](#modules-in-starlark) that you'd like to push to a service you're starting. The syntax looks like:
 
-```py
-artifact_uuid = upload_files(
-    # The path to upload, follows Kurtosis Starlark Paths.
+```python
+artifact_id = upload_files(
+    # The file to upload into a files a files artifact
+    # Must be a Kurtosis resource specification.
     # MANDATORY
     src_path = "github.com/foo/bar/static/example.txt",
-    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
-    # OPTIONAL Default: 36bit-hex-uuid
-    artifact_uuid = "my-favorite-artifact-id",
+
+    # The ID to give the files artifact that will be produced.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # OPTIONAL (Default: "")
+    artifact_uuid = "my-artifact",
 )
 ```
 
@@ -268,34 +267,129 @@ Note that the `src_path` needs to follow our [paths](#paths-in-starlark) specifi
 
 ### store_file_from_service
 
-Copy a file or folder from a service container to the Kurtosis filestore for use with `files` in [`add_service`](#addservice) mentioned above. The syntax looks like
+Produces a files artifact by copying files or directories from an existing service in the enclave. The syntax looks like:
 
-```py
-artifact_uuid = store_file_from_service(
-    # The service ID of the service from which the file needs to be copied from.
+```python
+artifact_id = store_file_from_service(
+    # The service ID of a preexisting service from which the file will be copied.
     # MANDATORY
-	service_id="example-service-id",
-    # The path on the service's container that needs to be copied.
+    service_id = "example-service-id",
+
+    # The path on the service's container that will be copied into a files artifact.
     # MANDATORY
-	src_path="/tmp/foo"
-    # The ID of the artifact that gets stored in the file store. If you don't specify it Kurtosis will generate a unique one for you.
-    # OPTIONAL Default: 36bit-hex-uuid
-    artifact_uuid = "my-favorite-artifact-id",    
+    src_path = "/tmp/foo"
+
+    # The ID to give the files artifact that will be produced.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # OPTIONAL (Default: "")
+    artifact_uuid = "my-favorite-artifact-id",
 )
 ```
 
-### import
 
-At the time of writing Kurtosis Starlark supports `import` of modules. We have deprecated the `load` primitive that ships with Starlark in favor of `import`. Kurtosis Starlark disallows relative or absolute paths, and forces users to use the Kurtosis Starlark [path](#paths-in-starlark) specification. `import`
-would work as follows.
+### define_fact
 
-```py
-lib_module = import_module("github.com/foo/bar/src/lib.star")
-lib_module.function_to_import()
-function_to_import.my_function()
+A "fact" is a piece of data about the enclave that, once created, is constantly being updated. Facts have recipes, which define how 
+their data will be produced. Fact recipes come in two flavors - `curl` and `exec`. `curl` facts are populated by making an HTTP request
+against a service endpoint, while `exec` facts are populated by running a shell command on a service container. 
+
+The output of a fact can be used later in Starlark, and facts are the way to retrieve and use runtime information about the system.
+
+For example:
+
+```python
+define_fact(
+    # The service ID of the service from which data will be extracted.
+    # MANDATORY
+    service_id = "example-service-id",
+
+    # The name of the fact, which can be used to reference it later.
+    # MANDATORY
+    fact_name = "example-fact-name",
+
+    # The curl request to run to populate the fact.
+    # MANDATORY
+    fact_recipe = struct(
+        # The HTTP method to use when making the request (can be "GET" or "POST").
+        # MANDATORY
+        method= "POST",
+
+        # The ID of the port on the service to retrieve data from. 
+        # This should correspond to the port ID defined in `add_service`
+        # MANDATORY
+        port_id = "http",
+
+        # The URL endpoint to talk to on the service.
+        # MANDATORY
+        endpoint = "/eth/v1/node/health",
+
+        # The content-type header to set while talking to the service.
+        # MANDATORY
+        content_type = "application/json",
+
+        # The body to send with the request. 
+        # Mostly used for POST requests, as many servers don't support GET request bodies.
+        # OPTIONAL (Default: "")
+        body = '{"data": "data to post"}'
+
+        # The HTTP response body can optionally be passed through a JSON-parsing and field extraction step using the 'jq' tool.
+        # When provided, this field's path will be treated as a 'jq' path and applied to the response body.
+        # For the full JQ syntax, see the jq docs:
+        #   https://stedolan.github.io/jq/manual/
+        # OPTIONAL (Default: '.')
+        field_extractor = ".data.enr"
+    )
+)
 ```
 
-## Starlark Standard Libraries
+The return value of `define_fact` is a reference which can be included in the `cmd`, `entrypoint`, or `env_vars` sections of `add_service`. The Kurtosis engine will insert the correct value when the service container is launched.
+
+### wait
+
+The `wait` method pauses execution until the specified fact has the desired value, or a timeout occurs. The `wait` syntax looks like:
+
+```python
+wait(
+    # The service ID of the service whose fact will be waited upon.
+    # MANDATORY
+    service_id = "service_id",
+
+    # The name of the fact on the service whose value will be waited upon.
+    # MANDATORY
+    fact_name = "example-fact-name",
+)
+```
+
+### import_module
+
+Kurtosis Starlark scripts can depend on other scripts. To import another script, use the `import_module` function. The result object will contain all the symbols of the imported script.
+
+```python
+# Import the code to namespaced object
+lib = import_module("github.com/foo/bar/src/lib.star")
+
+# Use code from the imported module
+lib.some_function()
+```
+
+NOTE: We chose not to use the normal Starlark `load` primitive because it doesn't do namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
+
+Dependencies
+------------
+A Starlark script can depend on and use other resources, including static files and other Starlark scripts. Static file contents are imported using the `read_file` command, while other Starlark scripts are imported using the `import_module` command.
+
+In both cases, the external file is referenced using a fully-qualified URL-like path like so:
+
+```
+github.com/moduleAuthor/moduleName/path/in/repo/file.star
+```
+
+(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system)
+
+This path will give the Kurtosis engine all the information it needs to e 
+
+Starlark Standard Libraries
+---------------------------
 
 The following Starlark libraries that ship with the `starlark-go` are included 
 in Kurtosis Starlark by default
@@ -303,9 +397,43 @@ in Kurtosis Starlark by default
 1. The Starlark [time](https://github.com/google/starlark-go/blob/master/lib/time/time.go#L18-L52) is a collection of time-related functions
 2. The Starlark [json](https://github.com/google/starlark-go/blob/master/lib/json/json.go#L28-L74) module allows you `encode`, `decode` and `indent` JSON
 3. The Starlark [proto](https://github.com/google/starlark-go/blob/master/lib/proto/proto.go) module allows you to define and interact with `proto` objects
-4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) allows you to create `structs` like the one used in [`add_service`](#addservice)
+4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) builtin allows you to create `structs` like the one used in [`add_service`](#addservice)
 
-## More About Starlark
+
+
+
+
+
+
+
+
+
+More About Starlark
+-------------------
+
+### Dependencies in Starlark
+
+A Starlark script can depend on and use other resources, including static files and other Starlark scripts. Static file contents are imported using the `read_file` command, while other Starlark scripts are imported using the `import_module` command.
+
+In both cases, the external file is referenced using a fully-qualified URL-like path like so:
+
+```
+github.com/moduleAuthor/moduleName/path/in/repo/file.star
+```
+
+This system was inspired by Go's module system, and behaves similarly: 
+
+. At the time of writing Starlark 
+ at Kurtosis supports only GitHub paths, the paths can be used for reading files, importing other modules or importing types.
+
+The structure of a valid path looks like
+
+
+If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor/moduleName/` to the enclave and then it will read the file at
+ `/path/on/repo/file.star` relative to the root of the cloned repository.
+
+If you are executing a module make sure that all referred paths, are referred
+by the `module ID` where the `module ID` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
 
 ### Modules in Starlark
 
@@ -358,19 +486,7 @@ To execute the above module, you could run from the root of the module
 kurtosis exec ${PWD}
 ```
 
-### Paths in Starlark
 
-Paths in Starlark are Golang like paths. At the time of writing Starlark 
- at Kurtosis supports only GitHub paths, the paths can be used for reading files, importing other modules or importing types.
-
-The structure of a valid path looks like
-
- ```
- github.com/moduleAuthor/moduleName/path/on/repo/file.star
- ```
-
-If this file is on GitHub, Starlark will clone the repo `github.com/moduleAuthor/moduleName/` to the enclave and then it will read the file at
- `/path/on/repo/file.star` relative to the root of the cloned repository.
-
-If you are executing a module make sure that all referred paths, are referred
-by the `module ID` where the `module ID` looks like `github.com/moduleAuthor/moduleName`. See the [starlark module](#modules-in-starlark) section for more.
+<!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
+[modules-in-starlark]: #modules-in-starlark
+[dependencies-in-starlark]: #dependencies-in-starlark
