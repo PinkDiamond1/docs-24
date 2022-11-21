@@ -18,3 +18,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# VS Code
+*.vscode
+
+# IntelliJ
+.idea
+*.iws
+*.iml
+*.ipr
+
+# Vim swapfiles
+*.swp
