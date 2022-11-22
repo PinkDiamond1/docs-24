@@ -264,7 +264,7 @@ artifact_id = store_service_files(
     src = "/tmp/foo"
 
     # The ID to give the files artifact that will be produced.
-    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit ID.
     # OPTIONAL (Default: "")
     artifact_id = "my-favorite-artifact-id",
 )
