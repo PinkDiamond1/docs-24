@@ -249,24 +249,24 @@ artifact_id = upload_files(
 
 Note that the `src_path` needs to be a resource identifier as defined in [the "Dependencies" section][dependencies].
 
-### store_file_from_service
+### store_service_files
 
 Produces a files artifact by copying files or directories from an existing service in the enclave. The syntax looks like:
 
 ```python
-artifact_id = store_file_from_service(
+artifact_id = store_service_files(
     # The service ID of a preexisting service from which the file will be copied.
     # MANDATORY
     service_id = "example-service-id",
 
     # The path on the service's container that will be copied into a files artifact.
     # MANDATORY
-    src_path = "/tmp/foo"
+    src = "/tmp/foo"
 
     # The ID to give the files artifact that will be produced.
     # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
     # OPTIONAL (Default: "")
-    artifact_uuid = "my-favorite-artifact-id",
+    artifact_id = "my-favorite-artifact-id",
 )
 ```
 
