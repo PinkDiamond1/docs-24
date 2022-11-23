@@ -61,6 +61,7 @@ service = add_service(
         image = "kurtosistech/example-datastore-server",
 
         # The ports that the container should listen on, identified by a user-friendly ID that can be used to select the port again in the future.
+        # If no ports are provided, no ports will be exposed on the host machine, unless there is an EXPOSE in the Dockerfile
         # OPTIONAL (Default: {})
         ports = {
             "grpc": struct(
@@ -397,6 +398,8 @@ github.com/moduleAuthor/moduleName/path/in/repo/some-file.star
 ```
 
 (Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system)
+
+Note: At the moment Starlark only supports public repositories hosted on GitHub.
 
 All import paths are URLs; there is no notion of relative imports in Kurtosis even for local paths. We made this choice to allow for performance optimizations: the result of loading any given resource can be cached based on the resource URL.
 
