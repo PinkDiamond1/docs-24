@@ -206,24 +206,24 @@ artifact_id = render_templates(
     #  - Each value is the template + data required to produce the filepath
     # Multiple filepaths can be specified to produce a files artifact with multiple files inside.
     # MANDATORY
-    template_and_data_by_dest_rel_filepath = {
-        "/foo/bar/output.txt": {
+    config = {
+        "/foo/bar/output.txt": struct(
             # The template to render, which should be formatted in Go template format:
             #   https://pkg.go.dev/text/template#pkg-overview
             # MANDATORY
-            "template": "Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
+            template="Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
 
             # The data to slot into the template, serialized into JSON. 
             # The JSON object properties should exactly match the keys in the template.
             # MANDATORY
-            "template_data_json": json_encoded_template_data,
-        }
+            data=json_encoded_template_data,
+        )
     }
 
     # The ID to give the files artifact that will be produced.
-    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit ID.
     # OPTIONAL (Default: "")
-    artifact_uuid = "my-artifact"
+    artifact_id = "my-artifact"
 )
 ```
 
