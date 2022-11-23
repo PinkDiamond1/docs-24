@@ -238,12 +238,12 @@ artifact_id = upload_files(
     # The file to upload into a files a files artifact
     # Must be a Kurtosis resource specification.
     # MANDATORY
-    src_path = "github.com/foo/bar/static/example.txt",
+    src = "github.com/foo/bar/static/example.txt",
 
     # The ID to give the files artifact that will be produced.
-    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit UUID.
+    # If none is specified, Kurtosis will generate a random hex-encoded 36-bit ID.
     # OPTIONAL (Default: "")
-    artifact_uuid = "my-artifact",
+    artifact_id = "my-artifact",
 )
 ```
 
