@@ -61,13 +61,12 @@ All interaction with Kurtosis happens via API requests to the Kurtosis engine. T
 
 For day-to-day operation, we provide [a CLI that wraps the SDK with easy-to-use commands][installation] (usage guide [here][cli-usage]), and we plan to have a GUI soon as well.
 
-Modules
--------
+Modules & Packages
+------------------
 We mentioned earlier that enclaves house environments, and that we chose the name 'enclave' intentionally. This is because environments are fractal: Steve might deploy microservices to his Prod environment that use services in the Prod environments of Angela and Rob. The union of all three could therefore be called "the environment containing Steve's application", even while it has other environments inside it.
 
-This becomes especially relevant with Kurtosis modules. A Kurtosis module is a portable environment-in-a-box, a package of Kurtosis SDK instructions, capable of being transferred between individuals and across machines (more details [here][modules]). Two modules might be deployed in the same enclave, meaning that two disparate environments are launched in the same space. To avoid confusion, we've designated the enclave as the space in which environments get loaded in.
+This becomes especially relevant with Kurtosis modules. A Kurtosis module is a portable environment-in-a-box, a package of Kurtosis SDK instructions, capable of being transferred between individuals and across machines. Two modules might be deployed in the same enclave, meaning that two disparate environments are launched in the same space. To avoid confusion, we've designated the enclave as the space in which environments get loaded in.
 
 <!-------------- ONLY LINKS BELOW HERE --------------------->
 [installation]: ./install
 [cli-usage]: ./cli
-[modules]: ./modules
