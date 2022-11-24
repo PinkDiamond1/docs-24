@@ -76,7 +76,7 @@ const sidebars = {
     },
     {
       type: 'link',
-      label: 'Changelogs',
+      label: 'Changelog',
       href: 'https://docs.kurtosistech.com/kurtosis/changelog',
     },
   ],
