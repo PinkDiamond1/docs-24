@@ -1,6 +1,7 @@
 ---
-title: Starlark Introduction
-sidebar_label: Starlark Introduction
+title: Starlark
+sidebar_label: Starlark
+sidebar_position: 3
 ---
 
 :warning: **Starlark at Kurtosis is in an alpha state. Message us on discord [here](https://discord.com/channels/783719264308953108/783719264308953111) in case you run into problems.**

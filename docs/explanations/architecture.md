@@ -64,5 +64,5 @@ For a more detailed explanation of Starlark and how it's used at Kurtosis, [see 
 [cli-usage]: ./cli
 [six-properties]: ./six-properties.md
 [what-is-kurtosis]: ./what-is-kurtosis.md
-[starlark-explanation]: ./starlark-explanation.md
+[starlark-explanation]: ./starlark.md
 [starlark-reference]: ../reference/starlark-reference.md
