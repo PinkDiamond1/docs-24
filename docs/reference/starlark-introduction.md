@@ -49,7 +49,7 @@ kurtosis run main.star
 
 You should see output that looks like
 
-![expected output](/img/starlark/exec-output.png)
+![expected output](/img/starlark/run-output.png)
 
 Kurtosis scripts runs in three phases: 
 
