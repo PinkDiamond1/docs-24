@@ -75,26 +75,9 @@ const sidebars = {
       ]
     },
     {
-      type: 'category',
+      type: 'link',
       label: 'Changelogs',
-      collapsed: false,
-      items: [,
-        {
-          type: 'link',
-          label: 'Kurtosis CLI Changelog',
-          href: 'https://docs.kurtosistech.com/kurtosis-cli/changelog',
-        },
-        {
-          type: 'link',
-          label: 'Kurtosis Core Changelog',
-          href: 'https://docs.kurtosistech.com/kurtosis-core/changelog',
-        },
-        {
-          type: 'link',
-          label: 'Kurtosis Engine Changelog',
-          href: 'https://docs.kurtosistech.com/kurtosis-engine-server/changelog',
-        },
-      ]
+      href: 'https://docs.kurtosistech.com/kurtosis/changelog',
     },
   ],
 
