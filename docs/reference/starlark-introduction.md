@@ -41,23 +41,23 @@ service = add_service(
 print("httpd has been added successfully")
 ```
 
-Finally, execute it using the Kurtosis CLI:
+Finally, run it using the Kurtosis CLI:
 
 ```bash
-kurtosis exec main.star
+kurtosis run main.star
 ```
 
 You should see output that looks like
 
 ![expected output](/img/starlark/exec-output.png)
 
-Kurtosis scripts execute in three phases: 
+Kurtosis scripts runs in three phases: 
 
 1. The Starlark script is interpreted, and each command is pushed to a queue of instructions to execute
 1. The "flattened" list of commands are validated, which allows Kurtosis to report misconfigurations like typo'd ports or IP addresses before any execution happens
 1. The list of commands are executed
 
-On the second line you can see that Kurtosis created an [enclave][enclave] with the randomly chosen name `winter-mountain` for the script to execute in.
+On the second line you can see that Kurtosis created an [enclave][enclave] with the randomly chosen name `winter-mountain` for the script to run in.
 
 On the third line you can see the flattened list of commands that Kurtosis validated (which only contains `add_service`).
 
