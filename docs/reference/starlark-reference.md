@@ -440,10 +440,10 @@ def main():
 
 then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.mod` file (due to the shared module name).
 
-To execute the module, it's enough to run the following in the directory with the `kurtosis.mod` file:
+To run the module, it's enough to run the following in the directory with the `kurtosis.mod` file:
 
 ```
-kurtosis exec .
+kurtosis run .
 ```
 
 
