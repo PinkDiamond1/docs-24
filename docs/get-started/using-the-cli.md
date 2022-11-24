@@ -75,8 +75,6 @@ This will print detailed information about:
 
 * The enclave's status (running or stopped)
 * The services inside the enclave (if any), and the information for accessing those services' ports from your local machine
-* The [modules](/modules) inside the enclave (if any)
-* The REPLs that have been attached to the enclave (if any)
 
 ### Dump enclave information to disk
 You'll likely need to store enclave logs to disk at some point - maybe you want to have a log package if your CI fails, or you want to record historical logs as you work on a module, or you want to send debugging information to a module author. Whatever the case may be, you can run:
