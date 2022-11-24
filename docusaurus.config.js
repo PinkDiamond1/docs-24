@@ -74,12 +74,6 @@ const config = {
             label: 'API',
           },
           {
-            to: '/modules',
-            position: 'left',
-            label: 'Modules',
-            activeBasePath: '/modules'
-          },
-          {
             href: 'https://www.kurtosis.com/careers',
             position: 'right',
             label: `Join Us - We're Hiring`,

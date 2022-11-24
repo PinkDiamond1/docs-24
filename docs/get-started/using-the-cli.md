@@ -75,8 +75,6 @@ This will print detailed information about:
 
 * The enclave's status (running or stopped)
 * The services inside the enclave (if any), and the information for accessing those services' ports from your local machine
-* The [modules](/modules) inside the enclave (if any)
-* The REPLs that have been attached to the enclave (if any)
 
 ### Dump enclave information to disk
 You'll likely need to store enclave logs to disk at some point - maybe you want to have a log package if your CI fails, or you want to record historical logs as you work on a module, or you want to send debugging information to a module author. Whatever the case may be, you can run:
@@ -144,7 +142,7 @@ kurtosis service rm $THE_ENCLAVE_ID $THE_SERVICE_ID
 **NOTE:** To avoid destroying debugging information, Kurtosis will leave removed services inside the Docker engine. They will be stopped and won't show up in the list of active services in the enclave, but you'll still be able to access them (e.g. using `service logs`) by their service GUID (available via `enclave inspect`).
 
 ### Execute a module
-For ease-of-use, the Kurtosis CLI provides a single command to 1) create an enclave 2) load a [module](/modules) inside it and 3) execute the module. This command is:
+For ease-of-use, the Kurtosis CLI provides a single command to 1) create an enclave 2) load a module inside it and 3) execute the module. This command is:
 
 ```bash
 kurtosis module exec $THE_MODULE_IMAGE
