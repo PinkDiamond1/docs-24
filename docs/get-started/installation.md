@@ -49,7 +49,7 @@ sudo yum install kurtosis-cli
 ## deb, rpm, and apk
 Download the appropriate artifact from [the release artifacts page][release-artifacts].
 
-Once the CLI is installed, [the quickstart is a great place to get started](/quickstart).
+Once you're done, [the quickstart is a great place to get started](/quickstart).
 
 Metrics Election
 ----------------
