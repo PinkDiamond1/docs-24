@@ -4,19 +4,42 @@ sidebar_label: Starlark
 sidebar_position: 3
 ---
 
-:warning: **Starlark at Kurtosis is in an alpha state. Message us on discord [here](https://discord.com/channels/783719264308953108/783719264308953111) in case you run into problems.**
+What is Starlark?
+-----------------
+[Starlark](https://github.com/bazelbuild/starlark) is a programming language that was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language). Its syntax is a minimal subset of of Python, with a focus on readability. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page](https://bazel.build/rules/language#differences_with_python) lists the differences between Starlark and Python.
 
-### What is Starlark?
+How is Starlark used at Kurtosis?
+---------------------------------
+At Kurtosis, Starlark is the language for users to define and transform [enclaves][enclaves]. Users submit Starlark programs to the Kurtosis engine, the Kurtosis engine runs the Starlark, and executes the required instructions.
 
-Starlark is a programming language similar to Python that was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language).
+Starlark is also the sharing mechanism for Kurtosis environment definitions. If a user shares a Starlark snippet or file, the user is sharing the environment definition itself.
 
-Though very similar to Python, Starlark removes many Python features so that it's hermetic (meaning each Starlark script is self-contained), deterministic (meaning the same input gives the same output), and easy-to-read. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page](https://bazel.build/rules/language#differences_with_python) lists the differences between Starlark and Python.
+Why did Kurtosis choose Starlark for its environment definitions?
+-----------------------------------------------------------------
+Kurtosis aims to provide a single distributed application development tool across Dev, Test, and Prod. We believe that any environment definition format that can do this must have [six properties][six-properties]. We have also observed that the definitions are fundamentally different between Dev, Test, and Prod: in Dev/Test, definitions should be loose, easy to modify, and only strict enough 
 
-### How is Starlark used at Kurtosis?
+
+
+
 
 Kurtosis uses Starlark as the definition language for environment changes. Users write Starlark scripts representing a series of environment transformations (e.g. setting up an Elasticsearch cluster), and the transformations can be executed against any given [enclave][enclave]. Starlark scripts are also parameterizable and shareable, so users can leverage each others' work.
 
-### Why did Kurtosis choose Starlark over other programming languages?
+Why?
+----
+- Wrestling with the "configuration language" thing forever
+- https://twitter.com/bgrant0607/status/1123621201106980864?lang=en
+- We're seeing a shift away from YAML
+    - E.g. Pulumi
+
+
+Why did Kurtosis choose Starlark over other programming languages?
+------------------------------------------------------------------
+
+- We needed a way for users to define environments that obeyed [the Six Properties of environment definitions][six-properties].
+- Starlark properties
+- Needed a way to decouple 
+- Backed by Google
+- Python-like - familiar to most people
 
 Kurtosis chose Starlark to define environment changes because it's:
 
@@ -58,11 +81,12 @@ Kurtosis scripts execute in three phases:
 1. The "flattened" list of commands are validated, which allows Kurtosis to report misconfigurations like typo'd ports or IP addresses before any execution happens
 1. The list of commands are executed
 
-On the second line you can see that Kurtosis created an [enclave][enclave] with the randomly chosen name `winter-mountain` for the script to execute in.
+On the second line you can see that Kurtosis created an [enclave][enclaves] with the randomly chosen name `winter-mountain` for the script to execute in.
 
 On the third line you can see the flattened list of commands that Kurtosis validated (which only contains `add_service`).
 
 On the fifth line you can see the output of the script.
 
 <!--------------- ONLY LINKS BELOW HERE --------------------------->
-[enclave]: ./architecture.md#enclaves
+[enclaves]: ./architecture.md#enclaves
+[six-properties]: ./six-properties.md

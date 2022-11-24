@@ -4,7 +4,16 @@ sidebar_label: The Six Properties
 sidebar_position: 3
 ---
 
-There are many tools for defining environments: Bash/Python scripts, Ansible, Docker Compose, Helm, Terraform, etc. These tools have varying utility depending on whether they're being used in Dev, Test, or Prod. Kurtosis believes that any environment definition tool must enable six properties in order to be useful across Dev, Test, and Prod:
+Why is reusing environment definitions across Dev, Test, and Prod so difficult? We have many tools - Bash/Python s
+
+There are many tools for defining environments: Bash/Python scripts, Ansible, Docker Compose, Helm, Terraform, etc. These tools have varying utility depending on whether they're being used in Dev, Test, or Prod. 
+
+
+
+
+
+
+Kurtosis believes that any environment definition tool must enable six properties in order to be useful across Dev, Test, and Prod:
 
 1. **Composability:** The user should be able to combine two or more environment definitions to form a new one (e.g. Postgres + Elasticsearch).
 1. **Decomposability:** The user should be able to take an existing environment definition and strip out the parts they're not interested in to form a smaller environment definition (e.g. take the large Prod environment definition and instantiate only a small portion of it).
@@ -13,4 +22,8 @@ There are many tools for defining environments: Bash/Python scripts, Ansible, Do
 1. **Pluggability of Data:** The data used across Dev, Test, and Prod varies so widely that the user should be able to configure which data to use.
 1. **Portability:** An environment definition author should be able to share their work and be confident that it can be used.
 
-Kurtosis is designed to fulfill all six properties.
+Further, we've observed that the environment definitions across Dev, Test, and Prod have different characters:
+
+
+- In Dev, environment definitions are loose, often modified, often not checked into source control, and rarely shared
+- In Test, environment definition
