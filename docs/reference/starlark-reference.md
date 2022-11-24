@@ -28,7 +28,7 @@ Can be called in any of the following ways:
 make_pizza("16cm")
 
 # 2. Only the required argument filled, by name 
-make_pizza(size = "16cm)
+make_pizza(size = "16cm")
 
 # 3. Both arguments filled, positionally
 make_pizza("16cm", "mushroom")
@@ -197,10 +197,6 @@ template_data = {
     "Alive": True
 }
 
-# Template data must be JSON-encoded
-# json.encode & json.decode can be used within Starlark
-json_encoded_template_data = json.encode(template_data)
-
 artifact_id = render_templates(
     # A dictionary where:
     #  - Each key is a filepath that will be produced inside the output files artifact
@@ -214,10 +210,10 @@ artifact_id = render_templates(
             # MANDATORY
             template="Hello {{.Name}}. The sum of {{.Numbers}} is {{.Answer}}. My favorite moment in history {{.UnixTimeStamp}}. My favorite number {{.LargeFloat}}. Am I Alive? {{.Alive}}",
 
-            # The data to slot into the template, serialized into JSON. 
-            # The JSON object properties should exactly match the keys in the template.
+            # The data to slot into the template, can be a struct or a dict
+            # The keys should exactly match the keys in the template.
             # MANDATORY
-            data=json_encoded_template_data,
+            data=template_data,
         )
     }
 

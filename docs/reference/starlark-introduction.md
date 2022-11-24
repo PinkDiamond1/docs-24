@@ -64,4 +64,4 @@ On the third line you can see the flattened list of commands that Kurtosis valid
 On the fifth line you can see the output of the script.
 
 <!--------------- ONLY LINKS BELOW HERE --------------------------->
-[enclave]: /docs/reference/architecture.md#enclaves
+[enclave]: ./architecture.md#enclaves

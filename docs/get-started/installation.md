@@ -5,9 +5,11 @@ slug: /install
 sidebar_position: 1
 ---
 
-[Interacting with Kurtosis](/cli) is done via a CLI; the instructions below will walk you through installing it.
+[Interacting with Kurtosis](/cli) is done via a CLI. The instructions below will walk you through installing it.
 
-**TIP:** The CLI supports tab completion. After you install using one of the methods below, follow [these instructions](/cli#adding-tab-completion) to enable tab completion.
+:::tip
+The CLI supports tab completion. After you install using one of the methods below, follow [these instructions](/cli#adding-tab-completion) to enable tab completion.
+:::
 
 ## Homebrew
 ```
