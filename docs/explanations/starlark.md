@@ -6,11 +6,11 @@ sidebar_position: 3
 
 What is Starlark?
 -----------------
-[Starlark](https://github.com/bazelbuild/starlark) is a programming language that was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language). Its syntax is a minimal subset of of Python, with a focus on readability. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page](https://bazel.build/rules/language#differences_with_python) lists the differences between Starlark and Python.
+[Starlark](https://github.com/bazelbuild/starlark) is a minimal language that sits between a configuration language and a full programming language. It was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language), and has since [been adopted by Facebook for the Buck build system as well](https://developers.facebook.com/blog/post/2021/04/08/rust-starlark-library/). Starlark's syntax is a minimal subset of of Python, with a focus on readability. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page](https://bazel.build/rules/language#differences_with_python) lists the differences between Starlark and Python.
 
 How is Starlark used at Kurtosis?
 ---------------------------------
-At Kurtosis, Starlark is the language for users to define and transform [enclaves][enclaves]. Users submit Starlark programs to the Kurtosis engine, the Kurtosis engine runs the Starlark, and executes the required instructions.
+Kurtosis uses Starlark as the language for users to define and transform [enclaves][enclaves]. Users submit Starlark programs to the Kurtosis engine, the Kurtosis engine runs the Starlark, and executes the required instructions.
 
 Starlark is also the sharing mechanism for Kurtosis environment definitions. If a user shares a Starlark snippet or file, the user is sharing the environment definition itself.
 
@@ -34,9 +34,10 @@ Why?
 
 Why did Kurtosis choose Starlark over other programming languages?
 ------------------------------------------------------------------
+- The properties desired for Google/FB build system is very similar to what we want
 
 - We needed a way for users to define environments that obeyed [the Six Properties of environment definitions][six-properties].
-- Starlark properties
+- Starlark properties (determinism, hermiticity, etc.)
 - Needed a way to decouple 
 - Backed by Google
 - Python-like - familiar to most people
