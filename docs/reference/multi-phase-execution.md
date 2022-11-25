@@ -41,6 +41,6 @@ In the future, it will also allow us to:
 - Compile a Kurtosis plan down a declarative definition (e.g. Helm or Terraform)
 
 <!---------------- ONLY LINKS BELOW HERE ------------------------->
-[starlark-explainer]: ../explainers/starlark.md
+[starlark-explanation]: ../explanations/starlark.md
 [starlark-instructions]: ./starlark-instructions.md
 [packages]: ./packages.md

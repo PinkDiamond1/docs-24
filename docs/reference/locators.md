@@ -12,7 +12,7 @@ github.com/package-author/package-name/path/in/repo/some-file.star
 
 references a file inside a GitHub repo called `package-name`, owned by `package-author`, that lives at the path `/path/in/repo/some-file.star` relative to the root of the repo.
 
-Locators are used for identifying resources that will be used inside a Starlark script - namely by [`import_module`](./starlark-reference.md#import_module) and [`read_file`](./starlark-reference.md#read_file).
+Locators are used for identifying resources that will be used inside a Starlark script - namely by [`import_module`](./starlark-instructions.md#import_module) and [`read_file`](./starlark-instructions.md#read_file).
 
 :::info
 Only locators pointing to public GitHub repositories are currently allowed.
