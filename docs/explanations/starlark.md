@@ -6,7 +6,7 @@ sidebar_position: 3
 
 What is Starlark?
 -----------------
-[Starlark](https://github.com/bazelbuild/starlark) is a minimal language, between a configuration language and a general-purpose programming language. It was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language), and has since [been adopted by Facebook for the Buck build system as well](https://developers.facebook.com/blog/post/2021/04/08/rust-starlark-library/). Starlark's syntax is a minimal subset of of Python, with a focus on readability. The [Starlark spec here](https://github.com/google/starlark-go/blob/master/doc/spec.md) covers the entire language, and [this page][starlark-differences-with-python] lists the differences between Starlark and Python.
+[Starlark](https://github.com/bazelbuild/starlark) is a minimal programming language, halfway between a configuration language and a general-purpose programming language. It was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language), and has since [been adopted by Facebook for the Buck build system as well](https://developers.facebook.com/blog/post/2021/04/08/rust-starlark-library/). Starlark's syntax is a minimal subset of of Python, with a focus on readability. [This page][starlark-differences-with-python] lists the differences between Starlark and Python.
 
 How is Starlark used at Kurtosis?
 ---------------------------------
@@ -23,12 +23,12 @@ We first looked at pure configuration languages like YAML, Jsonnet, Dhall, and C
 We next looked at letting users declare environment definitions in their preferred general-purpose language, like Pulumi. This would require a large effort from our side to support many different SDKs, but we would do it if it was the right choice. However, we ultimately rejected this option because we realized that Kurtosis environment definitions in general-purpose programming languages:
 
 1. Are _too_ powerful: we'd need to run user code to construct an environment, and running arbitrary user code is a security risk in one general-purpose language let alone in various.
-1. Aren't friendly for the environment definition author: to make an environment definition portable, the author would have to bundle their definition inside a container. Containerization makes development more painful (the user must know about Dockerfiles and their best practices), and requires a CI job to publish the container images up to Dockerhub.
+1. Aren't friendly for the environment definition author: to make an environment definition portable, the author would have to bundle their definition inside a container. Containerization makes development more painful (the user must know about Dockerfiles, their best practices, and how to build them locally), and requires a CI job to publish the container images up to Dockerhub.
 1. Aren't friendly for the environment definition consumer: a developer investigating a third-party environment definition could easily be faced with a language they're not familiar with. Worse, general-purpose languages have many patterns for accomplishing the same task, so the consumer would need to understand the class/object/function architecture.
 
 When we discovered Starlark, the fit was obvious. Starlark:
 
-- Is syntactically valid Python, which most developers are familiar with and which has lots of tooling
+- Is syntactically valid Python, which most developers are familiar with and which has much tooling
 - [Intentionally removes many Python features][starlark-differences-with-python], to make Starlark easier to read and understand
 - Has [several properties that are very useful for Kurtosis](https://github.com/bazelbuild/starlark#design-principles), thanks to Starlark's origin as a build system definition language
 - [Has been around in Google since at least 2017](https://blog.bazel.build/2017/03/21/design-of-skylark.html), meaning it's well-vetted

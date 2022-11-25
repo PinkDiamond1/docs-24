@@ -28,8 +28,8 @@ With this lens, we see why none of the most common solutions can be reused acros
 - Scripting can be used for Dev and Test, but instantiating just a part of the environment requires extensive parameterization. Scripting is also not declarative, and requires the author to build in idempotence. Validation and data-handling is left to the author. Finally, scripts can get very complex and require specialized knowledge to understand.
 - Ansible behaves like scripting with idempotence and validation on top. It is better in the Prod usecase than scripting, but doesn't ease the Dev/Test usecase of instantiating just a part of the system.
 - Docker Compose is great for Dev and even for some Test, but fails in Prod for its lack of idempotence and its requirement to bring the entire stack down and up each time each time each time each time. It has no validation, little parameterizability, and Docker Compose files cannot be plugged together.
-- Helm is excellent for the Prod usecase for its idempotence, parameterizability, and emphasis on sharing, but Helm charts are complex and difficult to compose or decompose. Like with Docker Compose, data-handling is via volumes only. Declarative is the only supported execution method, so Helm only fills the Test usecase when mixed with a procedural language.
-- Terraform, like Helm, hits the Prod usecase very well, and does a better job with sharing. However, like Helm, Terraform can only be executed in declarative mode, which means the Test usecase needs a procedural langauge to sequence events.
+- Helm is excellent for the Prod usecase for its idempotence, parameterizability, and emphasis on sharing, but Helm charts are complex and difficult to compose or decompose. Like Docker Compose, data-handling is via volumes only. The only execution mode is declarative, so Helm only fills the Test usecase when mixed with a procedural language.
+- Terraform, like Helm, hits the Prod usecase very well. However, like Helm, Terraform can only be executed in declarative mode; Test usecases with Terraform therefore need a procedural langauge to sequence events.
 
 What does a reusable solution look like?
 ----------------------------------------
@@ -38,15 +38,15 @@ Kurtosis believes that any environment definition that aims to be reusable acros
 1. **Composability:** The user should be able to combine two or more environment definitions to form a new one (e.g. Postgres + Elasticsearch).
     - In Dev, Test, and Prod, this allows modularization of definitions
 1. **Decomposability:** The user should be able to take an existing environment definition and strip out the parts they're not interested in to form a smaller environment definition (e.g. take the large Prod environment definition and instantiate only a small portion of it).
-    - In Dev, Test, and Prod, consumers of third-party definitions can select exactly the sub-components of the system
-    - In Dev, developers can select just the parts of the Prod system they're interested in
-1. **Safety:** The user should be able to know whether the environment definition will work before instantiating it (analogous to type-checking - e.g. do all the ports match up, do the IP addresses match up, are the container images available, etc.)
-    - In Dev, Test, and Prod, this left-shifts classes of errors from runtime to validation time
-1. **Parameterizability:** An environment definition should be able to accept parameters (e.g. define the desired number of Elasticsearch nodes)
+    - In Dev, Test, and Prod, this consumers of third-party definitions can select only the sub-components of the definition that are of interest
+    - In Dev, developers can select just the parts of their Prod system that they're working on
+1. **Safety:** The user should be able to know whether the environment definition will work before instantiating it (analogous to type-checking - e.g. verifying all the ports match up, all the IP addresses match up, all the container images are available, etc.).
+    - In Dev, Test, and Prod, this left-shifts classes of errors from runtime to validation time resulting in a tighter feedback loop
+1. **Parameterizability:** An environment definition should be able to accept parameters (e.g. define the desired number of Elasticsearch nodes).
     - In Dev, Test, and Prod, parameterizability is essential to keeping environment definitions DRY
 1. **Pluggability of Data:** The data used across Dev, Test, and Prod varies so widely that the user should be able to configure which data to use.
-    - In Dev, Test, and Prod, data will vary by environment and so the environment definition must have a first-class way of plugging in data
-1. **Portability:** An environment definition author should be able to share their work and be confident that it can be used.
+    - In Dev, Test, and Prod, this allows for a definition to be reusable even when the data isn't the same
+1. **Portability:** An environment definition author should be able to share their work and be confident that it can be consumed.
     - In Dev, Test, and Prod, this allows for reuse of definitions
     - In Test, test cases that failed on a CI machine can be reproduced on a developer's machine
 
