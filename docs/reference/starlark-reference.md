@@ -369,6 +369,113 @@ wait(
 )
 ```
 
+
+### get_value
+
+The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+
+For GET requests:
+```python
+get_request_recipe = struct(
+    # The service ID that is the server for the request
+    # MANDATORY
+    service_id = "my_service",
+    
+    # The port ID that is the server port for the request
+    # MANDATORY
+    port_id = "my_port",
+
+    # The endpoint for the request
+    # MANDATORY
+    endpoint = "/endpoint?input=data",
+
+    # The method is GET for this example
+    # MANDATORY
+    method = "GET",
+)
+get_response = get_value(
+    recipe = get_request_recipe
+)
+print(get_response.body) # Prints the body of the request
+print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+```
+
+For POST requests:
+```python
+post_request_recipe = struct(
+    # The service ID that is the server for the request
+    # MANDATORY
+    service_id = "my_service",
+
+    # The port ID that is the server port for the request
+    # MANDATORY
+    port_id = "my_port",
+
+    # The endpoint for the request
+    # MANDATORY
+    endpoint = "/endpoint",
+
+    # The method is POST for this example
+    # MANDATORY
+    method = "POST",
+
+    # The content type header of the request (e.g. application/json, text/plain, etc)
+	content_type="text/plain",
+
+    # The body of the request
+	body="text body"
+)
+post_response = get_value(
+    recipe = post_request_recipe
+)
+```
+
+### assert
+
+The `assert` instruction fails the Starlark script in runtime if the assertion defined fails.
+
+```python
+assert(
+    # The value currently being asserted.
+    # MANDATORY
+    value = "test1"
+
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
+    # MANDATORY
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = "test2"
+) # This fails in runtime given that "test1" == "test2" is false
+
+assert(
+    # Value can also be a runtime value derived from a `get_value` call
+    value = response.body
+    assertion = "=="
+    target_value = 200
+)
+```
+
+
+### extract
+
+The `extract` instruction evaluates a JQ-like string against a JSON string value, extracting its field.
+
+```python
+value = extract(
+    # The input is a JSON string.
+    # MANDATORY
+    input = "{'key': 'my_value'}",
+
+    # The extractor is a JQ-like string.
+    # MANDATORY
+    extractor = ".key"
+)
+print(value) # Prints 'my_value'
+```
+
 ### import_module
 
 Kurtosis Starlark scripts can depend on other scripts. To import another script, use the `import_module` function. The result object will contain all the symbols of the imported script.
