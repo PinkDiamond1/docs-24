@@ -35,16 +35,33 @@ When we discovered Starlark, the fit was obvious. Starlark:
 - Is used for both Google and Facebook's build system, meaning it isn't going away any time soon
 - [Is used by several other companies beyond Google and Facebook](https://github.com/bazelbuild/starlark/blob/master/users.md#users)
 
-<!-- TODO FILL THIS OUT!!!! -->
-<!--
-How has Kurtosis extended Starlark for environment definitions?
----------------------------------------------------------------
-Starlark itself is very basic; it is intended to be extended to fulfill a given usecase (e.g. the Bazel build language is actually a set of extensions built on top of Starlark). To leverage Starlark for environment definitions, we added the following:
+How is Starlark implemented at Kurtosis?
+----------------------------------------
+Starlark itself is very basic; it is intended to be extended to fulfill a given usecase (e.g. the Bazel build language is actually an extension built on top of Starlark). We extended basic Starlark with several features so that it could define environments easily:
 
+- [Dependencies][dependencies-reference]: 
+
+
+
+
+
+
+We needed Starlark to fulfill [the six properties of reusable environment definitions][reusable-environment-definitions]. 
+
+
+
+
+
+We extended basic Starlark with several features so that it would provide the 
+
+
+
+
+
+
+- A set of functions for modifying the state of an enclave
 - A package system
-- A set of functions for modifying the 
 - 
--->
 
 How do I get started with Starlark?
 -----------------------------------
@@ -91,3 +108,4 @@ On the fifth line you can see the output of the script.
 [enclaves]: ./architecture.md#enclaves
 [reusable-environment-definitions]: ./reusable-environment-definitions.md
 [starlark-differences-with-python]: https://bazel.build/rules/language#differences_with_python
+[dependencies-reference]: ../reference/dependencies.md
