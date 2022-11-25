@@ -13,7 +13,7 @@ Instructions
 def do_something(required_arg, optional_arg="default_value")
 ```
 
-In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required are not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
+In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required or not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
 
 Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
 
@@ -399,14 +399,13 @@ Note: At the moment Starlark only supports public repositories hosted on GitHub.
 
 All import paths are URLs; there is no notion of relative imports in Kurtosis even for local paths. We made this choice to allow for performance optimizations: the result of loading any given resource can be cached based on the resource URL.
 
-However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.mod` file like so:
+However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    # Should correspond to URL to locate this kurtosis.mod file on Github.
-    # If the kurtosis.mod file lives at a subpath of the repo, that subpath should be appended here, e.g.:
-    #    github.com/author/repo-name/sub/path
-    name: "github.com/<your-github-org-or-user-name>/<repo-name>"
+# Should correspond to URL to locate this kurtosis.yml file on Github.
+# If the kurtosis.yml file lives at a subpath of the repo, that subpath should be appended here, e.g.:
+#    github.com/author/repo-name/sub/path
+name: "github.com/<your-github-org-or-user-name>/<repo-name>"
 ```
 
 The module name will tell Kurtosis that any imports using that name should be resolved locally, rather than by cloning a remote Github URL.
@@ -415,17 +414,16 @@ For example, if we have a repo with these contents:
 
 ```
 /
-    kurtosis.mod
+    kurtosis.yml
     main.star
     public-key.json
 ```
 
 
-with a `kurtosis.mod` file like so:
+with a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    name: "github.com/kurtosis/example"
+name: "github.com/kurtosis/example"
 ```
 
 and a `main.star` like so:
@@ -438,9 +436,9 @@ def main():
     print(public_key)
 ```
 
-then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.mod` file (due to the shared module name).
+then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.yml` file (due to the shared module name).
 
-To run the module, it's enough to run the following in the directory with the `kurtosis.mod` file:
+To run the module, it's enough to run the following in the directory with the `kurtosis.yml` file:
 
 ```
 kurtosis run .
