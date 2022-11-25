@@ -14,7 +14,7 @@ The problem is that our tools are woefully outdated. The term "DevOps" was coine
 
 In our vision, a developer should have a single tool for their service that can prototype, test, debug, deploy to Prod, and observe while running live. Our goal with Kurtosis is to bring DevOps back. 
 
-To read more about the specifics of what we're building, read about [the Six Properties here][six-properties]. To get started using Kurtosis, see [the installation instructions][install].
+To read more about our beliefs on reusable environments, [go here][reusable-environment-definitions]. To get started using Kurtosis, see [the installation instructions][install].
 
-[six-properties]: ./six-properties.md
+[reusable-environment-definitions]: ./reusable-environment-definitions.md
 [install]: /install

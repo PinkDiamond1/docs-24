@@ -55,14 +55,14 @@ For day-to-day operation, we also provide [a CLI ][installation] (usage guide [h
 
 Kurtosis Instruction Language
 -----------------------------
-Distributed system definitions are complex. To allow users to express their system in the simplest way possible while still fulfilling the required [properties of a reusable environment definition][environment-definition-properties], the Kurtosis engine provides users with the ability to define and manipulate enclaves using Google's Starlark configuration language. The Kurtosis engine contains a Starlark interepreter, and users can [send Starlark instructions][starlark-reference] via the Kurtosis SDK to tell the engine what to do with an enclave.
+Distributed system definitions are complex. To allow users to express their system in the simplest way possible while still fulfilling the required [properties of a reusable environment definition][reusable-environment-definitions], the Kurtosis engine provides users with the ability to define and manipulate enclaves using Google's Starlark configuration language. The Kurtosis engine contains a Starlark interepreter, and users can [send Starlark instructions][starlark-reference] via the Kurtosis SDK to tell the engine what to do with an enclave.
 
 For a more detailed explanation of Starlark and how it's used at Kurtosis, [see here][starlark-explanation]. For a reference list of the available Starlark instructions, [see here][starlark-reference].
 
 <!-------------- ONLY LINKS BELOW HERE --------------------->
 [installation]: ./install
 [cli-usage]: ./cli
-[environment-definition-properties]: ./environment-definition-properties.md
+[reusable-environment-definitions]: ./reusable-environment-definitions.md
 [what-is-kurtosis]: ./what-is-kurtosis.md
 [starlark-explanation]: ./starlark.md
 [starlark-reference]: ../reference/starlark-reference.md

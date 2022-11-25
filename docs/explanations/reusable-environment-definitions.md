@@ -1,9 +1,11 @@
 ---
-title: Environment Definition Properties
-sidebar_label: Environment Definition Properties
+title: Reusable Environment Definitions
+sidebar_label: Reusable Environment Definitions
 sidebar_position: 3
 ---
 
+Why are reusable environment definitions hard?
+----------------------------------------------
 We have many tools for defining and modifying environments: Bash/Python scripts, Ansible, Docker Compose, Helm, and Terraform. Yet, none have proven successful at reuse across Dev, Test, and Prod. Why?
 
 Environment definitions in Dev, Test, and Prod share some common requirements:
@@ -19,6 +21,8 @@ They also have distinct differences:
 - In Test, environment definitions should be source-controlled, but are rarely shared given how specific the environment definition is to the scenario being tested. The order in which events happen is very important, so determinism and ordering of events matter.
 - In Prod, environment definitions must be source-controlled. They may be shared, but can only be modified by authorized individuals. They are nearly always declarative: idempotence is very important in Prod, along with the ability to make the minimal set of changes (e.g. add just a few new services without needing to restart the entire stack).
 
+Why aren't the current solutions reusable?
+------------------------------------------
 With this lens, we see why none of the most common solutions can be reused across Dev, Test, and Prod:
 
 - Scripting can be used for Dev and Test, but instantiating just a part of the environment requires extensive parameterization. Scripting is also not declarative, and requires the author to build in idempotence. Validation and data-handling is left to the author. Finally, scripts can get very complex and require specialized knowledge to understand.
@@ -27,7 +31,9 @@ With this lens, we see why none of the most common solutions can be reused acros
 - Helm is excellent for the Prod usecase for its idempotence, parameterizability, and emphasis on sharing, but Helm charts are complex and difficult to compose or decompose. Like with Docker Compose, data-handling is via volumes only. Declarative is the only supported execution method, so Helm only fills the Test usecase when mixed with a procedural language.
 - Terraform, like Helm, hits the Prod usecase very well, and does a better job with sharing. However, like Helm, Terraform can only be executed in declarative mode, which means the Test usecase needs a procedural langauge to sequence events.
 
-We believe that any environment definition tool that aims to be reusable across Dev, Test, and Prod must have six properties:
+What does a reusable solution look like?
+----------------------------------------
+Kurtosis believes that any environment definition that aims to be reusable across Dev, Test, and Prod must have six properties:
 
 1. **Composability:** The user should be able to combine two or more environment definitions to form a new one (e.g. Postgres + Elasticsearch).
     - In Dev, Test, and Prod, this allows modularization of definitions
