@@ -10,7 +10,7 @@ const config = {
   url: 'https://docs.kurtosis.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
