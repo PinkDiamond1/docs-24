@@ -13,6 +13,8 @@ A Kurtosis package is a:
 - That contains [a `kurtosis.yml` file][kurtosis-yml]
 - Which names the package via a [locator][locators] that points to the directory containing the `kurtosis.yml` file
 
+Kurtosis packages are shared simply by pushing to GitHub, in the same way as Go modules.
+
 For example, a directory structure like so:
 
 ```
@@ -29,7 +31,7 @@ whose `kurtosis.yml` file looked like so:
 name: github.com/me/my-package
 ```
 
-would be called `github.com/me/my-package` and should get pushed to the `my-package` repo owned by the `me` user on GitHub.
+would be called `github.com/me/my-package`. It should get pushed to the `my-package` repo owned by the `me` user on GitHub.
 
 Packages are referenced indirectly, as the [locators][locators] used to specify external resources in a Starlark script will contain the package name where the resource lives.
 
@@ -42,7 +44,7 @@ helpers = import_module("github.com/me/my-package/helpers/helpers.star")
 would be used to import the `helpers.star` file into a Starlark script.
 
 <!-- TODO Update this when dependencies are done in the kurtosis.yml file, which would happen at dependency resolution time -->
-The Kurtosis engine will automatically download dependency packages when running a Starlark script.
+The Kurtosis engine will automatically download dependency packages from GitHub when running a Starlark script.
 
 ### Runnable Packages
 A Kurtosis package that has a `main.star` file next to its `kurtosis.yml` file is called a "runnable package". The `main.star` file of a runnable package must have a `run()` method like so:

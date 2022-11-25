@@ -223,12 +223,12 @@ The result of `render_templates` is the ID of the files artifact that was genera
 
 ### upload_files
 
-`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when you have a static file that you'd like to push to a service you're starting. The syntax looks like:
+`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when a static file should be loaded to a service.
 
 ```python
 artifact_id = upload_files(
     # The file to upload into a files a files artifact
-    # Must be a Kurtosis resource specification.
+    # Must be a Kurtosis locator.
     # MANDATORY
     src = "github.com/foo/bar/static/example.txt",
 
@@ -239,11 +239,11 @@ artifact_id = upload_files(
 )
 ```
 
-Note that the `src_path` needs to be a resource identifier as defined in [the "Dependencies" section][dependencies].
+Note that the `src_path` needs to be a [locator][locators].
 
 ### store_service_files
 
-Produces a files artifact by copying files or directories from an existing service in the enclave. The syntax looks like:
+Produces a files artifact by copying files or directories from an existing service in the enclave.
 
 ```python
 artifact_id = store_service_files(
@@ -264,19 +264,15 @@ artifact_id = store_service_files(
 
 ### read_file
 
-The `read_file` function reads the contents of a file into a variable. This executes at interpretation time and the file contents won't be displayed in the list of flattened commands to run.
-
-The syntax looks like:
+The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-execution] and the file contents won't be displayed in the preview.
 
  ```python
 contents = read_file(
-    # The path to the file to read, which must obey Kurtosis package syntax. 
+    # The Kurtosis locator of the file to read.
     # MANDATORY
     src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  ```
-
-To understand the syntax of the source path, see [the "Dependencies" section][dependencies].
 
 
 ### define_fact
@@ -350,7 +346,7 @@ The return value of `define_fact` is a reference which can be included in the `c
 
 ### wait
 
-The `wait` method pauses execution until the specified fact has the desired value, or a timeout occurs. The `wait` syntax looks like:
+The `wait` method pauses [execution][multi-phase-execution] until the specified fact has the desired value, or a timeout occurs.
 
 ```python
 wait(
@@ -366,7 +362,7 @@ wait(
 
 ### import_module
 
-Kurtosis Starlark scripts can depend on other scripts. To import another script, use the `import_module` function. The result object will contain all the symbols of the imported script.
+The `import_module` function imports the symbols from a Starlark script specified by the given [locator][locators].
 
 ```python
 # Import the code to namespaced object
@@ -376,8 +372,7 @@ lib = import_module("github.com/foo/bar/src/lib.star")
 lib.some_function()
 ```
 
-NOTE: We chose not to use the normal Starlark `load` primitive because it doesn't do namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
-
+NOTE: We chose not to use the normal Starlark `load` primitive due to its lack of namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
 
 
 Starlark Standard Libraries
@@ -393,4 +388,5 @@ in Kurtosis Starlark by default
 
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
+[locators]: ./locators.md
 [multi-phase-execution]: ./multi-phase-execution.md

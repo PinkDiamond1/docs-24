@@ -39,7 +39,8 @@ How is Starlark implemented at Kurtosis?
 ----------------------------------------
 Starlark itself is very basic; it is intended to be extended to fulfill a given usecase (e.g. the Bazel build language is actually an extension built on top of Starlark). We extended basic Starlark with several features so that it could define environments easily:
 
-- [Dependencies][dependencies-reference]: 
+- Dependencies: Kurtosis scripts can [import other resources][locators-reference], which can be shared [via a GitHub-based packaging system][packages-reference].
+- 
 
 
 
@@ -108,4 +109,6 @@ On the fifth line you can see the output of the script.
 [enclaves]: ./architecture.md#enclaves
 [reusable-environment-definitions]: ./reusable-environment-definitions.md
 [starlark-differences-with-python]: https://bazel.build/rules/language#differences_with_python
-[dependencies-reference]: ../reference/dependencies.md
+
+[locators-reference]: ../reference/locators.md
+[packages-reference]: ../reference/packages.md
