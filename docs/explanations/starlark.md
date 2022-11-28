@@ -37,32 +37,12 @@ When we discovered Starlark, the fit was obvious. Starlark:
 
 How is Starlark implemented at Kurtosis?
 ----------------------------------------
-Starlark itself is very basic; it is intended to be extended to fulfill a given usecase (e.g. the Bazel build language is actually an extension built on top of Starlark). We extended basic Starlark with several features so that it could define environments easily:
+Starlark itself is very basic; Google designed it to be extended to fulfill a given usecase (e.g. the Bazel build language is actually an extension built on top of Starlark). We extended basic Starlark with several features so that it could [fulfill the properties of reusable environment definitions][reusable-environment-definitions]:
 
-- Dependencies: Kurtosis scripts can [import other resources][locators-reference], which can be shared [via a GitHub-based packaging system][packages-reference].
-- 
-
-
-
-
-
-
-We needed Starlark to fulfill [the six properties of reusable environment definitions][reusable-environment-definitions]. 
-
-
-
-
-
-We extended basic Starlark with several features so that it would provide the 
-
-
-
-
-
-
-- A set of functions for modifying the state of an enclave
-- A package system
-- 
+- A [list of Kurtosis-specific functions][starlark-instructions-reference] for working with an environment
+- The [ability to accept parameters][run-args-reference]
+- Dependencies, so Kurtosis scripts can [import other scripts][locators-reference]
+- A [GitHub-based packaging system][packages-reference], so environment definitions can be shared with each other
 
 How do I get started with Starlark?
 -----------------------------------
@@ -112,3 +92,5 @@ On the fifth line you can see the output of the script.
 
 [locators-reference]: ../reference/locators.md
 [packages-reference]: ../reference/packages.md
+[run-args-reference]: ../reference/packages.md#arguments
+[starlark-instructions-reference]: ../reference/starlark-instructions.md

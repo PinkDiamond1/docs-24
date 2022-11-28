@@ -62,11 +62,12 @@ kurtosis run github.com/me/my-package
 
 This will result in a call to the `run()` function of the package's `main.star`.
 
-To accept parameters to the `run()` function, the function should accept an `input_args` parameter:
+### Arguments
+To accept parameters to the `run()` function, the function should accept an `args` parameter:
 
 ```python
-def run(input_args):
-    print("Hello, " + input_args.name)
+def run(args):
+    print("Hello, " + args.name)
 ```
 
 To pass parameters to the `run()` function, a JSON object should be given to the `--args` flag should be used when running the package:
