@@ -13,7 +13,7 @@ Instructions
 def do_something(required_arg, optional_arg="default_value")
 ```
 
-In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required are not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
+In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required or not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
 
 Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
 
@@ -523,11 +523,10 @@ All import paths are URLs; there is no notion of relative imports in Kurtosis ev
 However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    # Should correspond to URL to locate this kurtosis.yml file on Github.
-    # This has to live in the root of the repository next to the main.star
-    # all other files can be in any nested directory or at root.
-    name: "github.com/<your-github-org-or-user-name>/<repo-name>"
+# Should correspond to URL to locate this kurtosis.yml file on Github.
+# This has to live in the root of the repository next to the main.star
+# all other files can be in any nested directory or at root.
+name: "github.com/<your-github-org-or-user-name>/<repo-name>"
 ```
 
 The module name will tell Kurtosis that any imports using that name should be resolved locally, rather than by cloning a remote Github URL.
@@ -545,8 +544,7 @@ For example, if we have a repo with these contents:
 with a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    name: "github.com/kurtosis/example"
+name: "github.com/kurtosis/example"
 ```
 
 and a `main.star` like so:
