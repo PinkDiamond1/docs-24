@@ -405,7 +405,7 @@ However, a `read_file` or `import_module` command alone is not enough informatio
 module:
     # Should correspond to URL to locate this kurtosis.yml file on Github.
     # This has to live in the root of the repository next to the main.star
-    # all other files can be in any nested directory or at root even.
+    # all other files can be in any nested directory or at root.
     name: "github.com/<your-github-org-or-user-name>/<repo-name>"
 ```
 
