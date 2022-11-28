@@ -13,7 +13,7 @@ Instructions
 def do_something(required_arg, optional_arg="default_value")
 ```
 
-In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required are not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
+In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required or not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
 
 Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
 
@@ -283,6 +283,126 @@ contents = read_file(
 
 To understand the syntax of the source path, see [the "Dependencies" section][dependencies].
 
+### get_value
+
+The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+
+For GET requests:
+```python
+get_request_recipe = struct(
+    # The service ID that is the server for the request
+    # MANDATORY
+    service_id = "my_service",
+    
+    # The port ID that is the server port for the request
+    # MANDATORY
+    port_id = "my_port",
+
+    # The endpoint for the request
+    # MANDATORY
+    endpoint = "/endpoint?input=data",
+
+    # The method is GET for this example
+    # MANDATORY
+    method = "GET",
+)
+get_response = get_value(
+    recipe = get_request_recipe
+)
+print(get_response.body) # Prints the body of the request
+print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+```
+
+For POST requests:
+```python
+post_request_recipe = struct(
+    # The service ID that is the server for the request
+    # MANDATORY
+    service_id = "my_service",
+
+    # The port ID that is the server port for the request
+    # MANDATORY
+    port_id = "my_port",
+
+    # The endpoint for the request
+    # MANDATORY
+    endpoint = "/endpoint",
+
+    # The method is POST for this example
+    # MANDATORY
+    method = "POST",
+
+    # The content type header of the request (e.g. application/json, text/plain, etc)
+    # MANDATORY
+    content_type="text/plain",
+
+    # The body of the request
+    # MANDATORY
+    body="text body"
+)
+post_response = get_value(
+    recipe = post_request_recipe
+)
+```
+
+### assert
+
+The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
+
+```python
+assert(
+    # The value currently being asserted.
+    # MANDATORY
+    value = "test1"
+
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
+    # MANDATORY
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = "test2"
+) # This fails in runtime given that "test1" == "test2" is false
+
+assert(
+    # Value can also be a runtime value derived from a `get_value` call
+    value = response.body
+    assertion = "=="
+    target_value = 200
+)
+```
+
+
+### extract
+
+The `extract` instruction evaluates a JQ-like string against a JSON string value, extracting its field.
+
+```python
+value = extract(
+    # The input is a JSON string.
+    # MANDATORY
+    input = "{'key': 'my_value'}",
+
+    # The extractor is a JQ-like string.
+    # MANDATORY
+    extractor = ".key"
+)
+print(value) # Prints 'my_value'
+```
+
+Extracts can also be chained after a `get_value` call:
+
+```python
+get_response = get_value(
+    recipe = get_request_recipe
+)
+value = extract(
+    input = get_response.body,
+    extractor = ".id"
+)
+```
+
 ### import_module
 
 Kurtosis Starlark scripts can depend on other scripts. To import another script, use the `import_module` function. The result object will contain all the symbols of the imported script.
@@ -307,20 +427,19 @@ In both cases, the external file is referenced using a fully-qualified URL like 
 github.com/moduleAuthor/moduleName/path/in/repo/some-file.star
 ```
 
-(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system)
+(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system. Also note that the url doesn't have things like "blob", "tree" etc that GitHub urls do have)
 
 Note: At the moment Starlark only supports public repositories hosted on GitHub.
 
 All import paths are URLs; there is no notion of relative imports in Kurtosis even for local paths. We made this choice to allow for performance optimizations: the result of loading any given resource can be cached based on the resource URL.
 
-However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.mod` file like so:
+However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    # Should correspond to URL to locate this kurtosis.mod file on Github.
-    # If the kurtosis.mod file lives at a subpath of the repo, that subpath should be appended here, e.g.:
-    #    github.com/author/repo-name/sub/path
-    name: "github.com/<your-github-org-or-user-name>/<repo-name>"
+# Should correspond to URL to locate this kurtosis.yml file on Github.
+# This has to live in the root of the repository next to the main.star
+# all other files can be in any nested directory or at root.
+name: "github.com/<your-github-org-or-user-name>/<repo-name>"
 ```
 
 The module name will tell Kurtosis that any imports using that name should be resolved locally, rather than by cloning a remote Github URL.
@@ -329,17 +448,16 @@ For example, if we have a repo with these contents:
 
 ```
 /
-    kurtosis.mod
+    kurtosis.yml
     main.star
     public-key.json
 ```
 
 
-with a `kurtosis.mod` file like so:
+with a `kurtosis.yml` file like so:
 
 ```yaml
-module:
-    name: "github.com/kurtosis/example"
+name: "github.com/kurtosis/example"
 ```
 
 and a `main.star` like so:
@@ -352,9 +470,9 @@ def main():
     print(public_key)
 ```
 
-then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.mod` file (due to the shared module name).
+then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.yml` file (due to the shared module name).
 
-To run the module, it's enough to run the following in the directory with the `kurtosis.mod` file:
+To run the module, it's enough to run the following in the directory with the `kurtosis.yml` file:
 
 ```
 kurtosis run .
