@@ -6,7 +6,7 @@ sidebar_position: 3
 
 Why are reusable environment definitions hard?
 ----------------------------------------------
-We have many tools for defining and modifying environments: Bash/Python scripts, Ansible, Docker Compose, Helm, and Terraform. Yet, none have proven successful at reuse across Dev, Test, and Prod. Why?
+We have many tools for defining and modifying environments: Bash/Python scripts, Ansible, Docker Compose, Helm, and Terraform. Yet, none have proven successful at reuse across [the plethora of environments in today's world][what-is-kurtosis]. To see why, we'll focus on the three most common environment types: local Dev, ephemeral Test in CI, and Prod.
 
 Environment definitions in Dev, Test, and Prod share some common requirements:
 
@@ -17,8 +17,8 @@ Environment definitions in Dev, Test, and Prod share some common requirements:
 
 They also have distinct differences:
 
-- In Dev, environment definitions must be loose and easy to modify, are often not checked into source control, and are rarely shared due to the prototyping nature. However, developers _do_ want to leverage other public environment definitions to form their environment quickly (e.g. to use a public Postgres or Elasticsearch definitions to populate their environment).
-- In Test, environment definitions should be source-controlled, but are rarely shared given how specific the environment definition is to the scenario being tested. The order in which events happen is very important, so determinism and ordering of events matter.
+- In Dev, environment definitions must be loose and easy to modify, are often not checked into source control, and are rarely shared due to the prototyping nature. However, developers _do_ want to leverage other public environment definitions to form their local development environments quickly (e.g. to combine public definitions for Postgres and Elasticsearch to form a Postgres+Elasticsearch local development environment).
+- In Test, environment definitions should be source-controlled, but are rarely shared given how specific the environment definition is to the scenario being tested. The krder in which events happen is very important, so determinism and ordering of events matter.
 - In Prod, environment definitions must be source-controlled. They may be shared, but can only be modified by authorized individuals. They are nearly always declarative: idempotence is very important in Prod, along with the ability to make the minimal set of changes (e.g. add just a few new services without needing to restart the entire stack).
 
 Why aren't the current solutions reusable?
@@ -53,4 +53,6 @@ Kurtosis believes that any environment definition that aims to be reusable acros
 [Kurtosis environment definitions][starlark] are designed with these six properties in mind.
 
 
+<!--------------------- ONLY LINKS BELOW HERE ------------------------->
 [starlark]: ./starlark.md
+[what-is-kurtosis]: ./what-is-kurtosis.md

@@ -8,15 +8,15 @@ What is Starlark?
 -----------------
 [Starlark](https://github.com/bazelbuild/starlark) is a minimal programming language, halfway between a configuration language and a general-purpose programming language. It was developed by Google to do configurations for the [Bazel build tool](https://bazel.build/rules/language), and has since [been adopted by Facebook for the Buck build system as well](https://developers.facebook.com/blog/post/2021/04/08/rust-starlark-library/). Starlark's syntax is a minimal subset of of Python, with a focus on readability. [This page][starlark-differences-with-python] lists the differences between Starlark and Python.
 
-How is Starlark used at Kurtosis?
----------------------------------
+How is Starlark used with Kurtosis?
+-----------------------------------
 Kurtosis uses Starlark as the language for users to define and transform environments ([enclaves][enclaves]). Users submit Starlark scripts to the Kurtosis engine, the Starlark is interpreted, and the instructions in the script are executed.
 
 Starlark is also the way Kurtosis environment definitions are shared. If a user shares a Starlark snippet or file, the user is sharing the environment definition itself.
 
 Why did Kurtosis choose Starlark for its environment definitions?
 -----------------------------------------------------------------
-Kurtosis [aims to provide a single distributed application development tool across Dev, Test, and Prod][what-is-kurtosis]. We believe that any environment definition that is reusable across Dev, Test, and Prod [must have certain characteristics][reusable-environment-definitions]. With these properties in mind, we searched for tools that could fulfill our needs.
+Kurtosis [aims to provide a single distributed application development tool across Dev, Test, and Prod][what-is-kurtosis]. We believe that [any reusable environment definition must have certain characteristics][reusable-environment-definitions]. With these properties in mind, we searched for tools that could fulfill our needs.
 
 We first looked at pure configuration languages like YAML, Jsonnet, Dhall, and CUE. To use them, we'd need to write our own DSL (and accompanying parser) on top of the language to do what we needed. We knew that the parameterizability requirement meant users would need conditional/looping logic, but we were unhappy with how we'd have to invent conditionals, loops, and parameters from scratch. The conditionals and parameters in the CircleCI YAML DSL seem to be a cautionary tale of starting with a declarative language and adding logic constructs later, and [others](https://github.com/tektoncd/experimental/issues/185#issuecomment-535338943) seemed [to agree](https://solutionspace.blog/2021/12/04/every-simple-language-will-eventually-end-up-turing-complete/): when dealing with configuration, start with a Turing-complete language because you will eventually need it.
 
