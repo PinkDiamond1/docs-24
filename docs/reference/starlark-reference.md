@@ -420,10 +420,12 @@ post_request_recipe = struct(
     method = "POST",
 
     # The content type header of the request (e.g. application/json, text/plain, etc)
-	content_type="text/plain",
+    # MANDATORY
+    content_type="text/plain",
 
     # The body of the request
-	body="text body"
+    # MANDATORY
+    body="text body"
 )
 post_response = get_value(
     recipe = post_request_recipe
