@@ -9,7 +9,7 @@ sidebar_label: Starlark Instructions
 def do_something(required_arg, optional_arg="default_value")
 ```
 
-In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required are not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
+In Kurtosis Starlark, all parameters can be referenced by name regardless of whether they are required or not. We do this to allow for ease-of-reading clarity. Mandatory and optional parameters will be indicated in the comment above the field.
 
 Similarly, all function arguments can be provided either positionally or by name. E.g. a function signature of:
 
@@ -274,89 +274,124 @@ contents = read_file(
 )
  ```
 
+### get_value
 
-### define_fact
+The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
 
-A "fact" is a piece of data about the enclave that, once created, is constantly being updated. Facts have recipes, which define how 
-their data will be produced. Fact recipes come in two flavors - `curl` and `exec`. `curl` facts are populated by making an HTTP request
-against a service endpoint, while `exec` facts are populated by running a shell command on a service container. 
-
-The output of a fact can be used later in Starlark, and facts are the way to retrieve and use runtime information about the system.
-
-For example:
+For GET requests:
 
 ```python
-enr = define_fact(
-    # The service ID of the service from which data will be extracted.
+get_request_recipe = struct(
+    # The service ID that is the server for the request
     # MANDATORY
-    service_id = "bootnode",
-
-    # The name of the fact, which can be used to reference it later.
+    service_id = "my_service",
+    
+    # The port ID that is the server port for the request
     # MANDATORY
-    fact_name = "example-fact-name",
+    port_id = "my_port",
 
-    # The curl request to run to populate the fact.
+    # The endpoint for the request
     # MANDATORY
-    fact_recipe = struct(
-        # The HTTP method to use when making the request (can be "GET" or "POST").
-        # MANDATORY
-        method= "POST",
+    endpoint = "/endpoint?input=data",
 
-        # The ID of the port on the service to retrieve data from. 
-        # This should correspond to the port ID defined in `add_service`
-        # MANDATORY
-        port_id = "http",
-
-        # The URL endpoint to talk to on the service.
-        # MANDATORY
-        endpoint = "/eth/v1/node/health",
-
-        # The content-type header to set while talking to the service.
-        # MANDATORY
-        content_type = "application/json",
-
-        # The body to send with the request. 
-        # Mostly used for POST requests, as many servers don't support GET request bodies.
-        # OPTIONAL (Default: "")
-        body = '{"data": "data to post"}'
-
-        # The HTTP response body can optionally be passed through a JSON-parsing and field extraction step using the 'jq' tool.
-        # When provided, this field's path will be treated as a 'jq' path and applied to the response body.
-        # For the full JQ syntax, see the jq docs:
-        #   https://stedolan.github.io/jq/manual/
-        # OPTIONAL (Default: '.')
-        field_extractor = ".data.enr"
-    )
+    # The method is GET for this example
+    # MANDATORY
+    method = "GET",
 )
+get_response = get_value(
+    recipe = get_request_recipe
+)
+print(get_response.body) # Prints the body of the request
+print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+```
 
-add_service(
-    service_id = "child-node",
+For POST requests:
+```python
+post_request_recipe = struct(
+    # The service ID that is the server for the request
+    # MANDATORY
+    service_id = "my_service",
 
-    config = struct(
-        image = "ethereum/geth",
-        cmd = [
-            "--bootnode-enr",
-            enr,
-        ]
-    )
+    # The port ID that is the server port for the request
+    # MANDATORY
+    port_id = "my_port",
+
+    # The endpoint for the request
+    # MANDATORY
+    endpoint = "/endpoint",
+
+    # The method is POST for this example
+    # MANDATORY
+    method = "POST",
+
+    # The content type header of the request (e.g. application/json, text/plain, etc)
+    # MANDATORY
+    content_type="text/plain",
+
+    # The body of the request
+    # MANDATORY
+    body="text body"
+)
+post_response = get_value(
+    recipe = post_request_recipe
 )
 ```
 
-The return value of `define_fact` is a reference which can be included in the `cmd`, `entrypoint`, or `env_vars` sections of `add_service`. The Kurtosis engine will insert the correct value when the service container is launched.
+### assert
 
-### wait
-
-The `wait` method pauses [execution][multi-phase-execution] until the specified fact has the desired value, or a timeout occurs.
+The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
 
 ```python
-wait(
-    # The service ID of the service whose fact will be waited upon.
+assert(
+    # The value currently being asserted.
     # MANDATORY
-    service_id = "service_id",
+    value = "test1"
 
-    # The name of the fact on the service whose value will be waited upon.
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
     # MANDATORY
-    fact_name = "example-fact-name",
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = "test2"
+) # This fails in runtime given that "test1" == "test2" is false
+
+assert(
+    # Value can also be a runtime value derived from a `get_value` call
+    value = response.body
+    assertion = "=="
+    target_value = 200
+)
+```
+
+
+### extract
+
+The `extract` instruction evaluates a JQ-like string against a JSON string value, extracting its field.
+
+```python
+value = extract(
+    # The input is a JSON string.
+    # MANDATORY
+    input = "{'key': 'my_value'}",
+
+    # The extractor is a JQ-like string.
+    # MANDATORY
+    extractor = ".key"
+)
+print(value) # Prints 'my_value'
+```
+
+Extracts can also be chained after a `get_value` call:
+
+```python
+get_response = get_value(
+    recipe = get_request_recipe
+)
+value = extract(
+    input = get_response.body,
+    extractor = ".id"
 )
 ```
 
@@ -373,7 +408,6 @@ lib.some_function()
 ```
 
 NOTE: We chose not to use the normal Starlark `load` primitive due to its lack of namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
-
 
 Starlark Standard Libraries
 ---------------------------

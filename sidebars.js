@@ -55,7 +55,7 @@ const sidebars = {
         {
             type: 'link',
             label: 'Changelog',
-            href: 'https://docs.kurtosistech.com/kurtosis/changelog',
+            href: 'https://kurtosis-tech.github.io/kurtosis/changelog',
         },
     ],
 

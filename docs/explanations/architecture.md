@@ -16,7 +16,7 @@ Therefore, the job of the Kurtosis engine is to receive requests from the client
 
 Enclaves
 --------
-The environment is the foundation for Kurtosis, so Kurtosis needs a way to track environments. This is done through the concept of **enclaves**. An enclave is a house for an environment, implemented on the container orchestrator, that is managed by the Kurtosis engine. Each Kurtosis engine can manage arbitrary numbers of enclaves, limited only by the underlying hardware. Each enclave is separate from the other enclaves: no network communication can happen between them.
+Kurtosis implements "environments as a first-class" concept using **enclaves**. An enclave can be thought of an "environment container" - an isolated place for a user to run an environment that is easy to create, manage, and destroy. Each enclave is separate from the other enclaves: no network communication can happen between them. Enclaves are also cheap: each Kurtosis engine can manage arbitrary numbers of enclaves, limited only by the underlying hardware.
 
 Example: Some enclaves running in a Kurtosis engine, as displayed by [the Kurtosis CLI][installation]:
 
@@ -29,7 +29,7 @@ local-dev   RUNNING   Thu, 24 Nov 2022 14:11:37 UTC
 
 Services
 --------
-Enclaves contain distributed applications, and the most common object in an enclave is the service. Services in Kurtosis are containers that expose ports, and services may depend on other services (e.g. an API server depending on a database). Each enclave can have an arbitrary numbers of services, limited only by the underlying hardware.
+Enclaves contain distributed applications, and distributed applications have services. A service in Kurtosis is a container that exposes ports, and services may depend on other services (e.g. an API server depending on a database). Each enclave can have an arbitrary numbers of services, limited only by the underlying hardware.
 
 Example: A pair of Nginx services running inside an enclave called `test`, as reported by the Kurtosis CLI:
 
@@ -55,9 +55,9 @@ For day-to-day operation, we also provide [a CLI ][installation] (usage guide [h
 
 Kurtosis Instruction Language
 -----------------------------
-Distributed system definitions are complex. To allow users to express their system in the simplest way possible while still fulfilling the required [properties of a reusable environment definition][reusable-environment-definitions], the Kurtosis engine provides users with the ability to define and manipulate enclaves using Google's Starlark configuration language. The Kurtosis engine contains a Starlark interepreter, and users can [send Starlark instructions][starlark-instructions] via the Kurtosis SDK to tell the engine what to do with an enclave.
+Distributed system definitions are complex. To allow users to express their system in the simplest way possible while still fulfilling the required [properties of a reusable environment definition][reusable-environment-definitions], the Kurtosis engine provides users with the ability [to define and manipulate enclaves using Google's Starlark configuration language][starlark-explanation]. The Kurtosis engine contains a Starlark interpreter, and users can [send Starlark instructions][starlark-reference] via the Kurtosis SDK to tell the engine what to do with an enclave. This allows users to define their environments as code.
 
-For a more detailed explanation of Starlark and how it's used at Kurtosis, [see here][starlark-explanation]. For a reference list of the available Starlark instructions, [see here][starlark-instructions].
+For a reference list of the available Starlark instructions, [see here][starlark-reference].
 
 <!-------------- ONLY LINKS BELOW HERE --------------------->
 [installation]: ./install
