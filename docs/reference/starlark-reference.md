@@ -403,7 +403,7 @@ However, a `read_file` or `import_module` command alone is not enough informatio
 
 ```yaml
 module:
-    # Should correspond to URL to locate this kurtosis.mod file on Github.
+    # Should correspond to URL to locate this kurtosis.yml file on Github.
     # This has to live in the root of the repository next to the main.star
     # all other files can be in any nested directory or at root even.
     name: "github.com/<your-github-org-or-user-name>/<repo-name>"
@@ -438,7 +438,7 @@ def main():
     print(public_key)
 ```
 
-then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.mod` file (due to the shared module name).
+then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.yml` file (due to the shared module name).
 
 To run the module, it's enough to run the following in the directory with the `kurtosis.yml` file:
 
