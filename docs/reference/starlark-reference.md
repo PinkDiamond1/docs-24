@@ -393,7 +393,7 @@ In both cases, the external file is referenced using a fully-qualified URL like 
 github.com/moduleAuthor/moduleName/path/in/repo/some-file.star
 ```
 
-(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system)
+(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system. Also note that the url doesn't have things like "blob", "tree" etc that GitHub urls do have)
 
 Note: At the moment Starlark only supports public repositories hosted on GitHub.
 
@@ -403,8 +403,8 @@ However, a `read_file` or `import_module` command alone is not enough informatio
 
 ```yaml
 # Should correspond to URL to locate this kurtosis.yml file on Github.
-# If the kurtosis.yml file lives at a subpath of the repo, that subpath should be appended here, e.g.:
-#    github.com/author/repo-name/sub/path
+# This has to live in the root of the repository next to the main.star
+# all other files can be in any nested directory or at root.
 name: "github.com/<your-github-org-or-user-name>/<repo-name>"
 ```
 
