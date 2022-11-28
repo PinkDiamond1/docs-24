@@ -434,7 +434,7 @@ post_response = get_value(
 
 ### assert
 
-The `assert` instruction fails the Starlark script in runtime if the assertion defined fails.
+The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
 
 ```python
 assert(
@@ -476,6 +476,18 @@ value = extract(
     extractor = ".key"
 )
 print(value) # Prints 'my_value'
+```
+
+Extracts can also be chained after a `get_value` call:
+
+```python
+get_response = get_value(
+    recipe = get_request_recipe
+)
+value = extract(
+    input = get_response.body,
+    extractor = ".id"
+)
 ```
 
 ### import_module
