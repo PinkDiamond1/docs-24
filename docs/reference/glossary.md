@@ -18,9 +18,6 @@ The Kurtosis engine which receives instructions via the Kurtosis SDK (e.g. "laun
 ### Locator
 A URL-like string for referencing resources. Also see [the extended documentation][locators].
 
-### Module
-A single Starlark script that defines a sequence of instructions to execute inside an enclave (think "module" in the same sense as a Python module).
-
 ### Package
 A directory containing [a `kurtosis.yml` file][kurtosis-yml] and any additional modules and static files that the package needs. Also see [the extended documentation][packages].
 

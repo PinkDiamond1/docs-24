@@ -5,9 +5,9 @@ sidebar_label: Multi-Phase Execution
 
 <!-- TODO Refactor this a bit when we have a 'plan' object -->
 
-Kurtosis environment definitions are encapsulated inside [Starlark scripts][starlark-explainer], and these scripts can be bundled into [packages][packages].
+Kurtosis environment definitions are encapsulated inside [Starlark scripts][starlark-explanation], and these scripts can be bundled into [packages][packages].
 
-Much like PySpark, SQL, Gradle, and Cypress, a multi-phase approach is used when running a Kurtosis environment definition:
+Much like Spark, Gradle, Cypress, and Flink, a multi-phase approach is used when running a Kurtosis environment definition:
 
 <!-- TODO Add a dependency phase when we do dependency resolution before interpretation? -->
 1. **Interpretation Phase:** The Starlark is uploaded to the Kurtosis engine and the Starlark code is run. Each [Kurtosis instruction][starlark-instructions] adds a step to a plan of instructions to execute, but the instruction isn't executed yet.

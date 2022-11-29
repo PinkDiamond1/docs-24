@@ -239,7 +239,7 @@ artifact_id = upload_files(
 )
 ```
 
-Note that the `src_path` needs to be a [locator][locators].
+Note that the `src` argument needs to be a [locator][locators].
 
 ### store_service_files
 
@@ -270,7 +270,7 @@ The `read_file` function reads the contents of a file specified by the given [lo
 contents = read_file(
     # The Kurtosis locator of the file to read.
     # MANDATORY
-    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
+    src = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  ```
 
@@ -326,11 +326,11 @@ post_request_recipe = struct(
 
     # The content type header of the request (e.g. application/json, text/plain, etc)
     # MANDATORY
-    content_type="text/plain",
+    content_type = "text/plain",
 
     # The body of the request
     # MANDATORY
-    body="text body"
+    body = "text body"
 )
 post_response = get_value(
     recipe = post_request_recipe
