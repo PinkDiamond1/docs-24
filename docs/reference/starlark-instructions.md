@@ -1,15 +1,11 @@
 ---
-title: Starlark Reference Guide
-sidebar_label: Starlark Reference
+title: Starlark Instructions
+sidebar_label: Starlark Instructions
 ---
-:warning: **Starlark at Kurtosis is in an alpha state. Message us on discord [here](https://discord.com/channels/783719264308953108/783719264308953111) in case you run into problems.**
-
-Instructions
-------------
 
 **GENERAL NOTE:** In Python, it is very common to name function parameters that are optional. E.g.:
 
-```py
+```python
 def do_something(required_arg, optional_arg="default_value")
 ```
 
@@ -34,18 +30,17 @@ make_pizza(size = "16cm")
 make_pizza("16cm", "mushroom")
 
 # 4. Both arguments filled, mixing position and name
-make_pizza("16cm", topping = "mushrom")
+make_pizza("16cm", topping = "mushroom")
 
 # 5. Both arguments filled, by name
 make_pizza(size = "16cm", topping = "mushroom")
 ```
 
-We recommend the last style, for its reading clarity.
+We recommend the last style (naming both positional and optional args), for reading clarity.
 
 ### add_service
 
-The `add_service` instruction adds a service to the Kurtosis enclave within which the script executes. The instruction
-looks like:
+The `add_service` instruction adds a service to the Kurtosis enclave within which the script executes.
 
 ```python
 service = add_service(
@@ -161,7 +156,7 @@ remove_service(
 
 ### exec
 
-The `exec` instruction executes commands on a given service as if they were running in a shell on the container. Its syntax is:
+The `exec` instruction executes commands on a given service as if they were running in a shell on the container.
 
 ```python
 exec(
@@ -180,7 +175,7 @@ exec(
 )
 ```
 
-If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error at execution time.
+If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-execution].
 
 ### render_templates
 
@@ -228,12 +223,12 @@ The result of `render_templates` is the ID of the files artifact that was genera
 
 ### upload_files
 
-`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when you have a static file that you'd like to push to a service you're starting. The syntax looks like:
+`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when a static file should be loaded to a service.
 
 ```python
 artifact_id = upload_files(
     # The file to upload into a files a files artifact
-    # Must be a Kurtosis resource specification.
+    # Must be a Kurtosis locator.
     # MANDATORY
     src = "github.com/foo/bar/static/example.txt",
 
@@ -244,11 +239,11 @@ artifact_id = upload_files(
 )
 ```
 
-Note that the `src_path` needs to be a resource identifier as defined in [the "Dependencies" section][dependencies].
+Note that the `src` argument needs to be a [locator][locators].
 
 ### store_service_files
 
-Produces a files artifact by copying files or directories from an existing service in the enclave. The syntax looks like:
+Produces a files artifact by copying files or directories from an existing service in the enclave.
 
 ```python
 artifact_id = store_service_files(
@@ -269,25 +264,21 @@ artifact_id = store_service_files(
 
 ### read_file
 
-The `read_file` function reads the contents of a file into a variable. This executes at interpretation time and the file contents won't be displayed in the list of flattened commands to run.
-
-The syntax looks like:
+The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-execution] and the file contents won't be displayed in the preview.
 
  ```python
 contents = read_file(
-    # The path to the file to read, which must obey Kurtosis package syntax. 
+    # The Kurtosis locator of the file to read.
     # MANDATORY
     src = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  ```
-
-To understand the syntax of the source, see [the "Dependencies" section][dependencies].
-
 ### get_value
 
 The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
 
 For GET requests:
+
 ```python
 get_request_recipe = struct(
     # The service ID that is the server for the request
@@ -334,11 +325,11 @@ post_request_recipe = struct(
 
     # The content type header of the request (e.g. application/json, text/plain, etc)
     # MANDATORY
-    content_type="text/plain",
+    content_type = "text/plain",
 
     # The body of the request
     # MANDATORY
-    body="text body"
+    body = "text body"
 )
 post_response = get_value(
     recipe = post_request_recipe
@@ -405,7 +396,7 @@ value = extract(
 
 ### import_module
 
-Kurtosis Starlark scripts can depend on other scripts. To import another script, use the `import_module` function. The result object will contain all the symbols of the imported script.
+The `import_module` function imports the symbols from a Starlark script specified by the given [locator][locators].
 
 ```python
 # Import the code to namespaced object
@@ -415,69 +406,7 @@ lib = import_module("github.com/foo/bar/src/lib.star")
 lib.some_function()
 ```
 
-NOTE: We chose not to use the normal Starlark `load` primitive because it doesn't do namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
-
-Dependencies
-------------
-A Starlark script can depend on and use other resources, including static files and other Starlark scripts. Static file contents are imported using the `read_file` command, while other Starlark scripts are imported using the `import_module` command.
-
-In both cases, the external file is referenced using a fully-qualified URL like so:
-
-```
-github.com/moduleAuthor/moduleName/path/in/repo/some-file.star
-```
-
-(Go developers will recognize this syntax as similar to Go's import syntax; the Kurtosis dependency system takes inspiration from Go's module system. Also note that the url doesn't have things like "blob", "tree" etc that GitHub urls do have)
-
-Note: At the moment Starlark only supports public repositories hosted on GitHub.
-
-All import paths are URLs; there is no notion of relative imports in Kurtosis even for local paths. We made this choice to allow for performance optimizations: the result of loading any given resource can be cached based on the resource URL.
-
-However, a `read_file` or `import_module` command alone is not enough information for Kurtosis to understand your script's dependencies because there are no relative imports. Next to your `main.star` file, you will need a `kurtosis.yml` file like so:
-
-```yaml
-# Should correspond to URL to locate this kurtosis.yml file on Github.
-# This has to live in the root of the repository next to the main.star
-# all other files can be in any nested directory or at root.
-name: "github.com/<your-github-org-or-user-name>/<repo-name>"
-```
-
-The module name will tell Kurtosis that any imports using that name should be resolved locally, rather than by cloning a remote Github URL.
-
-For example, if we have a repo with these contents:
-
-```
-/
-    kurtosis.yml
-    main.star
-    public-key.json
-```
-
-
-with a `kurtosis.yml` file like so:
-
-```yaml
-name: "github.com/kurtosis/example"
-```
-
-and a `main.star` like so:
-
-```python
-public_key = read_file(src = "github.com/kurtosis/example/public-key.json")
-
-def main():
-
-    print(public_key)
-```
-
-then Kurtosis will know that the contents of `public-key.json` should be retrieved from the file living right next to the `kurtosis.yml` file (due to the shared module name).
-
-To run the module, it's enough to run the following in the directory with the `kurtosis.yml` file:
-
-```
-kurtosis run .
-```
-
+NOTE: We chose not to use the normal Starlark `load` primitive due to its lack of namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
 
 Starlark Standard Libraries
 ---------------------------
@@ -492,4 +421,5 @@ in Kurtosis Starlark by default
 
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
-[dependencies]: #dependencies
+[locators]: ./locators.md
+[multi-phase-execution]: ./multi-phase-execution.md

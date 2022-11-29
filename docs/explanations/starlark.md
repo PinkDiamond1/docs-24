@@ -35,16 +35,14 @@ When we discovered Starlark, the fit was obvious. Starlark:
 - Is used for both Google and Facebook's build system, meaning it isn't going away any time soon
 - [Is used by several other companies beyond Google and Facebook](https://github.com/bazelbuild/starlark/blob/master/users.md#users)
 
-<!-- TODO FILL THIS OUT!!!! -->
-<!--
-How has Kurtosis extended Starlark for environment definitions?
----------------------------------------------------------------
-Starlark itself is very basic; it is intended to be extended to fulfill a given usecase (e.g. the Bazel build language is actually a set of extensions built on top of Starlark). To leverage Starlark for environment definitions, we added the following:
+How is Starlark implemented at Kurtosis?
+----------------------------------------
+Starlark itself is very basic; Google designed it to be extended to fulfill a given usecase (e.g. the Bazel build language is actually an extension built on top of Starlark). We extended basic Starlark with several features so that it could [fulfill the properties of reusable environment definitions][reusable-environment-definitions]:
 
-- A package system
-- A set of functions for modifying the 
-- 
--->
+- A [list of Kurtosis-specific functions][starlark-instructions-reference] for working with an environment
+- The [ability to accept parameters][run-args-reference]
+- Dependencies, so Kurtosis scripts can [import other scripts][locators-reference]
+- A [GitHub-based packaging system][packages-reference], so environment definitions can be shared with each other
 
 How do I get started with Starlark?
 -----------------------------------
@@ -91,3 +89,8 @@ On the fifth line you can see the output of the script.
 [enclaves]: ./architecture.md#enclaves
 [reusable-environment-definitions]: ./reusable-environment-definitions.md
 [starlark-differences-with-python]: https://bazel.build/rules/language#differences_with_python
+
+[locators-reference]: ../reference/locators.md
+[packages-reference]: ../reference/packages.md
+[run-args-reference]: ../reference/packages.md#arguments
+[starlark-instructions-reference]: ../reference/starlark-instructions.md

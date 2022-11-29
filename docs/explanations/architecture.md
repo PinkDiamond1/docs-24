@@ -65,4 +65,4 @@ For a reference list of the available Starlark instructions, [see here][starlark
 [reusable-environment-definitions]: ./reusable-environment-definitions.md
 [what-is-kurtosis]: ./what-is-kurtosis.md
 [starlark-explanation]: ./starlark.md
-[starlark-reference]: ../reference/starlark-reference.md
+[starlark-instructions]: ../reference/starlark-instructions.md
