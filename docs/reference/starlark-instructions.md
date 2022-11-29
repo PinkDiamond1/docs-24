@@ -273,7 +273,6 @@ contents = read_file(
     src = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  ```
-
 ### get_value
 
 The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
