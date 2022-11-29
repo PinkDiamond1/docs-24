@@ -277,11 +277,11 @@ The syntax looks like:
 contents = read_file(
     # The path to the file to read, which must obey Kurtosis package syntax. 
     # MANDATORY
-    src_path = "github.com/kurtosis-tech/datastore-army-module/README.md"
+    src = "github.com/kurtosis-tech/datastore-army-module/README.md"
 )
  ```
 
-To understand the syntax of the source path, see [the "Dependencies" section][dependencies].
+To understand the syntax of the source, see [the "Dependencies" section][dependencies].
 
 ### get_value
 
@@ -463,7 +463,7 @@ name: "github.com/kurtosis/example"
 and a `main.star` like so:
 
 ```python
-public_key = read_file(src_path = "github.com/kurtosis/example/public-key.json")
+public_key = read_file(src = "github.com/kurtosis/example/public-key.json")
 
 def main():
 
