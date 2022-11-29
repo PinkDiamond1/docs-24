@@ -9,7 +9,10 @@ sidebar_position: 3
 The [Kurtosis CLI](/install) is the main way to interact with Kurtosis. This document will present some common CLI workflows.
 
 :::tip
-The `kurtosis` command, and all of its subcommands, will print helptext when passed the `-h` flag. You can use this at any time to see information on the command you're trying to run.
+The `kurtosis` command, and all of its subcommands, will print helptext when passed the `-h` flag. You can use this at any time to see information on the command you're trying to run. For example:
+```
+kurtosis service -h
+```
 :::
 
 :::tip
