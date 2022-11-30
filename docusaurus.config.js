@@ -68,10 +68,10 @@ const config = {
             activeBasePath: '/cli'
           },
           {
-            type: 'docSidebar',
-            sidebarId: 'api',
+            to: '/sdk',
             position: 'left',
-            label: 'API',
+            label: 'SDK',
+            activeBasePath: '/sdk'
           },
           {
             href: 'https://www.kurtosis.com/careers',

@@ -1,8 +1,12 @@
 ---
 title: SDK
 sidebar_label: SDK
-hide_table_of_contents: true
+slug: /sdk
+toc_min_heading_level: 2
+toc_max_heading_level: 2
 ---
+
+This page documents the objects and functions contained in [the Kurtosis SDK][kurtosis-sdk-repo].
 
 :::tip
 The sidebar on the right can be used to quickly navigate classes.
@@ -557,6 +561,8 @@ the `Float64` method on the `json.Number` first, so above would look like `{{pri
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
+
+[kurtosis-sdk-repo]: https://github.com/kurtosis-tech/kurtosis-sdk
 
 [servicelogsstreamcontent]: #servicelogsstreamcontent
 [servicelog]: #servicelog
