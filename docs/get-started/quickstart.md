@@ -5,7 +5,7 @@ slug: /quickstart
 sidebar_position: 2
 ---
 
-These instructions will give you a brief quickstart of Kurtosis. They should take roughly 10 minutes.
+These instructions will give you a brief quickstart of Kurtosis. They should take 15 minutes.
 
 Step One: Set Up Prerequisites
 ------------------------------
@@ -46,7 +46,7 @@ Kurtosis [enclaves][enclaves-explanation] are where your environments live; you 
 
 Run the following:
 
-```
+```bash
 kurtosis enclave add
 ```
 
@@ -65,7 +65,7 @@ INFO[2022-11-29T20:38:21-03:00] ================================================
 
 Now, type the following but don't press ENTER yet:
 
-```
+```bash
 kurtosis enclave inspect
 ```
 
@@ -93,9 +93,22 @@ GUID   ID   Ports   Status
 
 `kurtosis enclave inspect` is the way to investigate an enclave.
 
-Run the following to store your enclave ID in a variable, replacing `YOUR_ENCLAVE_ID_HERE` with your enclave's ID.
+If you ever forget your enclave ID or don't feel like using tab completion, you can always run the following:
+
+```bash
+kurtosis enclave ls
+```
+
+This will print all the enclaves inside your Kurtosis cluster:
 
 ```
+EnclaveID        Status    Creation Time
+summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
+```
+
+Now run the following to store your enclave ID in a variable, replacing `YOUR_ENCLAVE_ID_HERE` with your enclave's ID.
+
+```bash
 ENCLAVE_ID="YOUR_ENCLAVE_ID_HERE"
 ```
 
@@ -109,8 +122,8 @@ Distributed applications are composed of [services][services-explanation]. Here 
 
 Enter this command:
 
-```
-kurtosis service "$ENCLAVE_ID" my-nginx nginx --ports http=80
+```bash
+kurtosis service add "$ENCLAVE_ID" my-nginx nginx:latest --ports http=80
 ```
 
 You should see output similar to the following:
@@ -123,7 +136,7 @@ Ports Bindings:
 
 Now inspect your enclave again:
 
-```
+```bash
 kurtosis enclave inspect "$ENCLAVE_ID"
 ```
 
@@ -149,7 +162,7 @@ Kurtosis binds all service ports to ephemeral ports on your local machine. Copy 
 
 Now enter the following but don't press ENTER yet:
 
-```
+```bash
 kurtosis service shell "$ENCLAVE_ID"
 ```
 
@@ -170,7 +183,7 @@ Feel free to explore, and press Ctrl-C when you're done.
 
 Now enter the following but don't press ENTER:
 
-```
+```bash
 kurtosis service logs -f "$ENCLAVE_ID"
 ```
 
@@ -204,7 +217,251 @@ Press ENTER, and you'll see a live-updating stream of the service's logs:
 2022/11/29 23:50:51 [error] 29#29: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:60215", referrer: "http://127.0.0.1:60215/"
 ```
 
-You can reload your browser window showing the NginX welcome page to see new log entries appear.
+You can reload your browser window showing the NginX welcome page to see new log entries appear. When you're satisfied, press Ctrl-C to end the stream.
+
+Lastly, run:
+
+```bash
+kurtosis enclave dump "$ENCLAVE_ID" enclave-output
+```
+
+Kurtosis will dump a snapshot of the enclave's logs and container specs to the `enclave-output` directory. This can be useful for quickly sharing debugging information with your coworkers.
+
+Step Four: Write A Simple Starlark Script
+-----------------------------------
+We've used the CLI and some debugging tools, so let's start using [Kurtosis' Starlark environment definition language][starlark-explanation].
+
+Create and `cd` into a new working directory:
+
+```bash
+mkdir my-kurtosis-environment && cd my-kurtosis-environment
+```
+
+Create a new Starlark file called `main.star` with the following contents:
+
+```python
+add_service(
+    "my-nginx",
+    config = struct(
+        image = "nginx:latest",
+        ports = {
+            "http": struct(number = 80, protocol = "TCP"),
+        },
+    ),
+)
+```
+
+The commands in this file will do the same thing as the `service add` command you ran earlier, but they are now [infrastructure-as-code](https://en.wikipedia.org/wiki/Infrastructure_as_code).
+
+Run the following:
+
+```bash
+kurtosis run main.star --dry-run
+```
+
+Because the `--dry-run` flag was specified, Kurtosis will read the file and show the instructions it would execute without executing them:
+
+```
+INFO[2022-11-30T10:26:23-03:00] Creating a new enclave for Starlark to run inside...
+INFO[2022-11-30T10:26:25-03:00] Enclave 'nameless-snow' created successfully
+
+> add_service service_id="my-nginx"
+
+INFO[2022-11-30T10:26:26-03:00] ======================================================
+INFO[2022-11-30T10:26:26-03:00] ||          Created enclave: nameless-snow          ||
+INFO[2022-11-30T10:26:26-03:00] ======================================================
+```
+
+Remove the `--dry-run` flag and execute the script:
+
+```bash
+kurtosis run main.star
+```
+
+The output will look similar to the dry run...
+
+```
+INFO[2022-11-30T10:28:16-03:00] Creating a new enclave for Starlark to run inside...
+INFO[2022-11-30T10:28:18-03:00] Enclave 'silent-hill' created successfully
+
+> add_service service_id="my-nginx"
+
+INFO[2022-11-30T10:28:21-03:00] ====================================================
+INFO[2022-11-30T10:28:21-03:00] ||          Created enclave: silent-hill          ||
+INFO[2022-11-30T10:28:21-03:00] ====================================================
+```
+
+...but you'll notice that inspecting the newly-created enclave will show that the service got added:
+
+```
+Enclave ID:                           silent-hill
+Enclave Status:                       RUNNING
+Creation Time:                        Wed, 30 Nov 2022 10:28:16 -03
+API Container Status:                 RUNNING
+API Container Host GRPC Port:         127.0.0.1:62487
+API Container Host GRPC Proxy Port:   127.0.0.1:62488
+
+========================================= Kurtosis Modules =========================================
+GUID   ID   Ports
+
+========================================== User Services ==========================================
+GUID                  ID         Ports                             Status
+my-nginx-1669814898   my-nginx   http: 80/tcp -> 127.0.0.1:62493   RUNNING
+```
+
+Just like the service deployed via the CLI, the same Kurtosis debugging tools are available for this enclave.
+
+Step Five: Write A Starlark App
+-----------------------------------
+Now that you've seen the basics, let's define an app with a dependency between two services.
+
+Replace your `main.star` contents with the following:
+
+```python
+rest_service = add_service(
+    "hello-world",
+    config = struct(
+        image = "vad1mo/hello-world-rest",
+        ports = {
+            "http": struct(number = 5050, protocol = "TCP"),
+        },
+    ),
+)
+
+nginx_conf_data = {
+    "HelloWorldIpAddress": rest_service.ip_address,
+    "HelloWorldPort": rest_service.ports["http"].number,
+}
+
+nginx_conf_template = """
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # Reverse proxy configuration (note the template values!)
+    location /sample{
+      proxy_pass http://{{ .HelloWorldIpAddress }}:{{ .HelloWorldPort }}/sample;
+    }
+}
+"""
+
+nginx_config_file_artifact = render_templates(
+    config = {
+        "default.conf": struct(
+            template = nginx_conf_template,
+            data = nginx_conf_data,
+        )
+    }
+)
+
+add_service(
+    "my-nginx",
+    config = struct(
+        image = "nginx:latest",
+        ports = {
+            "http": struct(number = 80, protocol = "TCP"),
+        },
+        files = {
+            nginx_config_file_artifact: "/etc/nginx/conf.d",
+        }
+    ),
+)
+```
+
+Run the Starlark script again, and inspect the created enclave. You'll see that two services, `my-nginx` and `hello-world`, have been added now:
+
+```
+Enclave ID:                           spring-river
+Enclave Status:                       RUNNING
+Creation Time:                        Wed, 30 Nov 2022 11:03:25 -03
+API Container Status:                 RUNNING
+API Container Host GRPC Port:         127.0.0.1:62666
+API Container Host GRPC Proxy Port:   127.0.0.1:62667
+
+========================================= Kurtosis Modules =========================================
+GUID   ID   Ports
+
+========================================== User Services ==========================================
+GUID                     ID            Ports                               Status
+hello-world-1669817008   hello-world   http: 5050/tcp -> 127.0.0.1:62672   RUNNING
+my-nginx-1669817010      my-nginx      http: 80/tcp -> 127.0.0.1:62676     RUNNING
+```
+
+Now in your browser open the `my-nginx` endpoint with the `/sample` URL path (e.g. `127.0.0.1:62676/sample`, though your URL will be different). You'll see the `hello-world` service responding through the NginX proxy that we've configured:
+
+```
+/ - Hello sample! Host:cfd00c7a9953/172.17.0.19
+```
+
+Your Starlark script defined a set of instructions - a plan - for building the environment. This plan was:
+
+1. Start the `hello-world` service, listening on port `5050`
+1. Render a NginX config file using a template and the IP address and port of the `hello-world` service
+1. Start the `my-nginx` service with the NginX config file mounted at `/etc/nginx/conf.d/default.conf`
+
+Kurtosis read this plan, ran pre-flight validation on it to catch common errors (e.g. referencing container images or services or ports that don't exist), and started the environment you specified.
+
+These instructions are just the beginning, though - there are [many more instructions available][starlark-instructions-reference].
+
+Step Five: An Interlude
+-----------------------
+We've started a few enclaves at this point, and `kurtosis enclave ls` will display something like the following:
+
+```
+EnclaveID        Status    Creation Time
+summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
+nameless-snow    RUNNING   Wed, 30 Nov 2022 13:26:23 UTC
+silent-hill      RUNNING   Wed, 30 Nov 2022 13:28:16 UTC
+spring-river     RUNNING   Wed, 30 Nov 2022 14:03:25 UTC
+```
+
+Enclaves themselves have very little overhead and are cheap to create, but the services inside the enclaves will naturally consume resources. Cleaning up our Kurtosis cluster is easy:
+
+```
+kurtosis clean -a
+```
+
+The `-a` flag indicates that even running enclaves should be removed. If you prefer to manage enclaves individually, this can be done with the `kurtosis enclave stop` and `kurtosis enclave rm` commands.
+
+Before we continue, let's review what we've learned so far. We've:
+
+1. Seen how the Kurtosis CLI can manage enclaves and services
+1. Played with various debugging tools that the Kurtosis engine provides
+1. Used Starlark to define an infrastructure-as-code environment
+1. Linked togethr
+
+
+Step XXXXX: Cleaning Up
+----------------------
+We've started a few enclaves at this point, and `kurtosis enclave ls` will display something more or less like:
+
+```
+EnclaveID        Status    Creation Time
+summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
+nameless-snow    RUNNING   Wed, 30 Nov 2022 13:26:23 UTC
+silent-hill      RUNNING   Wed, 30 Nov 2022 13:28:16 UTC
+```
+
+Enclaves themselves have very little overhead and are cheap to create, but the services inside the enclaves will naturally consume resources. To clean up our Kurtosis cluster, run:
+
+```
+kurtosis clean -a
+```
+
+The `-a` flag indicates that even running enclaves should be removed.
 
 
 
@@ -308,7 +565,7 @@ Notice how the enclave doesn't yet have any user services or Kurtosis modules. T
 Now that we have an enclave, let's put something in it. Execute the following command to run a web server (using the `httpd` Docker image) inside the enclave and give it the ID `webserver`:
 
 ```
-kurtosis service add demo webserver httpd --ports http=80
+kurtosis service add demo webserver httpd:latest --ports http=80
 ```
 
 Your output should look something like this:
@@ -558,3 +815,5 @@ The test will pass, indicating that our test set up an Ethereum network and ran 
 [installing-tab-complete]: ./using-the-cli.md#adding-tab-completion
 [enclaves-explanation]: ../explanations/architecture.md#enclaves
 [services-explanation]: ../explanations/architecture.md#services
+[starlark-explanation]: ../explanations/starlark.md
+[starlark-instructions-reference]: ../reference/starlark-instructions.md
