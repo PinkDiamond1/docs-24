@@ -234,7 +234,7 @@ We've used the CLI and some debugging tools, so let's start using [Kurtosis' Sta
 Create and `cd` into a new working directory:
 
 ```bash
-mkdir my-kurtosis-environment && cd my-kurtosis-environment
+mkdir my-kurtosis-package && cd my-kurtosis-package
 ```
 
 Create a new Starlark file called `main.star` with the following contents:
@@ -412,9 +412,9 @@ Your Starlark script defined a set of instructions - a plan - for building the e
 1. Render a NginX config file using a template and the IP address and port of the `hello-world` service
 1. Start the `my-nginx` service with the NginX config file mounted at `/etc/nginx/conf.d/default.conf`
 
-Kurtosis read this plan, ran pre-flight validation on it to catch common errors (e.g. referencing container images or services or ports that don't exist), and started the environment you specified.
+Kurtosis read this plan, [ran pre-flight validation on it][multi-phase-runs-reference] to catch common errors (e.g. referencing container images or services or ports that don't exist), and started the environment you specified.
 
-These instructions are just the beginning, though - there are [many more instructions available][starlark-instructions-reference].
+These instructions are just the beginning, however - there are [many more instructions available][starlark-instructions-reference].
 
 Step Five: An Interlude
 -----------------------
@@ -441,27 +441,265 @@ Before we continue, let's review what we've learned so far. We've:
 1. Seen how the Kurtosis CLI can manage enclaves and services
 1. Played with various debugging tools that the Kurtosis engine provides
 1. Used Starlark to define an infrastructure-as-code environment
-1. Linked togethr
+1. Defined a simple app that contained service dependencies and template-rendering
 
+Step Six: Use Resources In Starlark
+-----------------------------------
+It would be very cumbersome if your entire environment definition needed to fit in a single Starlark file, and we already see how the NginX config template makes the Starlark harder to read. Let's fix this.
 
-Step XXXXX: Cleaning Up
-----------------------
-We've started a few enclaves at this point, and `kurtosis enclave ls` will display something more or less like:
+First, create a file called `kurtosis.yml` next to your `main.star` file with the following contents, replacing `YOUR-GITHUB-USERNAME` with your GitHub username:
 
-```
-EnclaveID        Status    Creation Time
-summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
-nameless-snow    RUNNING   Wed, 30 Nov 2022 13:26:23 UTC
-silent-hill      RUNNING   Wed, 30 Nov 2022 13:28:16 UTC
+```yaml
+name: "github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package"
 ```
 
-Enclaves themselves have very little overhead and are cheap to create, but the services inside the enclaves will naturally consume resources. To clean up our Kurtosis cluster, run:
+This is [a Kurtosis package manifest][kurtosis-yml-reference], which transforms your directory into [a Kurtosis paackage][packages-reference] and allows all Starlark scripts inside to use external dependencies.
+
+Now create a file called `default.conf.tmpl` next to your `main.star` with the NginX config file contents (copied from the Starlark script):
 
 ```
-kurtosis clean -a
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # Reverse proxy configuration (note the template values!)
+    location /sample{
+      proxy_pass http://{{ .HelloWorldIpAddress }}:{{ .HelloWorldPort }}/sample;
+    }
+}
 ```
 
-The `-a` flag indicates that even running enclaves should be removed.
+Finally, replace your `main.star` with the following, replacing `YOUR-GITHUB-USERNAME` in the first line with your GitHub username:
+
+```python
+nginx_conf_template = read_file("github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package/default.conf.tmpl")
+
+def run(args):
+    rest_service = add_service(
+        "hello-world",
+        config = struct(
+            image = "vad1mo/hello-world-rest",
+            ports = {
+                "http": struct(number = 5050, protocol = "TCP"),
+            },
+        ),
+    )
+
+    nginx_conf_data = {
+        "HelloWorldIpAddress": rest_service.ip_address,
+        "HelloWorldPort": rest_service.ports["http"].number,
+    }
+
+    nginx_config_file_artifact = render_templates(
+        config = {
+            "default.conf": struct(
+                template = nginx_conf_template,
+                data = nginx_conf_data,
+            )
+        }
+    )
+
+    add_service(
+        "my-nginx",
+        config = struct(
+            image = "nginx:latest",
+            ports = {
+                "http": struct(number = 80, protocol = "TCP"),
+            },
+            files = {
+                nginx_config_file_artifact: "/etc/nginx/conf.d",
+            }
+        ),
+    )
+```
+
+Take note that:
+
+- We added a `run` function, which makes this directory [a runnable Kurtosis package][runnale-packages-reference].
+- The template contents are now being imported using the `read_file` [Starlark instruction][starlark-instructions-reference].
+- The template file is referenced using a URL-like syntax; [this is called a "locator"][locators-reference] and is how Starlark files include external resources.
+
+Finally, we now run the Starlark by specifying the package directory (the directory with the `kurtosis.yml`):
+
+```bash
+kurtosis run .
+```
+
+This gives Kurtosis the information it needs to resolve external information.
+
+Step Seven: Parameterize Your Package
+-------------------------------------
+Notice that the `run` function in the `main.star` has an `args` argument. This allows you to parameterize your Kurtosis package.
+
+Replace your `main.star` with the following, replacing `YOUR-GITHUB-USERNAME` in the first line with your GitHub username:
+
+```python
+nginx_conf_template = read_file("github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package/default.conf.tmpl")
+
+def run(args):
+    rest_service = add_service(
+        "hello-world",
+        config = struct(
+            image = "vad1mo/hello-world-rest",
+            ports = {
+                "http": struct(number = 5050, protocol = "TCP"),
+            },
+        ),
+    )
+
+    nginx_conf_data = {
+        "HelloWorldIpAddress": rest_service.ip_address,
+        "HelloWorldPort": rest_service.ports["http"].number,
+    }
+
+    nginx_config_file_artifact = render_templates(
+        config = {
+            "default.conf": struct(
+                template = nginx_conf_template,
+                data = nginx_conf_data,
+            )
+        }
+    )
+
+    nginx_count = 1
+    if hasattr(args, "nginx_count"):
+        nginx_count = args.nginx_count
+
+    for i in range(0, nginx_count):
+        add_service(
+            "my-nginx-" + str(i),
+            config = struct(
+                image = "nginx:latest",
+                ports = {
+                    "http": struct(number = 80, protocol = "TCP"),
+                },
+                files = {
+                    nginx_config_file_artifact: "/etc/nginx/conf.d",
+                }
+            ),
+        )
+```
+
+Now run the package again, passing in a JSON object for args:
+
+```bash
+kurtosis run . --args '{"nginx_count": 3}'
+```
+
+After execution, inspecting the enclave will reveal that three NginX services have been started:
+
+```
+Enclave ID:                           lingering-sun
+Enclave Status:                       RUNNING
+Creation Time:                        Wed, 30 Nov 2022 14:23:27 -03
+API Container Status:                 RUNNING
+API Container Host GRPC Port:         127.0.0.1:63162
+API Container Host GRPC Proxy Port:   127.0.0.1:63163
+
+========================================= Kurtosis Modules =========================================
+GUID   ID   Ports
+
+========================================== User Services ==========================================
+GUID                     ID            Ports                               Status
+hello-world-1669829012   hello-world   http: 5050/tcp -> 127.0.0.1:63169   RUNNING
+my-nginx-0-1669829015    my-nginx-0    http: 80/tcp -> 127.0.0.1:63173     RUNNING
+my-nginx-1-1669829021    my-nginx-1    http: 80/tcp -> 127.0.0.1:63177     RUNNING
+my-nginx-2-1669829027    my-nginx-2    http: 80/tcp -> 127.0.0.1:63181     RUNNING
+```
+
+Each one of these NginX services works identically.
+
+Note that we used the `hasattr` Starlark builtin to check if `args.nginx_count` exists, so the package will continue to work if you omit the `--args` flag to `kurtosis run`.
+
+Step Seven: Publish & Consume Your Package
+------------------------------------------
+[Kurtosis packages][packages-reference] are designed to be trivial to share and consume, so let's do so now.
+
+First, create a repo in your personal GitHub called `my-kurtosis-package`.
+
+Second, run the following in your Kurtosis `my-kurtosis-package` directory (the directory with `kurtosis.yml`), replacing `YOUR-GITHUB-USERNAME` with your GitHub username:
+
+```bash
+git init && git remote add origin https://github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package.git
+```
+
+This makes your directory a Git repo associated with the new GitHub repo you just created.
+
+Now commit and push your changes:
+
+```bash
+git add . && git commit -m "Initial commit" && git push origin master
+```
+
+Your package is now published, and available to anyone using Kurtosis. To use it, anyone can run the following, replacing `YOUR-GITHUB-USERNAME` with your GitHub username:
+
+
+```bash
+kurtosis run github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package
+```
+
+Starlark code is composable, meaning you can import Starlark inside other Starlark (in keeping with [the properties of a reusable environment definition][reusable-environment-definitions-explanation]). 
+
+To see this in action, create a new `new-kurtosis-package` directory outside of your `my-kurtosis-package` directory:
+
+```bash
+cd ~ && mkdir new-kurtosis-package && cd new-kurtosis-package
+```
+
+<!-- TODO refactor this when dependencies are specified in the kurtosis.yml file -->
+Add a `kurtosis.yml` manifest make the directory [a Kurtosis package][packages-reference]:
+
+```yaml
+name: "github.com/test/test"
+```
+
+Next to the `kurtosis.yml`, add a `main.star`, replacing `YOUR-GITHUB-USERNAME` in the first line with your GitHub username:
+
+```python
+my_package = import_module("github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package/main.star")
+
+my_package.run(struct(nginx_count = 3))
+```
+
+Finally, run it by referencing the directory containing the new `kurtosis.yml`:
+
+```
+kurtosis run .
+```
+
+Kurtosis will handle the importing of your already-published package, allowing anyone to use your environment definition.
+
+Conclusion
+----------
+In this tutorial we've seen:
+
+- Environments as a first-class concept - easy to create, access, and destroy
+- Two ways of manipulating the contents of an environment, [through the CLI][using-the-cli-reference] and [through Starlark][starlark-instructions-reference]
+- Referencing external resources in Starlark
+- Publishing & consuming environment definitions through the concept of [Kurtosis packages][packages-reference]
+- Parameterizing environment definitions through the concept of [runnable package][runnable-packages-reference]
+
+These are just the basics of Kurtosis. To dive deeper, you can now:
+
+- Learn more about [the architecture of Kurtosis][architecture-explanation]
+- Explore [the catalog of Starlark instructions][starlark-instructions-reference]
+- Explore [Kurtosis-provided packages being used in production][kurtosis-managed-packages]
+- [Search GitHub for Kurtosis packages in the wild][wild-kurtosis-packages]
+
+<!-- TODO add linik to how-to guide on how to use Kurtosis in Go/TS tests -->
 
 
 
@@ -817,3 +1055,16 @@ The test will pass, indicating that our test set up an Ethereum network and ran 
 [services-explanation]: ../explanations/architecture.md#services
 [starlark-explanation]: ../explanations/starlark.md
 [starlark-instructions-reference]: ../reference/starlark-instructions.md
+[multi-phase-runs-reference]: ../reference/multi-phase-runs.md
+[kurtosis-yml-reference]: ../reference/kurtosis-yml.md
+[packages-reference]: ../reference/packages.md
+[runnable-packages-reference]: ../reference/packages.md#runnable-packages
+[locators-reference]: ../reference/locators.md
+[reusable-environment-definitions-reference]: ../explanations/reusable-environment-definitions.md
+
+<!-- TODO MOVE THIS OT REFERENCE -->
+[using-the-cli-reference]: ./using-the-cli.md
+
+[kurtosis-managed-packages]: https://github.com/kurtosis-tech?q=in%3Aname+package&type=all&language=&sort=
+[wild-kurtosis-packages]: https://github.com/search?q=filename%3Akurtosis.yml&type=code
+[architecture-explanation]: ../explanations/architecture.md

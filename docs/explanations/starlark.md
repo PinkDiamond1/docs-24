@@ -46,6 +46,8 @@ Starlark itself is very basic; Google designed it to be extended to fulfill a gi
 
 Additionally, we built a [multi-phase engine][multi-phase-runs-reference] around the Starlark interpreter, to provide [users with benefits not normally available in a scripting language][multi-phase-runs-explanation].
 
+
+<!------ TODO DELETE THIS WHEN QUICKSTART IS UP AND RUNNING ------>
 How do I get started with Starlark?
 -----------------------------------
 
