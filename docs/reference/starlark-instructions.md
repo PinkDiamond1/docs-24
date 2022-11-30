@@ -3,6 +3,8 @@ title: Starlark Instructions
 sidebar_label: Starlark Instructions
 ---
 
+This page lists out the Kurtosis instructions that are available in Starlark.
+
 **GENERAL NOTE:** In Python, it is very common to name function parameters that are optional. E.g.:
 
 ```python
@@ -110,12 +112,12 @@ service = add_service(
 )
 ```
 
-The `add_service` function returns a `service` object that contains information about the service that can be used later in the script. The `service` struct has:
+The `add_service` function returns a `service` object that contains service information in the form of [future references][future-references-reference] that can be used later in the script. The `service` struct has:
 
-- An `ip_address` property representing the service's IP address
-- A `ports` dictionary containing information about each port that the service is listening on
+- An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address
+- A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on
 
-The value of the `ports` dictionary is an object with two fields, `number` and `protocol`. 
+The value of the `ports` dictionary is an object with two properties, `number` and `protocol`, which themselves are [future references][future-references-reference]. 
 
 E.g.:
 
@@ -175,7 +177,7 @@ exec(
 )
 ```
 
-If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-execution].
+If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
 
 ### render_templates
 
@@ -219,11 +221,11 @@ artifact_id = render_templates(
 )
 ```
 
-The result of `render_templates` is the ID of the files artifact that was generated, which can be used with the `files` property of service config in the `add_service` command.
+The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
 
 ### upload_files
 
-`upload_files` packages the requested files as a files artifact that gets stored inside the enclave. This is particularly useful when a static file should be loaded to a service.
+`upload_files` packages the files specified by the [locator][locators] into a files artifact that gets stored inside the enclave. This is particularly useful when a static file needs to be loaded to a service container.
 
 ```python
 artifact_id = upload_files(
@@ -239,7 +241,7 @@ artifact_id = upload_files(
 )
 ```
 
-Note that the `src` argument needs to be a [locator][locators].
+The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
 
 ### store_service_files
 
@@ -262,9 +264,11 @@ artifact_id = store_service_files(
 )
 ```
 
+The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
+
 ### read_file
 
-The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-execution] and the file contents won't be displayed in the preview.
+The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-runs-reference] and the file contents won't be displayed in the preview.
 
  ```python
 contents = read_file(
@@ -284,7 +288,7 @@ get_request_recipe = struct(
     # The service ID that is the server for the request
     # MANDATORY
     service_id = "my_service",
-    
+
     # The port ID that is the server port for the request
     # MANDATORY
     port_id = "my_port",
@@ -408,6 +412,14 @@ lib.some_function()
 
 NOTE: We chose not to use the normal Starlark `load` primitive due to its lack of namespacing. By default, the symbols imported by `load` are imported to the global namespace of the script that's importing them. We preferred module imports to be namespaced, in the same way that Python does by default.
 
+### print
+
+`print` will add an instruction to the plan to print the string. When the `print` instruction is executed during the Execution Phase, [future references][future-references-reference] will be replaced with their execution-time values.
+
+```
+print("Any string here")
+```
+
 Starlark Standard Libraries
 ---------------------------
 
@@ -421,4 +433,5 @@ in Kurtosis Starlark by default
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
 [locators]: ./locators.md
-[multi-phase-execution]: ./multi-phase-execution.md
+[multi-phase-runs-reference]: ./multi-phase-runs.md
+[future-references-reference]: ./future-references.md

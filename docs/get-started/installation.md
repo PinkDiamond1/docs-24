@@ -11,7 +11,9 @@ sidebar_position: 1
 The CLI supports tab completion. After you install using one of the methods below, follow [these instructions](/cli#adding-tab-completion) to enable tab completion.
 :::
 
-## Homebrew
+<details>
+<summary>Homebrew</summary>
+
 ```
 brew install kurtosis-tech/tap/kurtosis-cli
 ```
@@ -28,15 +30,21 @@ Please update to Xcode 12.5 (or delete it).
 ```
 xcode-select --install
 ```
+</details>
 
-## apt
+<details>
+<summary>apt</summary>
+
 ```
 echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
 sudo apt update
 sudo apt install kurtosis-cli
 ```
+</details>
 
-## yum
+<details>
+<summary>yum</summary>
+
 ```
 echo '[kurtosis]
 name=Kurtosis
@@ -45,9 +53,13 @@ enabled=1
 gpgcheck=0' | sudo tee /etc/yum.repos.d/kurtosis.repo
 sudo yum install kurtosis-cli
 ```
+</details>
 
-## deb, rpm, and apk
+<details>
+<summary>deb, rpm, and apk</summary>
+
 Download the appropriate artifact from [the release artifacts page][release-artifacts].
+</details>
 
 Once you're done, [the quickstart is a great place to get started](/quickstart).
 
@@ -70,23 +82,37 @@ The fix is to restart the engine like so:
 kurtosis engine restart
 ```
 
-### Homebrew
+<details>
+<summary>Homebrew</summary>
+
 ```
 brew upgrade kurtosis-tech/tap/kurtosis-cli
 ```
+</details>
 
-### apt
+<details>
+<summary>apt</summary>
+
 ```
 apt install --only-upgrade kurtosis-cli
 ```
+</details>
 
-### yum
+<details>
+<summary>yum</summary>
+
 ```
 yum upgrade kurtosis-cli
 ```
+</details>
 
-### deb, rpm, and apk
+<details>
+<summary>deb, rpm, and apk</summary>
+
 Download the appropriate artifact from [the release artifacts page][release-artifacts].
+</details>
+
+<!-------------------------- ONLY LINKS BELOW HERE ---------------------------->
 
 [release-artifacts]: https://github.com/kurtosis-tech/kurtosis-cli-release-artifacts/releases
 [cli-changelog]: https://docs.kurtosistech.com/kurtosis-cli/changelog

@@ -13,7 +13,9 @@ A Kurtosis package is a:
 - That contains [a `kurtosis.yml` file][kurtosis-yml]
 - Which names the package via a [locator][locators] that points to the directory containing the `kurtosis.yml` file
 
-Kurtosis packages are shared simply by pushing to GitHub, in the same way as Go modules.
+Kurtosis packages are the system by which Starlark scripts can include external resources.
+
+Kurtosis packages are shared simply by pushing to GitHub.
 
 For example, a directory structure like so:
 
