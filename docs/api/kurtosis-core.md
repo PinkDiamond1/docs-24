@@ -62,7 +62,7 @@ Gets the [ModuleContext][modulecontext] associated with an already-running modul
 
 * `moduleContext`: The [ModuleContext][modulecontext] representation of the running module container, which allows execution of the module's execute function (if it exists).
 
-### `runStarlarkScript(String serializedStarlarkScript, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+### `runStarlarkScript(String serializedStarlarkScript, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
 
 Run a provided Starlark script inside the enclave.
 
@@ -73,9 +73,9 @@ Run a provided Starlark script inside the enclave.
 
 **Returns**
 
-* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
 
-### `runStarlarkPackage(String packageRootPath, String serializedParams, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+### `runStarlarkPackage(String packageRootPath, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
 
 Run a provided Starlark script inside the enclave.
 
@@ -87,9 +87,9 @@ Run a provided Starlark script inside the enclave.
 
 **Returns**
 
-* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
 
-### `runRemoteStarlarkPackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+### `runRemoteStarlarkPackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
 
 Run a Starlark script hosted in a remote github.com repo inside the enclave.
 
@@ -101,7 +101,7 @@ Run a Starlark script hosted in a remote github.com repo inside the enclave.
 
 **Returns**
 
-* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
 
 <!-- TODO DELETE THIS!!! -->
 ### `registerFilesArtifacts(Map<FilesArtifactID, String> filesArtifactUrls)`
@@ -309,11 +309,11 @@ ContainerConfigBuilder
 The builder that should be used to create [ContainerConfig][containerconfig] instances. The functions on this builder will correspond to the properties on the [ContainerConfig][containerconfig] object, in the form `withPropertyName` (e.g. `withUsedPorts` sets the ports used by the container).
 
 
-RunStarlarkResponseLine
+StarlarkRunResponseLine
 -----------------------
 
-This is a union object representing a single line returned by Kurtosis' Starlark runner. All Starlark run endpoints
-will return a stream of this object.
+This is a union object representing a single line returned by Kurtosis' Starlark runner. All Starlark run endpoints will return a stream of this object.
+
 Each line is one of:
 
 ### [StarlarkInstruction][starlarkinstruction] `instruction`
@@ -326,42 +326,47 @@ The result of an instruction that was successfully executed
 The error that was thrown running the Starlark code
 
 ### [StarlarkRunProgress][starlarkrunprogress] `progressInfo`
-Regularly during the run of the code, Kurtosis' Starlark engine will send progress information through the stream to
-account for progress that was made running the code.
+Regularly during the run of the code, Kurtosis' Starlark engine will send progress information through the stream to account for progress that was made running the code.
 
 StarlarkInstruction
 -------------------
+
 `StarlarkInstruction` represents a Starlark instruction that is currently being executed. It contains the following fields:
-- `instructionName`: the name of the instruction
-- `instructionPosition`: the position of the instruction in the source code. It iscomposed of (filename, line number,
-column number)
-- `arguments`: The list of arguments provided to this instruction. Each argument is composed of an optional name (if
-it was named in the source script) and its serialized value
-- `executableInstruction`: A single string representing the instruction in valid Starlark code
+
+* `instructionName`: the name of the instruction
+
+* `instructionPosition`: the position of the instruction in the source code. It iscomposed of (filename, line number, column number)
+
+* `arguments`: The list of arguments provided to this instruction. Each argument is composed of an optional name (if it was named in the source script) and its serialized value
+
+* `executableInstruction`: A single string representing the instruction in valid Starlark code
 
 StarlarkInstructionResult
 -------------------------
-`StarlarkInstructionResult` is the result of an instruction that was successfully run against Kurtosis engine. It is a 
-single string field corresponding to the output of the instruction.
+
+`StarlarkInstructionResult` is the result of an instruction that was successfully run against Kurtosis engine. It is a single string field corresponding to the output of the instruction.
 
 StarlarkError
 -------------
+
 Errors can be of three kind:
-- Interpretation error: these errors happens before Kurtosis was able to execute the script. It typically means
-there's a syntax error in the provided Starlark code. The error message should point the users to where the code is
-incorrect.
-- Validation error: these errors happens after interpretation was successful, but before the execution actually started
-in Kurtosis. Before starting the execution, Kurtosis runs some validation on the instructions that are about to be
-executed. The error message should contain more information on which instruction is incorrect.
-- Execution error: these errors happens during the execution of the script against Kurtosis engine. More information
-is available in the error message.
+
+* Interpretation error: these errors happens before Kurtosis was able to execute the script. It typically means there's a syntax error in the provided Starlark code. The error message should point the users to where the code is incorrect.
+
+* Validation error: these errors happens after interpretation was successful, but before the execution actually started in Kurtosis. Before starting the execution, Kurtosis runs some validation on the instructions that are about to be executed. The error message should contain more information on which instruction is incorrect.
+
+* Execution error: these errors happens during the execution of the script against Kurtosis engine. More information is available in the error message.
 
 StarlarkRunProgress
 -------------------
+
 `StarlarkRunProgress` accounts for progress that is made during a Starlark run. It contains three fields:
-- `totalSteps`: The total number of steps for this run
-- `currentStepNumber`: The number of the step that is currently being executed
-- `currentStepInfo`: A string field with some information on the current step being executed.
+
+* `totalSteps`: The total number of steps for this run
+
+* `currentStepNumber`: The number of the step that is currently being executed
+
+* `currentStepInfo`: A string field with some information on the current step being executed.
 
 
 ServiceContext
