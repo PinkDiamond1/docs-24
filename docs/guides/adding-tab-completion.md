@@ -88,6 +88,7 @@ Once tab completion is installed, you will be able to:
     ```zsh
     # Add Kurtosis tab-completion
     source <(kurtosis completion zsh)
+    compdef _kurtosis kurtosis
     ```
 1. If you have an alias set up for Kurtosis, add the following to your `~/.zshrc` file (we'll assume the alias `kt` in this example):
     ```zsh
