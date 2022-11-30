@@ -1,7 +1,6 @@
 ---
 title: Starlark
 sidebar_label: Starlark
-sidebar_position: 3
 ---
 
 What is Starlark?

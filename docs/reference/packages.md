@@ -1,7 +1,6 @@
 ---
 title: Packages
 sidebar_label: Packages
-sidebar_position: 2
 ---
 
 <!-- TODO Add more information here when dependencies are specified in the kurtosis.yml -->

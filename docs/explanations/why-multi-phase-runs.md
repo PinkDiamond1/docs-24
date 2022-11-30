@@ -1,7 +1,6 @@
 ---
 title: Why Multi-Phase Runs?
 sidebar_label: Why Multi-Phase Runs?
-sidebar_position: 7
 ---
 
 Kurtosis runs its [Starlark environment definitions][starlark-explanation] in [multiple phases][multi-phase-runs-reference].

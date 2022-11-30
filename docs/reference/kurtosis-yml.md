@@ -1,7 +1,6 @@
 ---
 title: kurtosis.yml
 sidebar_label: kurtosis.yml
-sidebar_position: 3
 ---
 
 The `kurtosis.yml` file is a manifest file necessary to turn a directory into [a Kurtosis package][package]. This is the spec for the `kurtosis.yml`:

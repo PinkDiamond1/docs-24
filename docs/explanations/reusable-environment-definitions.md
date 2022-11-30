@@ -1,7 +1,6 @@
 ---
 title: Reusable Environment Definitions
 sidebar_label: Reusable Environment Definitions
-sidebar_position: 3
 ---
 
 Why are reusable environment definitions hard?
