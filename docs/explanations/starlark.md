@@ -68,7 +68,7 @@ A `run` method with the signature `run(args)` is necessary in standalone
 starlark scripts. The argument to the method can be passed using the `--args`
 flag in the CLI.
 
-The argument to the `run` method functions the same way as it does in [packages][[run-args-reference]].
+The argument to the `run` method functions the same way as it does in [packages][[run-args-reference].
 :::
 
 Finally, run it using the Kurtosis CLI:
