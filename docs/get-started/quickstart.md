@@ -7,6 +7,10 @@ sidebar_position: 2
 
 These instructions will give you a brief quickstart of Kurtosis. They should take 15 minutes.
 
+:::tip
+All code blocks can be copied by hovering over the code block and clicking the clipboard icon that appears on the right.
+:::
+
 Step One: Set Up Prerequisites
 ------------------------------
 ### Install Docker
@@ -54,13 +58,17 @@ kurtosis enclave add
 This may take a few seconds as Kurtosis downloads its Docker images for the first time; subsequent runs will be much faster.
 :::
 
+:::tip
+Kurtosis subcommands (e.g. `enclave` and `add` above) can be tab-completed as well!
+:::
+
 You'll see an output similar to the following:
 
 ```
-INFO[2022-11-29T20:38:17-03:00] Creating new enclave...
-INFO[2022-11-29T20:38:21-03:00] =====================================================
-INFO[2022-11-29T20:38:21-03:00] ||          Created enclave: summer-sound          ||
-INFO[2022-11-29T20:38:21-03:00] =====================================================
+INFO[2022-11-30T15:39:52-03:00] Creating new enclave...
+INFO[2022-11-30T15:40:02-03:00] =======================================================
+INFO[2022-11-30T15:40:02-03:00] ||          Created enclave: wandering-frog          ||
+INFO[2022-11-30T15:40:02-03:00] =======================================================
 ```
 
 Now, type the following but don't press ENTER yet:
@@ -69,26 +77,25 @@ Now, type the following but don't press ENTER yet:
 kurtosis enclave inspect
 ```
 
-If [you have tab completion installed][installing-tab-complete], you can now press TAB to tab-complete your enclave's ID (which will be different than `summer-sound`).
+If [you have tab completion installed][installing-tab-complete], you can now press TAB to tab-complete your enclave's ID (which will be different than `wandering-frog`).
 
-If you don't have tab completion installed, you'll need to aste the enclave ID from the `Created enclave:` line outputted above (yours will be different than `summer-sound`).
+If you don't have tab completion installed, you'll need to paste the enclave ID from the `Created enclave:` line outputted above (yours will be different than `wandering-frog`).
 
 Press ENTER, and you should receive an output like so:
 
 ```
-Enclave ID:                           summer-sound
+Enclave ID:                           wandering-frog
 Enclave Status:                       RUNNING
-Creation Time:                        Tue, 29 Nov 2022 20:38:17 -03
+Creation Time:                        Wed, 30 Nov 2022 15:39:52 -03
 API Container Status:                 RUNNING
-API Container Host GRPC Port:         127.0.0.1:60083
-API Container Host GRPC Proxy Port:   127.0.0.1:60084
+API Container Host GRPC Port:         127.0.0.1:63593
+API Container Host GRPC Proxy Port:   127.0.0.1:63594
 
 ========================================= Kurtosis Modules =========================================
 GUID   ID   Ports
 
 ========================================== User Services ==========================================
 GUID   ID   Ports   Status
-
 ```
 
 `kurtosis enclave inspect` is the way to investigate an enclave.
@@ -103,7 +110,7 @@ This will print all the enclaves inside your Kurtosis cluster:
 
 ```
 EnclaveID        Status    Creation Time
-summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
+wandering-frog   RUNNING   Wed, 30 Nov 2022 15:39:52 -03
 ```
 
 Now run the following to store your enclave ID in a variable, replacing `YOUR_ENCLAVE_ID_HERE` with your enclave's ID.
@@ -131,7 +138,7 @@ You should see output similar to the following:
 ```
 Service ID: my-nginx
 Ports Bindings:
-   http:   80/tcp -> 127.0.0.1:60215
+   http:   80/tcp -> 127.0.0.1:63614
 ```
 
 Now inspect your enclave again:
@@ -143,43 +150,43 @@ kurtosis enclave inspect "$ENCLAVE_ID"
 You should see a new service with the service ID `my-nginx` in your enclave:
 
 ```
-Enclave ID:                           summer-sound
+Enclave ID:                           wandering-frog
 Enclave Status:                       RUNNING
-Creation Time:                        Tue, 29 Nov 2022 20:38:17 -03
+Creation Time:                        Wed, 30 Nov 2022 15:39:52 -03
 API Container Status:                 RUNNING
-API Container Host GRPC Port:         127.0.0.1:60083
-API Container Host GRPC Proxy Port:   127.0.0.1:60084
+API Container Host GRPC Port:         127.0.0.1:63593
+API Container Host GRPC Proxy Port:   127.0.0.1:63594
 
 ========================================= Kurtosis Modules =========================================
 GUID   ID   Ports
 
 ========================================== User Services ==========================================
 GUID                  ID         Ports                             Status
-my-nginx-1669765644   my-nginx   http: 80/tcp -> 127.0.0.1:60215   RUNNING
+my-nginx-1669833787   my-nginx   http: 80/tcp -> 127.0.0.1:63614   RUNNING
 ```
 
 Kurtosis binds all service ports to ephemeral ports on your local machine. Copy the `127.0.0.1:XXXXX` address into your browser (yours will be different), and you should see a welcome message from your NginX service running inside the enclave you created.
 
-Now enter the following but don't press ENTER yet:
+Now paste the following but don't press ENTER yet:
 
 ```bash
 kurtosis service shell "$ENCLAVE_ID"
 ```
 
-If you have tab completion installed, press TAB. The service GUID of the NginX service will be completed (which in this case was `my-nginx-1669765644`, but yours will be different).
+If you have tab completion installed, press TAB. The service GUID of the NginX service will be completed (which in this case was `my-nginx-1669833787`, but yours will be different).
 
-If you don't have tab completion installed, paste in the service GUID of the NginX service from the `enclave inspect` output above (which was `my-nginx-1669765644`, but yours will be different).
+If you don't have tab completion installed, paste in the service GUID of the NginX service from the `enclave inspect` output above (which was `my-nginx-1669833787`, but yours will be different).
 
 Press ENTER, and you'll be logged in to a shell on the container:
 
 ```
 Found bash on container; creating bash shell...
-root@071e0fe49fab:/#
+root@f046da8acc11:/#
 ```
 
 Kurtosis will try to give you a `bash` shell, but will drop down to `sh` if `bash` doesn't exist on the container.
 
-Feel free to explore, and press Ctrl-C when you're done.
+Feel free to explore, and enter `exit` or press Ctrl-D when you're done.
 
 Now enter the following but don't press ENTER:
 
@@ -200,21 +207,21 @@ Press ENTER, and you'll see a live-updating stream of the service's logs:
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
 /docker-entrypoint.sh: Configuration complete; ready for start up
-2022/11/29 23:47:27 [notice] 1#1: using the "epoll" event method
-2022/11/29 23:47:27 [notice] 1#1: nginx/1.23.2
-2022/11/29 23:47:27 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6)
-2022/11/29 23:47:27 [notice] 1#1: OS: Linux 5.10.104-linuxkit
-2022/11/29 23:47:27 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
-2022/11/29 23:47:27 [notice] 1#1: start worker processes
-2022/11/29 23:47:27 [notice] 1#1: start worker process 29
-2022/11/29 23:47:27 [notice] 1#1: start worker process 30
-2022/11/29 23:47:27 [notice] 1#1: start worker process 31
-2022/11/29 23:47:27 [notice] 1#1: start worker process 32
-2022/11/29 23:47:27 [notice] 1#1: start worker process 33
-2022/11/29 23:47:27 [notice] 1#1: start worker process 34
-172.17.0.1 - - [29/Nov/2022:23:50:50 +0000] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
-172.17.0.1 - - [29/Nov/2022:23:50:51 +0000] "GET /favicon.ico HTTP/1.1" 404 555 "http://127.0.0.1:60215/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
-2022/11/29 23:50:51 [error] 29#29: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:60215", referrer: "http://127.0.0.1:60215/"
+2022/11/30 18:43:09 [notice] 1#1: using the "epoll" event method
+2022/11/30 18:43:09 [notice] 1#1: nginx/1.23.2
+2022/11/30 18:43:09 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6)
+2022/11/30 18:43:09 [notice] 1#1: OS: Linux 5.10.104-linuxkit
+2022/11/30 18:43:09 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2022/11/30 18:43:09 [notice] 1#1: start worker processes
+2022/11/30 18:43:09 [notice] 1#1: start worker process 30
+2022/11/30 18:43:09 [notice] 1#1: start worker process 31
+2022/11/30 18:43:09 [notice] 1#1: start worker process 32
+2022/11/30 18:43:09 [notice] 1#1: start worker process 33
+2022/11/30 18:43:09 [notice] 1#1: start worker process 34
+2022/11/30 18:43:09 [notice] 1#1: start worker process 35
+172.17.0.1 - - [30/Nov/2022:18:43:53 +0000] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
+172.17.0.1 - - [30/Nov/2022:18:43:53 +0000] "GET /favicon.ico HTTP/1.1" 404 555 "http://127.0.0.1:63614/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
+2022/11/30 18:43:53 [error] 30#30: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:63614", referrer: "http://127.0.0.1:63614/"
 ```
 
 You can reload your browser window showing the NginX welcome page to see new log entries appear. When you're satisfied, press Ctrl-C to end the stream.
@@ -240,15 +247,16 @@ mkdir my-kurtosis-package && cd my-kurtosis-package
 Create a new Starlark file called `main.star` with the following contents:
 
 ```python
-add_service(
-    "my-nginx",
-    config = struct(
-        image = "nginx:latest",
-        ports = {
-            "http": struct(number = 80, protocol = "TCP"),
-        },
-    ),
-)
+def run(args):
+    add_service(
+        "my-nginx",
+        config = struct(
+            image = "nginx:latest",
+            ports = {
+                "http": struct(number = 80, protocol = "TCP"),
+            },
+        ),
+    )
 ```
 
 The commands in this file will do the same thing as the `service add` command you ran earlier, but they are now [infrastructure-as-code](https://en.wikipedia.org/wiki/Infrastructure_as_code).
@@ -262,14 +270,15 @@ kurtosis run main.star --dry-run
 Because the `--dry-run` flag was specified, Kurtosis will read the file and show the instructions it would execute without executing them:
 
 ```
-INFO[2022-11-30T10:26:23-03:00] Creating a new enclave for Starlark to run inside...
-INFO[2022-11-30T10:26:25-03:00] Enclave 'nameless-snow' created successfully
+INFO[2022-11-30T15:48:18-03:00] Creating a new enclave for Starlark to run inside...
+INFO[2022-11-30T15:48:20-03:00] Enclave 'long-water' created successfully
 
 > add_service service_id="my-nginx"
 
-INFO[2022-11-30T10:26:26-03:00] ======================================================
-INFO[2022-11-30T10:26:26-03:00] ||          Created enclave: nameless-snow          ||
-INFO[2022-11-30T10:26:26-03:00] ======================================================
+Starlark code successfully executed. No output was returned
+INFO[2022-11-30T15:48:20-03:00] ===================================================
+INFO[2022-11-30T15:48:20-03:00] ||          Created enclave: long-water          ||
+INFO[2022-11-30T15:48:20-03:00] ===================================================
 ```
 
 Remove the `--dry-run` flag and execute the script:
@@ -278,38 +287,40 @@ Remove the `--dry-run` flag and execute the script:
 kurtosis run main.star
 ```
 
-The output will look similar to the dry run...
+The output will look similar to the dry run, but the `add_service` command now returns output:
 
 ```
-INFO[2022-11-30T10:28:16-03:00] Creating a new enclave for Starlark to run inside...
-INFO[2022-11-30T10:28:18-03:00] Enclave 'silent-hill' created successfully
+INFO[2022-11-30T15:48:59-03:00] Creating a new enclave for Starlark to run inside...
+INFO[2022-11-30T15:49:02-03:00] Enclave 'cool-meadow' created successfully
 
 > add_service service_id="my-nginx"
+Service 'my-nginx' added with internal ID 'my-nginx-1669834142'
 
-INFO[2022-11-30T10:28:21-03:00] ====================================================
-INFO[2022-11-30T10:28:21-03:00] ||          Created enclave: silent-hill          ||
-INFO[2022-11-30T10:28:21-03:00] ====================================================
+Starlark code successfully executed. No output was returned
+INFO[2022-11-30T15:49:04-03:00] ====================================================
+INFO[2022-11-30T15:49:04-03:00] ||          Created enclave: cool-meadow          ||
+INFO[2022-11-30T15:49:04-03:00] ====================================================
 ```
 
-...but you'll notice that inspecting the newly-created enclave will show that the service got added:
+Inspecting the enclave will now print the service inside:
 
 ```
-Enclave ID:                           silent-hill
+Enclave ID:                           cool-meadow
 Enclave Status:                       RUNNING
-Creation Time:                        Wed, 30 Nov 2022 10:28:16 -03
+Creation Time:                        Wed, 30 Nov 2022 15:48:59 -03
 API Container Status:                 RUNNING
-API Container Host GRPC Port:         127.0.0.1:62487
-API Container Host GRPC Proxy Port:   127.0.0.1:62488
+API Container Host GRPC Port:         127.0.0.1:63678
+API Container Host GRPC Proxy Port:   127.0.0.1:63679
 
 ========================================= Kurtosis Modules =========================================
 GUID   ID   Ports
 
 ========================================== User Services ==========================================
 GUID                  ID         Ports                             Status
-my-nginx-1669814898   my-nginx   http: 80/tcp -> 127.0.0.1:62493   RUNNING
+my-nginx-1669834142   my-nginx   http: 80/tcp -> 127.0.0.1:63684   RUNNING
 ```
 
-Just like the service deployed via the CLI, the same Kurtosis debugging tools are available for this enclave.
+Just like the service added via the CLI, the same Kurtosis debugging tools are available for enclaves created via Starlark.
 
 Step Five: Write A Starlark App
 -----------------------------------
@@ -318,97 +329,104 @@ Now that you've seen the basics, let's define an app with a dependency between t
 Replace your `main.star` contents with the following:
 
 ```python
-rest_service = add_service(
-    "hello-world",
-    config = struct(
-        image = "vad1mo/hello-world-rest",
-        ports = {
-            "http": struct(number = 5050, protocol = "TCP"),
-        },
-    ),
-)
+def run(args):
+    rest_service = add_service(
+        "hello-world",
+        config = struct(
+            image = "vad1mo/hello-world-rest",
+            ports = {
+                "http": struct(number = 5050, protocol = "TCP"),
+            },
+        ),
+    )
 
-nginx_conf_data = {
-    "HelloWorldIpAddress": rest_service.ip_address,
-    "HelloWorldPort": rest_service.ports["http"].number,
-}
-
-nginx_conf_template = """
-server {
-    listen       80;
-    listen  [::]:80;
-    server_name  localhost;
-
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
+    nginx_conf_data = {
+        "HelloWorldIpAddress": rest_service.ip_address,
+        "HelloWorldPort": rest_service.ports["http"].number,
     }
 
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   /usr/share/nginx/html;
-    }
+    nginx_conf_template = """
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
 
-    # Reverse proxy configuration (note the template values!)
-    location /sample{
-      proxy_pass http://{{ .HelloWorldIpAddress }}:{{ .HelloWorldPort }}/sample;
-    }
-}
-"""
-
-nginx_config_file_artifact = render_templates(
-    config = {
-        "default.conf": struct(
-            template = nginx_conf_template,
-            data = nginx_conf_data,
-        )
-    }
-)
-
-add_service(
-    "my-nginx",
-    config = struct(
-        image = "nginx:latest",
-        ports = {
-            "http": struct(number = 80, protocol = "TCP"),
-        },
-        files = {
-            nginx_config_file_artifact: "/etc/nginx/conf.d",
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
         }
-    ),
-)
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+
+        # Reverse proxy configuration (note the template values!)
+        location /sample{
+          proxy_pass http://{{ .HelloWorldIpAddress }}:{{ .HelloWorldPort }}/sample;
+        }
+    }
+    """
+
+    nginx_config_file_artifact = render_templates(
+        config = {
+            "default.conf": struct(
+                template = nginx_conf_template,
+                data = nginx_conf_data,
+            )
+        }
+    )
+
+    add_service(
+        "my-nginx",
+        config = struct(
+            image = "nginx:latest",
+            ports = {
+                "http": struct(number = 80, protocol = "TCP"),
+            },
+            files = {
+                nginx_config_file_artifact: "/etc/nginx/conf.d",
+            }
+        ),
+    )
 ```
 
-Run the Starlark script again, and inspect the created enclave. You'll see that two services, `my-nginx` and `hello-world`, have been added now:
+Run the Starlark script again:
+
+```bash
+kurtosis run main.star
+```
+
+Now inspect the enclave that got created. You'll see that two services, `my-nginx` and `hello-world`, have been added now:
 
 ```
-Enclave ID:                           spring-river
+Enclave ID:                           late-bird
 Enclave Status:                       RUNNING
-Creation Time:                        Wed, 30 Nov 2022 11:03:25 -03
+Creation Time:                        Wed, 30 Nov 2022 15:54:38 -03
 API Container Status:                 RUNNING
-API Container Host GRPC Port:         127.0.0.1:62666
-API Container Host GRPC Proxy Port:   127.0.0.1:62667
+API Container Host GRPC Port:         127.0.0.1:63729
+API Container Host GRPC Proxy Port:   127.0.0.1:63730
 
 ========================================= Kurtosis Modules =========================================
 GUID   ID   Ports
 
 ========================================== User Services ==========================================
 GUID                     ID            Ports                               Status
-hello-world-1669817008   hello-world   http: 5050/tcp -> 127.0.0.1:62672   RUNNING
-my-nginx-1669817010      my-nginx      http: 80/tcp -> 127.0.0.1:62676     RUNNING
+hello-world-1669834480   hello-world   http: 5050/tcp -> 127.0.0.1:63735   RUNNING
+my-nginx-1669834483      my-nginx      http: 80/tcp -> 127.0.0.1:63749     RUNNING
 ```
 
-Now in your browser open the `my-nginx` endpoint with the `/sample` URL path (e.g. `127.0.0.1:62676/sample`, though your URL will be different). You'll see the `hello-world` service responding through the NginX proxy that we've configured:
+Now in your browser open the `my-nginx` endpoint with the `/sample` URL path (e.g. `http://127.0.0.1:63749/sample`, though your URL will be different). You'll see the `hello-world` service responding through the NginX proxy that we've configured:
 
 ```
-/ - Hello sample! Host:cfd00c7a9953/172.17.0.19
+/ - Hello sample! Host:078807a8a776/172.17.0.11
 ```
 
 Your Starlark script defined a set of instructions - a plan - for building the environment. This plan was:
 
-1. Start the `hello-world` service, listening on port `5050`
+1. Start a `hello-world` service, listening on port `5050`
 1. Render a NginX config file using a template and the IP address and port of the `hello-world` service
 1. Start the `my-nginx` service with the NginX config file mounted at `/etc/nginx/conf.d/default.conf`
 
@@ -422,13 +440,13 @@ We've started a few enclaves at this point, and `kurtosis enclave ls` will displ
 
 ```
 EnclaveID        Status    Creation Time
-summer-sound     RUNNING   Tue, 29 Nov 2022 23:38:17 UTC
-nameless-snow    RUNNING   Wed, 30 Nov 2022 13:26:23 UTC
-silent-hill      RUNNING   Wed, 30 Nov 2022 13:28:16 UTC
-spring-river     RUNNING   Wed, 30 Nov 2022 14:03:25 UTC
+wandering-frog   RUNNING   Wed, 30 Nov 2022 15:39:52 -03
+long-water       RUNNING   Wed, 30 Nov 2022 15:48:18 -03
+cool-meadow      RUNNING   Wed, 30 Nov 2022 15:48:59 -03
+late-bird        RUNNING   Wed, 30 Nov 2022 15:54:38 -03
 ```
 
-Enclaves themselves have very little overhead and are cheap to create, but the services inside the enclaves will naturally consume resources. Cleaning up our Kurtosis cluster is easy:
+Enclaves themselves have very little overhead and are cheap to create, but the services inside the enclaves will naturally consume resources. Clean up your Kurtosis cluster now:
 
 ```
 kurtosis clean -a
@@ -528,17 +546,17 @@ def run(args):
 
 Take note that:
 
-- We added a `run` function, which makes this directory [a runnable Kurtosis package][runnale-packages-reference].
 - The template contents are now being imported using the `read_file` [Starlark instruction][starlark-instructions-reference].
 - The template file is referenced using a URL-like syntax; [this is called a "locator"][locators-reference] and is how Starlark files include external resources.
+- Because our directory is now a Kurtosis package due to the `kurtosis.yml` file and the package has a `main.star` file with a `run` function, our directory is now a [runnable Kurtosis package][runnable-packages-reference].
 
-Finally, we now run the Starlark by specifying the package directory (the directory with the `kurtosis.yml`):
+Because our directory is a runnable Kurtosis package, we now run the package by specifying the package directory (the directory with the `kurtosis.yml`):
 
 ```bash
 kurtosis run .
 ```
 
-This gives Kurtosis the information it needs to resolve external information.
+This will create the same `hello-world` and `my-nginx` services, but using external resources.
 
 Step Seven: Parameterize Your Package
 -------------------------------------
@@ -602,22 +620,22 @@ kurtosis run . --args '{"nginx_count": 3}'
 After execution, inspecting the enclave will reveal that three NginX services have been started:
 
 ```
-Enclave ID:                           lingering-sun
+Enclave ID:                           quiet-morning
 Enclave Status:                       RUNNING
-Creation Time:                        Wed, 30 Nov 2022 14:23:27 -03
+Creation Time:                        Wed, 30 Nov 2022 16:02:41 -03
 API Container Status:                 RUNNING
-API Container Host GRPC Port:         127.0.0.1:63162
-API Container Host GRPC Proxy Port:   127.0.0.1:63163
+API Container Host GRPC Port:         127.0.0.1:63802
+API Container Host GRPC Proxy Port:   127.0.0.1:63803
 
 ========================================= Kurtosis Modules =========================================
 GUID   ID   Ports
 
 ========================================== User Services ==========================================
 GUID                     ID            Ports                               Status
-hello-world-1669829012   hello-world   http: 5050/tcp -> 127.0.0.1:63169   RUNNING
-my-nginx-0-1669829015    my-nginx-0    http: 80/tcp -> 127.0.0.1:63173     RUNNING
-my-nginx-1-1669829021    my-nginx-1    http: 80/tcp -> 127.0.0.1:63177     RUNNING
-my-nginx-2-1669829027    my-nginx-2    http: 80/tcp -> 127.0.0.1:63181     RUNNING
+hello-world-1669834964   hello-world   http: 5050/tcp -> 127.0.0.1:63808   RUNNING
+my-nginx-0-1669834966    my-nginx-0    http: 80/tcp -> 127.0.0.1:63812     RUNNING
+my-nginx-1-1669834970    my-nginx-1    http: 80/tcp -> 127.0.0.1:63816     RUNNING
+my-nginx-2-1669834975    my-nginx-2    http: 80/tcp -> 127.0.0.1:63820     RUNNING
 ```
 
 Each one of these NginX services works identically.
