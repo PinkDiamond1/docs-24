@@ -722,7 +722,7 @@ These are just the basics of Kurtosis. To dive deeper, you can now:
 
 
 <!------------------------------- ONLY LINKS BELOW HERE ------------------------------------->
-[installing-tab-complete]: ./using-the-cli.md#adding-tab-completion
+[installing-tab-complete]: ../guides/adding-tab-completion.md
 [enclaves-explanation]: ../explanations/architecture.md#enclaves
 [services-explanation]: ../explanations/architecture.md#services
 [starlark-explanation]: ../explanations/starlark.md

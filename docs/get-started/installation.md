@@ -8,7 +8,7 @@ sidebar_position: 1
 Interacting with Kurtosis is done via [a CLI](/cli). The instructions below will walk you through installing it.
 
 :::tip
-The CLI supports tab completion. After you install using one of the methods below, follow [these instructions](/cli#adding-tab-completion) to enable tab completion.
+Kurtosis supports tab completion, and we strongly recommend [installing it][installing-tab-completion] after you install the CLI.
 :::
 
 <details>
@@ -113,6 +113,6 @@ Download the appropriate artifact from [the release artifacts page][release-arti
 </details>
 
 <!-------------------------- ONLY LINKS BELOW HERE ---------------------------->
-
+[installing-tab-completion]: ../guides/adding-tab-completion.md
 [release-artifacts]: https://github.com/kurtosis-tech/kurtosis-cli-release-artifacts/releases
 [cli-changelog]: https://docs.kurtosistech.com/kurtosis-cli/changelog
