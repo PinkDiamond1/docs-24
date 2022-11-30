@@ -44,6 +44,8 @@ Starlark itself is very basic; Google designed it to be extended to fulfill a gi
 - Dependencies, so Kurtosis scripts can [import other scripts][locators-reference]
 - A [GitHub-based packaging system][packages-reference], so environment definitions can be shared with each other
 
+Additionally, we built a [multi-phase engine][multi-phase-runs-reference] around the Starlark interpreter, to provide [users with benefits not normally available in a scripting language][multi-phase-runs-explanation].
+
 How do I get started with Starlark?
 -----------------------------------
 
@@ -94,3 +96,5 @@ On the fifth line you can see the output of the script.
 [packages-reference]: ../reference/packages.md
 [run-args-reference]: ../reference/packages.md#arguments
 [starlark-instructions-reference]: ../reference/starlark-instructions.md
+[multi-phase-runs-reference]: ../reference/multi-phase-runs.md
+[multi-phase-runs-explanation]: ../explanations/why-multi-phase-runs.md

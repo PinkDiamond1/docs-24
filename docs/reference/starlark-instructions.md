@@ -175,7 +175,7 @@ exec(
 )
 ```
 
-If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-execution].
+If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
 
 ### render_templates
 
@@ -264,7 +264,7 @@ artifact_id = store_service_files(
 
 ### read_file
 
-The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-execution] and the file contents won't be displayed in the preview.
+The `read_file` function reads the contents of a file specified by the given [locator][locators]. `read_file` executes [at interpretation time][multi-phase-runs-reference] and the file contents won't be displayed in the preview.
 
  ```python
 contents = read_file(
@@ -422,4 +422,4 @@ in Kurtosis Starlark by default
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
 [locators]: ./locators.md
-[multi-phase-execution]: ./multi-phase-execution.md
+[multi-phase-runs-reference]: ./multi-phase-runs.md
