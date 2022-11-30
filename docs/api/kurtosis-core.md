@@ -111,21 +111,37 @@ Downloads the given files artifacts to the Kurtosis engine, associating them wit
 
 * `filesArtifactUrls`: A map of files_artifact_id -> url, where the ID is how the artifact will be referenced in [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints] and the URL is the URL on the web where the files artifact should be downloaded from.
 
-### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, Func(String ipAddr) -> ContainerConfig containerConfigSupplier) -> ServiceContext serviceContext`
-Starts a new service in the enclave with the given service ID, inside the partition with the given ID, using the given config supplier.
+### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, ContainerConfig containerConfig) -> ServiceContext serviceContext`
+Starts a new service in the enclave with the given service ID, inside the partition with the given ID, using the given container config.
 
 **Args**
 
 * `serviceId`: The ID that the new service should have.
 * `partitionId`: The ID of the partition that the new service should be started in. This can be left blank to start the service in the default partition if it exists (i.e. if the enclave hasn't been repartitioned and the default partition removed).
-* `containerConfigSupplier`: An anonymous function, used to produce the [ContainerConfig][containerconfig] for starting the service, which receives the private IP address of the service being started (the IP address of the service _inside_ the service's enclave)
+* `containerConfig`: A [ContainerConfig][containerconfig] object indicating how to configure the service.
 
 **Returns**
 
 * `serviceContext`: The [ServiceContext][servicecontext] representation of a service running in a Docker container. Port information can be found in `ServiceContext.GetPublicPorts()`. The port spec strings that the service declared (as defined in [ContainerConfig.usedPorts][containerconfig_usedports]), mapped to the port on the host machine where the port has been bound to. This allows you to make requests to a service running in Kurtosis by making requests to a port on your local machine. If a port was not bound to a host machine port, it will not be present in the map (and if no ports were bound to host machine ports, the map will be empty).
 
-### `addService(ServiceID serviceId, Func(String ipAddr) -> ContainerConfig containerConfigSupplier) -> ServiceContext serviceContext`
+### `addServicesToPartition(Map<ServiceID, ContainerConfig> containerConfigs, PartitionID partitionId) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)
+Start services in bulk in the enclave with the given service IDs, inside the partition with the given ID, using the given container config.
+
+**Args**
+
+* `containerConfigs`: A mapping of service IDs to start in the enclave to their `containerConfig` indicating how to configure the service.
+* `partitionId`: The ID of the partition that the new service should be started in. This can be left blank to start the service in the default partition if it exists (i.e. if the enclave hasn't been repartitioned and the default partition removed).
+
+**Returns**
+
+* `successfulServices`: A mapping of service IDs that were successfully started in the enclave to their respective [ServiceContext][servicecontext] representation.
+* `failedServices`: A mapping of service IDs to the errors the caused that prevented the services from being added successfully to the enclave.
+
+### `addService(ServiceID serviceId,  ContainerConfig containerConfig) -> (ServiceContext serviceContext)`
 Convenience wrapper around [EnclaveContext.addServiceToPartition][enclavecontext_addservicetopartition], that adds the service to the default partition. Note that if the enclave has been repartitioned and the default partition doesn't exist anymore, this method will fail.
+
+### `addServices(Map<ServiceID, ContainerConfig> containerConfigs) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)`
+Convenience wrapper around [EnclaveContext.addServicesToPartition][enclavecontext_addservicestopartition], that adds the services to the default partition. Note that if the enclave has been repartitioned and the default partition doesn't exist anymore, this method will fail.
 
 ### `getServiceContext(ServiceID serviceId) -> ServiceContext serviceContext`
 Gets relevant information about a service (identified by the given service ID) that is running in the enclave.
@@ -189,7 +205,7 @@ Gets the IDs of the current services in the enclave.
 
 **Returns**
 
-* `serviceIDs`: A set of service IDs
+* `serviceIDs`: A set of objects containing information about the services in the enclave
 
 ### `getModules() -> Set<ModuleID> moduleIds`
 Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
@@ -301,7 +317,11 @@ Defines environment variables that should be set inside the Docker container run
 Allows you to set an allocation for CPU resources available in the underlying host container of a service. The metric used to measure `cpuAllocation`  is `millicpus`, 1000 millicpus is equivalent to 1 CPU on the underlying machine. This metric is identical [Docker's measure of `cpus`](https://docs.docker.com/config/containers/resource_constraints/#:~:text=Description-,%2D%2Dcpus%3D%3Cvalue%3E,-Specify%20how%20much) and [Kubernetes measure of `cpus` for limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu). Setting `cpuAllocationMillicpus=1500` is equivalent to setting `cpus=1.5` in Docker and `cpus=1.5` or `cpus=1500m` in Kubernetes. If set, the value must be a nonzero positive integer. If unset, there will be no constraints on CPU usage of the host container. 
 
 ### `uint64 memoryAllocationMegabytes`
-Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) docs.
+Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)'s docs.
+
+### `String privateIPAddrPlaceholder`
+The placeholder string used within `entrypointOverrideArgs`, `cmdOverrideArgs`, and `environmentVariableOverrides` that gets replaced with the private IP address of the container inside Docker/Kubernetes before the container starts. This defaults to `KURTOSIS_IP_ADDR_PLACEHOLDER` if this isn't set.
+The user needs to make sure that they provide the same placeholder string for this field that they use in `entrypointOverrideArgs`, `cmdOverrideArgs`, and `environmentVariableOverrides`.
 
 
 ContainerConfigBuilder
@@ -380,6 +400,14 @@ Gets the ID that Kurtosis uses to identify the service.
 
 The service's ID.
 
+### `getServiceGuid() -> ServiceGUID`
+Gets the GUID (Globally Unique Identifier) that Kurtosis creates and uses to identify the service.
+The differences with the ID is that this one is created by Kurtosis, users can't specify it, and this never can be repeated, every new execution of the same service will have a new GUID
+
+**Returns**
+
+The service's GUID.
+
 ### `getPrivateIpAddress() -> String`
 Gets the IP address where the service is reachable at from _inside_ the enclave that the container is running inside. This IP address is how other containers inside the enclave can connect to the service.
 
@@ -420,6 +448,46 @@ Uses [Docker exec](https://docs.docker.com/engine/reference/commandline/exec/) f
 * `exitCode`: The exit code of the command.
 * `logs`: The output of the run command, assuming a UTF-8 encoding. **NOTE:** Commands that output non-UTF-8 output will likely be garbled!
 
+ServiceInfo
+-----------
+This object contains information about a service:
+
+### `getServiceGuid() -> ServiceGUID`
+Gets the GUID (Globally Unique Identifier) that Kurtosis creates and uses to identify the service.
+The differences with the ID is that this one is created by Kurtosis, users can't specify it, and this never can be repeated, every new execution of the same service will have a new GUID
+
+**Returns**
+
+The service's GUID.
+
+### `getPrivateIpAddress() -> String`
+Gets the IP address where the service is reachable at from _inside_ the enclave that the container is running inside. This IP address is how other containers inside the enclave can connect to the service.
+
+**Returns**
+
+The service's private IP address.
+
+### `getPrivatePorts() -> Map<PortID, PortSpec>`
+Gets the ports that the service is reachable at from _inside_ the enclave that the container is running inside. These ports are how other containers inside the enclave can connect to the service.
+
+**Returns**
+
+The ports that the service is reachable at from inside the enclave, identified by the user-chosen ID set in [ContainerConfig.usedPorts][containerconfig_usedports] when the service was created.
+
+### `getMaybePublicIpAddress() -> String`
+If the service declared used ports in [ContainerConfig.usedPorts][containerconfig_usedports], then this function returns the IP address where the service is reachable at from _outside_ the enclave that the container is running inside. This IP address is how clients on the host machine can connect to the service. If no used ports were declared, this will be empty.
+
+**Returns**
+
+The service's public IP address, or an empty value if the service didn't declare any used ports.
+
+### `getPublicPorts() -> Map<PortID, PortSpec>`
+Gets the ports that the service is reachable at from _outside_ the enclave that the container is running inside. These ports are how clients on the host machine can connect to the service. If the service didn't declare any used ports in [ContainerConfig.usedPorts][containerconfig_usedports], this value will be an empty map.
+
+**Returns**
+
+The ports (if any) that the service is reachable at from outside the enclave, identified by the user-chosen ID set in [ContainerConfig.usedPorts][containerconfig_usedports] when the service was created.
+
 
 TemplateAndData
 ------------------
@@ -429,9 +497,13 @@ It has two properties.
 
 ### String template
 The template that needs to be rendered. We support Golang [templates](https://pkg.go.dev/text/template). The casing of the `keys` or `fields` inside the template must match the casing of the `fields` or the `keys` inside the data.
+
 ### Any templateData
 The data that needs to be rendered in the template. This will be converted into a JSON string before it gets sent over the wire. The elements inside the object should exactly match the keys in the template. If you are using a struct for `templateData` then the field names must start with an upper case letter to ensure that the field names are accessible outside of the structs own package. If you are using a map then you can keys that begin with lower case letters as well.
 
+Note, because of how we handle floating point numbers & large integers, if you pass a floating point number it will get
+printed in the decimal notation by default. If you want to use modifiers like `{{printf .%2f | .MyFloat}}`, you'll have to use
+the `Float64` method on the `json.Number` first, so above would look like `{{printf .2%f | .MyFloat.Float64}}`.
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
