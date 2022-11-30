@@ -68,7 +68,7 @@ Run a provided Starlark script inside the enclave.
 
 **Args**
 
-* `serializedStartosisScript`: The Startosis script provided as a string
+* `serializedStarlarkScript`: The Starlark script provided as a string
 * `dryRun`: When set to true, the Kurtosis instructions are not executed.
 
 **Returns**
