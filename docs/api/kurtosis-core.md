@@ -124,7 +124,7 @@ Starts a new service in the enclave with the given service ID, inside the partit
 
 * `serviceContext`: The [ServiceContext][servicecontext] representation of a service running in a Docker container. Port information can be found in `ServiceContext.GetPublicPorts()`. The port spec strings that the service declared (as defined in [ContainerConfig.usedPorts][containerconfig_usedports]), mapped to the port on the host machine where the port has been bound to. This allows you to make requests to a service running in Kurtosis by making requests to a port on your local machine. If a port was not bound to a host machine port, it will not be present in the map (and if no ports were bound to host machine ports, the map will be empty).
 
-### `addServicesToPartition(Map<ServiceID, ContainerConfig> containerConfigs, PartitionID partitionId) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)
+### `addServicesToPartition(Map<ServiceID, ContainerConfig> containerConfigs, PartitionID partitionId) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)`
 Start services in bulk in the enclave with the given service IDs, inside the partition with the given ID, using the given container config.
 
 **Args**
@@ -200,12 +200,12 @@ Waits until a service endpoint is available by making requests to the endpoint u
 * `retriesDelayMilliseconds`: Number of milliseconds to wait between retries
 * `bodyText`: If this value is non-empty, the endpoint will not be marked as available until this value is returned (e.g. `Hello World`). If this value is emptystring, no body text comparison will be done.
 
-### `getServices() -> Set<ServiceID> serviceIDs`
+### `getServices() -> Map<ServiceID,  ServiceGUID> serviceIds`
 Gets the IDs of the current services in the enclave.
 
 **Returns**
 
-* `serviceIDs`: A set of objects containing information about the services in the enclave
+* `serviceIds`: A map of objects containing a mapping of ID -> GUID for all the services inside the enclave
 
 ### `getModules() -> Set<ModuleID> moduleIds`
 Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
@@ -447,47 +447,6 @@ Uses [Docker exec](https://docs.docker.com/engine/reference/commandline/exec/) f
 
 * `exitCode`: The exit code of the command.
 * `logs`: The output of the run command, assuming a UTF-8 encoding. **NOTE:** Commands that output non-UTF-8 output will likely be garbled!
-
-ServiceInfo
------------
-This object contains information about a service:
-
-### `getServiceGuid() -> ServiceGUID`
-Gets the GUID (Globally Unique Identifier) that Kurtosis creates and uses to identify the service.
-The differences with the ID is that this one is created by Kurtosis, users can't specify it, and this never can be repeated, every new execution of the same service will have a new GUID
-
-**Returns**
-
-The service's GUID.
-
-### `getPrivateIpAddress() -> String`
-Gets the IP address where the service is reachable at from _inside_ the enclave that the container is running inside. This IP address is how other containers inside the enclave can connect to the service.
-
-**Returns**
-
-The service's private IP address.
-
-### `getPrivatePorts() -> Map<PortID, PortSpec>`
-Gets the ports that the service is reachable at from _inside_ the enclave that the container is running inside. These ports are how other containers inside the enclave can connect to the service.
-
-**Returns**
-
-The ports that the service is reachable at from inside the enclave, identified by the user-chosen ID set in [ContainerConfig.usedPorts][containerconfig_usedports] when the service was created.
-
-### `getMaybePublicIpAddress() -> String`
-If the service declared used ports in [ContainerConfig.usedPorts][containerconfig_usedports], then this function returns the IP address where the service is reachable at from _outside_ the enclave that the container is running inside. This IP address is how clients on the host machine can connect to the service. If no used ports were declared, this will be empty.
-
-**Returns**
-
-The service's public IP address, or an empty value if the service didn't declare any used ports.
-
-### `getPublicPorts() -> Map<PortID, PortSpec>`
-Gets the ports that the service is reachable at from _outside_ the enclave that the container is running inside. These ports are how clients on the host machine can connect to the service. If the service didn't declare any used ports in [ContainerConfig.usedPorts][containerconfig_usedports], this value will be an empty map.
-
-**Returns**
-
-The ports (if any) that the service is reachable at from outside the enclave, identified by the user-chosen ID set in [ContainerConfig.usedPorts][containerconfig_usedports] when the service was created.
-
 
 TemplateAndData
 ------------------
