@@ -1,6 +1,6 @@
 ---
-title: Kurtosis CLI
-sidebar_label: Using the CLI
+title: CLI Commands
+sidebar_label: CLI Commands
 slug: /cli
 sidebar_position: 3
 ---

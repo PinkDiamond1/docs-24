@@ -1,6 +1,6 @@
 ---
-title: Installation
-sidebar_label: Installation
+title: Installing The CLI
+sidebar_label: Installing The CLI
 slug: /install
 sidebar_position: 1
 ---
@@ -113,6 +113,6 @@ Download the appropriate artifact from [the release artifacts page][release-arti
 </details>
 
 <!-------------------------- ONLY LINKS BELOW HERE ---------------------------->
-[installing-tab-completion]: ../guides/adding-tab-completion.md
+[installing-tab-completion]: ./adding-tab-completion.md
 [release-artifacts]: https://github.com/kurtosis-tech/kurtosis-cli-release-artifacts/releases
 [cli-changelog]: https://docs.kurtosistech.com/kurtosis-cli/changelog

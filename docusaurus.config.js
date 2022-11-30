@@ -95,8 +95,8 @@ const config = {
                 to: '/cli',
               },
               {
-                label: 'API',
-                to: '/api/kurtosis-core',
+                label: 'SDK',
+                to: '/sdk',
               },
             ],
           },
