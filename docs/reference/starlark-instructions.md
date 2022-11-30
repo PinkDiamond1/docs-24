@@ -274,7 +274,7 @@ The `read_file` function reads the contents of a file specified by the given [lo
 contents = read_file(
     # The Kurtosis locator of the file to read.
     # MANDATORY
-    src = "github.com/kurtosis-tech/datastore-army-module/README.md"
+    src = "github.com/kurtosis-tech/datastore-army-package/README.md"
 )
  ```
 ### get_value
@@ -428,7 +428,6 @@ in Kurtosis Starlark by default
 
 1. The Starlark [time](https://github.com/google/starlark-go/blob/master/lib/time/time.go#L18-L52) is a collection of time-related functions
 2. The Starlark [json](https://github.com/google/starlark-go/blob/master/lib/json/json.go#L28-L74) module allows you `encode`, `decode` and `indent` JSON
-3. The Starlark [proto](https://github.com/google/starlark-go/blob/master/lib/proto/proto.go) module allows you to define and interact with `proto` objects
 4. The Starlark [struct](https://github.com/google/starlark-go/blob/master/starlarkstruct/struct.go) builtin allows you to create `structs` like the one used in [`add_service`](#addservice)
 
 

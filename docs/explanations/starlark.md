@@ -56,15 +56,23 @@ First, install the Kurtosis CLI using [the guide here](https://docs.kurtosis.com
 Next, save the following to a file named `main.star`:
 
 ```py
-service = add_service(
-    service_id = "httpd-service", 
-    config = struct(
-        image = "httpd:2.4.54", 
-        ports = {"http" : struct(number = 80, protocol = "TCP" )}
+def run(args):
+    service = add_service(
+        service_id = "httpd-service", 
+        config = struct(
+            image = "httpd:2.4.54", 
+            ports = {"http" : struct(number = 80, protocol = "TCP" )}
+        )
     )
-)
-print("httpd has been added successfully")
+    print("httpd has been added successfully")
 ```
+
+:::info
+A `run` method with the signature `run(args)` is necessary in standalone
+Starlark scripts.
+
+The argument to the `run` method functions the same way as it does [here][run-args-reference].
+:::
 
 Finally, run it using the Kurtosis CLI:
 

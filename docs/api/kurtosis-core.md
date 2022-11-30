@@ -31,7 +31,7 @@ This Kurtosis-provided class is the lowest-level representation of a Kurtosis en
 ### `getEnclaveId() -> EnclaveID`
 Gets the ID of the enclave that this [EnclaveContext][enclavecontext] object represents.
 
-### `loadModule(String moduleId, String image, String serializedParams) -> [ModuleContext][modulecontext] moduleContext`
+### `loadModule(String moduleId, String image, String serializedParams) -> ModuleContext moduleContext`
 Starts a new Kurtosis module (configured using the serialized params) inside the enclave, which makes it available for use.
 
 **Args**
@@ -51,7 +51,7 @@ Stops and removes a Kurtosis module from the enclave.
 
 * `moduleId`: The ID of the module to remove.
 
-### `getModuleContext(String moduleId) -> [ModuleContext][modulecontext] moduleContext`
+### `getModuleContext(String moduleId) -> ModuleContext moduleContext`
 Gets the [ModuleContext][modulecontext] associated with an already-running module container identified by the given ID.
 
 **Args**
@@ -62,6 +62,47 @@ Gets the [ModuleContext][modulecontext] associated with an already-running modul
 
 * `moduleContext`: The [ModuleContext][modulecontext] representation of the running module container, which allows execution of the module's execute function (if it exists).
 
+### `runStarlarkScript(String serializedStarlarkScript, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
+
+Run a provided Starlark script inside the enclave.
+
+**Args**
+
+* `serializedStarlarkScript`: The Starlark script provided as a string
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
+
+### `runStarlarkPackage(String packageRootPath, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
+
+Run a provided Starlark script inside the enclave.
+
+**Args**
+
+* `packageRootPath`: The path to the root of the package
+* `serializedParams`: The parameters to pass to the package for the run. It should be a serialized JSON string.
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
+
+### `runRemoteStarlarkPackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
+
+Run a Starlark script hosted in a remote github.com repo inside the enclave.
+
+**Args**
+
+* `packageId`: The ID of the package pointing to the github.com repo hosting the package. For example `github.com/kurtosistech/datastore-army-package`
+* `serializedParams`: The parameters to pass to the package for the run. It should be a serialized JSON string.
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
+
 <!-- TODO DELETE THIS!!! -->
 ### `registerFilesArtifacts(Map<FilesArtifactID, String> filesArtifactUrls)`
 Downloads the given files artifacts to the Kurtosis engine, associating them with the given IDs, so they can be mounted inside a service's filespace at creation time via [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints].
@@ -70,23 +111,39 @@ Downloads the given files artifacts to the Kurtosis engine, associating them wit
 
 * `filesArtifactUrls`: A map of files_artifact_id -> url, where the ID is how the artifact will be referenced in [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints] and the URL is the URL on the web where the files artifact should be downloaded from.
 
-### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, Func(String ipAddr) -> [ContainerConfig][containerconfig] containerConfigSupplier) -> ([ServiceContext][servicecontext] serviceContext)`
-Starts a new service in the enclave with the given service ID, inside the partition with the given ID, using the given config supplier.
+### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, ContainerConfig containerConfig) -> ServiceContext serviceContext`
+Starts a new service in the enclave with the given service ID, inside the partition with the given ID, using the given container config.
 
 **Args**
 
 * `serviceId`: The ID that the new service should have.
 * `partitionId`: The ID of the partition that the new service should be started in. This can be left blank to start the service in the default partition if it exists (i.e. if the enclave hasn't been repartitioned and the default partition removed).
-* `containerConfigSupplier`: An anonymous function, used to produce the [ContainerConfig][containerconfig] for starting the service, which receives the private IP address of the service being started (the IP address of the service _inside_ the service's enclave)
+* `containerConfig`: A [ContainerConfig][containerconfig] object indicating how to configure the service.
 
 **Returns**
 
 * `serviceContext`: The [ServiceContext][servicecontext] representation of a service running in a Docker container. Port information can be found in `ServiceContext.GetPublicPorts()`. The port spec strings that the service declared (as defined in [ContainerConfig.usedPorts][containerconfig_usedports]), mapped to the port on the host machine where the port has been bound to. This allows you to make requests to a service running in Kurtosis by making requests to a port on your local machine. If a port was not bound to a host machine port, it will not be present in the map (and if no ports were bound to host machine ports, the map will be empty).
 
-### `addService(ServiceID serviceId,  Func(String ipAddr) -> [ContainerConfig][containerconfig] containerConfigSupplier) -> ([ServiceContext][servicecontext] serviceContext)`
+### `addServicesToPartition(Map<ServiceID, ContainerConfig> containerConfigs, PartitionID partitionId) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)`
+Start services in bulk in the enclave with the given service IDs, inside the partition with the given ID, using the given container config.
+
+**Args**
+
+* `containerConfigs`: A mapping of service IDs to start in the enclave to their `containerConfig` indicating how to configure the service.
+* `partitionId`: The ID of the partition that the new service should be started in. This can be left blank to start the service in the default partition if it exists (i.e. if the enclave hasn't been repartitioned and the default partition removed).
+
+**Returns**
+
+* `successfulServices`: A mapping of service IDs that were successfully started in the enclave to their respective [ServiceContext][servicecontext] representation.
+* `failedServices`: A mapping of service IDs to the errors the caused that prevented the services from being added successfully to the enclave.
+
+### `addService(ServiceID serviceId,  ContainerConfig containerConfig) -> (ServiceContext serviceContext)`
 Convenience wrapper around [EnclaveContext.addServiceToPartition][enclavecontext_addservicetopartition], that adds the service to the default partition. Note that if the enclave has been repartitioned and the default partition doesn't exist anymore, this method will fail.
 
-### `getServiceContext(ServiceID serviceId) -> [ServiceContext][servicecontext]`
+### `addServices(Map<ServiceID, ContainerConfig> containerConfigs) -> (Map<ServiceID, ServiceContext> successfulServices, Map<ServiceID, Error> failedServices)`
+Convenience wrapper around [EnclaveContext.addServicesToPartition][enclavecontext_addservicestopartition], that adds the services to the default partition. Note that if the enclave has been repartitioned and the default partition doesn't exist anymore, this method will fail.
+
+### `getServiceContext(ServiceID serviceId) -> ServiceContext serviceContext`
 Gets relevant information about a service (identified by the given service ID) that is running in the enclave.
 
 **Args**
@@ -105,7 +162,7 @@ Stops the container with the given service ID and removes it from the enclave.
 * `serviceId`: The ID of the service to remove.
 * `containerStopTimeoutSeconds`: The number of seconds to wait for the container to gracefully stop before hard-killing it.
 
-### `repartitionNetwork(Map<PartitionID, Set<ServiceID>> partitionServices, Map<PartitionID, Map<PartitionID, [PartitionConnection][partitionconnection]>> partitionConnections, [PartitionConnection][partitionconnection] defaultConnection)`
+### `repartitionNetwork(Map<PartitionID, Set<ServiceID>> partitionServices, Map<PartitionID, Map<PartitionID, PartitionConnection>> partitionConnections, PartitionConnection defaultConnection)`
 Repartitions the enclave so that the connections between services match the specified new state. All services currently in the enclave must be allocated to a new partition.
 
 **NOTE: For this to work, partitioning must be turned on when the Enclave is created with [KurtosisContext.createEnclave()][kurtosiscontext_createenclave].**
@@ -114,7 +171,7 @@ Repartitions the enclave so that the connections between services match the spec
 
 * `partitionServices`: A definition of the new partitions in the enclave, and the services allocated to each partition. A service can only be allocated to a single partition.
 * `partitionConnections`: Definitions of the connection state between the new partitions. If a connection between two partitions isn't defined in this map, the default connection will be used. Connections are not directional, so an error will be thrown if the same connection is defined twice (e.g. `Map[A][B] = someConnection`, and `Map[B][A] = otherConnection`).
-* `defaultConnection`: The network state between two partitions that will be used if the connection isn't defined in the partition connections map.
+* `defaultConnection`: The default [PartitionConnection][partitionconnection] corresponding to the network state between two partitions that will be used if the connection isn't defined in the partition connections map.
 
 ### `waitForHttpGetEndpointAvailability(ServiceID serviceId, uint32 port, String path, String requestBody, uint32 initialDelayMilliseconds, uint32 retries, uint32 retriesDelayMilliseconds, String bodyText)`
 Waits until a service endpoint is available by making requests to the endpoint using the given parameters, and the HTTP GET method. An error is thrown if the number of retries is exceeded.
@@ -143,12 +200,12 @@ Waits until a service endpoint is available by making requests to the endpoint u
 * `retriesDelayMilliseconds`: Number of milliseconds to wait between retries
 * `bodyText`: If this value is non-empty, the endpoint will not be marked as available until this value is returned (e.g. `Hello World`). If this value is emptystring, no body text comparison will be done.
 
-### `getServices() -> Set<ServiceID> serviceIDs`
+### `getServices() -> Map<ServiceID,  ServiceGUID> serviceIds`
 Gets the IDs of the current services in the enclave.
 
 **Returns**
 
-* `serviceIDs`: A set of service IDs
+* `serviceIds`: A map of objects containing a mapping of ID -> GUID for all the services inside the enclave
 
 ### `getModules() -> Set<ModuleID> moduleIds`
 Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
@@ -260,12 +317,77 @@ Defines environment variables that should be set inside the Docker container run
 Allows you to set an allocation for CPU resources available in the underlying host container of a service. The metric used to measure `cpuAllocation`  is `millicpus`, 1000 millicpus is equivalent to 1 CPU on the underlying machine. This metric is identical [Docker's measure of `cpus`](https://docs.docker.com/config/containers/resource_constraints/#:~:text=Description-,%2D%2Dcpus%3D%3Cvalue%3E,-Specify%20how%20much) and [Kubernetes measure of `cpus` for limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu). Setting `cpuAllocationMillicpus=1500` is equivalent to setting `cpus=1.5` in Docker and `cpus=1.5` or `cpus=1500m` in Kubernetes. If set, the value must be a nonzero positive integer. If unset, there will be no constraints on CPU usage of the host container. 
 
 ### `uint64 memoryAllocationMegabytes`
-Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)` docs.
+Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)'s docs.
+
+### `String privateIPAddrPlaceholder`
+The placeholder string used within `entrypointOverrideArgs`, `cmdOverrideArgs`, and `environmentVariableOverrides` that gets replaced with the private IP address of the container inside Docker/Kubernetes before the container starts. This defaults to `KURTOSIS_IP_ADDR_PLACEHOLDER` if this isn't set.
+The user needs to make sure that they provide the same placeholder string for this field that they use in `entrypointOverrideArgs`, `cmdOverrideArgs`, and `environmentVariableOverrides`.
 
 
 ContainerConfigBuilder
 ------------------------------
 The builder that should be used to create [ContainerConfig][containerconfig] instances. The functions on this builder will correspond to the properties on the [ContainerConfig][containerconfig] object, in the form `withPropertyName` (e.g. `withUsedPorts` sets the ports used by the container).
+
+
+StarlarkRunResponseLine
+-----------------------
+
+This is a union object representing a single line returned by Kurtosis' Starlark runner. All Starlark run endpoints will return a stream of this object.
+
+Each line is one of:
+
+### [StarlarkInstruction][starlarkinstruction] `instruction`
+An instruction that is _about to be_ executed. 
+
+### [StarlarkInstructionResult][starlarkinstructionresult] `instructionResult`
+The result of an instruction that was successfully executed
+
+### [StarlarkError][starlarkerror] `error`
+The error that was thrown running the Starlark code
+
+### [StarlarkRunProgress][starlarkrunprogress] `progressInfo`
+Regularly during the run of the code, Kurtosis' Starlark engine will send progress information through the stream to account for progress that was made running the code.
+
+StarlarkInstruction
+-------------------
+
+`StarlarkInstruction` represents a Starlark instruction that is currently being executed. It contains the following fields:
+
+* `instructionName`: the name of the instruction
+
+* `instructionPosition`: the position of the instruction in the source code. It iscomposed of (filename, line number, column number)
+
+* `arguments`: The list of arguments provided to this instruction. Each argument is composed of an optional name (if it was named in the source script) and its serialized value
+
+* `executableInstruction`: A single string representing the instruction in valid Starlark code
+
+StarlarkInstructionResult
+-------------------------
+
+`StarlarkInstructionResult` is the result of an instruction that was successfully run against Kurtosis engine. It is a single string field corresponding to the output of the instruction.
+
+StarlarkError
+-------------
+
+Errors can be of three kind:
+
+* Interpretation error: these errors happens before Kurtosis was able to execute the script. It typically means there's a syntax error in the provided Starlark code. The error message should point the users to where the code is incorrect.
+
+* Validation error: these errors happens after interpretation was successful, but before the execution actually started in Kurtosis. Before starting the execution, Kurtosis runs some validation on the instructions that are about to be executed. The error message should contain more information on which instruction is incorrect.
+
+* Execution error: these errors happens during the execution of the script against Kurtosis engine. More information is available in the error message.
+
+StarlarkRunProgress
+-------------------
+
+`StarlarkRunProgress` accounts for progress that is made during a Starlark run. It contains three fields:
+
+* `totalSteps`: The total number of steps for this run
+
+* `currentStepNumber`: The number of the step that is currently being executed
+
+* `currentStepInfo`: A string field with some information on the current step being executed.
+
 
 ServiceContext
 --------------
@@ -277,6 +399,14 @@ Gets the ID that Kurtosis uses to identify the service.
 **Returns**
 
 The service's ID.
+
+### `getServiceGuid() -> ServiceGUID`
+Gets the GUID (Globally Unique Identifier) that Kurtosis creates and uses to identify the service.
+The differences with the ID is that this one is created by Kurtosis, users can't specify it, and this never can be repeated, every new execution of the same service will have a new GUID
+
+**Returns**
+
+The service's GUID.
 
 ### `getPrivateIpAddress() -> String`
 Gets the IP address where the service is reachable at from _inside_ the enclave that the container is running inside. This IP address is how other containers inside the enclave can connect to the service.
@@ -318,7 +448,6 @@ Uses [Docker exec](https://docs.docker.com/engine/reference/commandline/exec/) f
 * `exitCode`: The exit code of the command.
 * `logs`: The output of the run command, assuming a UTF-8 encoding. **NOTE:** Commands that output non-UTF-8 output will likely be garbled!
 
-
 TemplateAndData
 ------------------
 
@@ -327,9 +456,13 @@ It has two properties.
 
 ### String template
 The template that needs to be rendered. We support Golang [templates](https://pkg.go.dev/text/template). The casing of the `keys` or `fields` inside the template must match the casing of the `fields` or the `keys` inside the data.
+
 ### Any templateData
 The data that needs to be rendered in the template. This will be converted into a JSON string before it gets sent over the wire. The elements inside the object should exactly match the keys in the template. If you are using a struct for `templateData` then the field names must start with an upper case letter to ensure that the field names are accessible outside of the structs own package. If you are using a map then you can keys that begin with lower case letters as well.
 
+Note, because of how we handle floating point numbers & large integers, if you pass a floating point number it will get
+printed in the decimal notation by default. If you want to use modifiers like `{{printf .%2f | .MyFloat}}`, you'll have to use
+the `Float64` method on the `json.Number` first, so above would look like `{{printf .2%f | .MyFloat.Float64}}`.
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
@@ -352,6 +485,12 @@ The data that needs to be rendered in the template. This will be converted into 
 [enclavecontext_rendertemplates]: #rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths
 
 [partitionconnection]: #partitionconnection
+
+[starlarkrunresponseline]: #starlarkrunresponseline
+[starlarkinstruction]: #starlarkinstruction
+[starlarkinstructionresult]: #starlarkinstructionresult
+[starlarkerror]: #starlarkerror
+[starlarkrunprogress]: #starlarkrunprogress
 
 [servicecontext]: #servicecontext
 [servicecontext_getpublicports]: #getpublicports---mapportid-portspec
