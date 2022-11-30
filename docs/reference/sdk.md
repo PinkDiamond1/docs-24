@@ -111,6 +111,8 @@ This Kurtosis-provided class is the lowest-level representation of a Kurtosis en
 Gets the ID of the enclave that this [EnclaveContext][enclavecontext] object represents.
 
 ### `loadModule(String moduleId, String image, String serializedParams) -> ModuleContext moduleContext`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Starts a new Kurtosis module (configured using the serialized params) inside the enclave, which makes it available for use.
 
 **Args**
@@ -124,6 +126,8 @@ Starts a new Kurtosis module (configured using the serialized params) inside the
 * `moduleContext`: The [ModuleContext][modulecontext] representation of the running module container, which allows execution of the execute function (if it exists).
 
 ### `unloadModule(String moduleId)`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Stops and removes a Kurtosis module from the enclave.
 
 **Args**
@@ -131,6 +135,8 @@ Stops and removes a Kurtosis module from the enclave.
 * `moduleId`: The ID of the module to remove.
 
 ### `getModuleContext(String moduleId) -> ModuleContext moduleContext`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Gets the [ModuleContext][modulecontext] associated with an already-running module container identified by the given ID.
 
 **Args**
@@ -287,6 +293,8 @@ Gets the IDs of the current services in the enclave.
 * `serviceIds`: A map of objects containing a mapping of ID -> GUID for all the services inside the enclave
 
 ### `getModules() -> Set<ModuleID> moduleIds`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
 
 **Returns**
@@ -358,9 +366,13 @@ The destination relative filepaths are relative to the root of the archive that 
 
 ModuleContext
 -------------
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 This Kurtosis-provided class is the lowest-level representation of a Kurtosis module - a Docker container with a connection to the Kurtosis engine that responds to commands.
 
 ### `execute(String serializedParams) -> String serializedResult`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Some modules are considered executable, meaning they respond to an "execute" command. This function will send the execute command to the module with the given serialized args, returning the serialized result. The serialization format of args & response will depend on the module. If the module isn't executable (i.e. doesn't respond to an "execute" command) then an error will be thrown.
 
 **Args**
