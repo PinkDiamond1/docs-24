@@ -270,7 +270,7 @@ The `read_file` function reads the contents of a file specified by the given [lo
 contents = read_file(
     # The Kurtosis locator of the file to read.
     # MANDATORY
-    src = "github.com/kurtosis-tech/datastore-army-module/README.md"
+    src = "github.com/kurtosis-tech/datastore-army-package/README.md"
 )
  ```
 ### get_value
