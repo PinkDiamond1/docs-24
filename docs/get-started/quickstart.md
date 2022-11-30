@@ -434,7 +434,7 @@ Kurtosis read this plan, [ran pre-flight validation on it][multi-phase-runs-refe
 
 These instructions are just the beginning, however - there are [many more instructions available][starlark-instructions-reference].
 
-Step Five: An Interlude
+Step Six: An Interlude
 -----------------------
 We've started a few enclaves at this point, and `kurtosis enclave ls` will display something like the following:
 
@@ -461,7 +461,7 @@ Before we continue, let's review what we've learned so far. We've:
 1. Used Starlark to define an infrastructure-as-code environment
 1. Defined a simple app that contained service dependencies and template-rendering
 
-Step Six: Use Resources In Starlark
+Step Seven: Use Resources In Starlark
 -----------------------------------
 It would be very cumbersome if your entire environment definition needed to fit in a single Starlark file, and we already see how the NginX config template makes the Starlark harder to read. Let's fix this.
 
@@ -558,7 +558,7 @@ kurtosis run .
 
 This will create the same `hello-world` and `my-nginx` services, but using external resources.
 
-Step Seven: Parameterize Your Package
+Step Eight: Parameterize Your Package
 -------------------------------------
 Notice that the `run` function in the `main.star` has an `args` argument. This allows you to parameterize your Kurtosis package.
 
@@ -642,7 +642,7 @@ Each one of these NginX services works identically.
 
 Note that we used the `hasattr` Starlark builtin to check if `args.nginx_count` exists, so the package will continue to work if you omit the `--args` flag to `kurtosis run`.
 
-Step Seven: Publish & Consume Your Package
+Step Nine: Publish & Consume Your Package
 ------------------------------------------
 [Kurtosis packages][packages-reference] are designed to be trivial to share and consume, so let's do so now.
 
