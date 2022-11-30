@@ -5,6 +5,230 @@ slug: /quickstart
 sidebar_position: 2
 ---
 
+These instructions will give you a brief quickstart of Kurtosis. They should take roughly 10 minutes.
+
+Step One: Set Up Prerequisites
+------------------------------
+### Install Docker
+Verify that you have the Docker daemon installed and running on your local machine by running (you can copy this code by hovering over it and clicking the clipboard in the top-right corner):
+
+```
+docker image ls
+```
+
+- If you don't have Docker installed, do so by following [the installation instructions](https://docs.docker.com/get-docker/)
+- If Docker is installed but not running, start it
+
+:::caution
+[DockerHub restricts downloads from users who aren't logged in](https://www.docker.com/blog/what-you-need-to-know-about-upcoming-docker-hub-rate-limiting/) to 100 images downloaded per 6 hours, so if at any point in this tutorial you see the following error message:
+
+```
+Error response from daemon: toomanyrequests: You have reached your pull rate limit. You may increase the limit by authenticating and upgrading: https://www.docker.com/increase-rate-limit
+```
+
+you can fix it by creating a DockerHub account (if you don't have one already) and registering it with your local Docker engine like so:
+
+```
+docker login
+```
+:::
+
+### Install the Kurtosis CLI
+Follow the steps [on this installation page](/install) to install the CLI, or upgrade it to latest if it's already installed.
+
+:::tip
+We strongly recommend [installing tab-complete][installing-tab-complete]; you'll find it very useful!
+:::
+
+Step Two: Create An Enclave
+---------------------------
+Kurtosis [enclaves][enclaves-explanation] are where your environments live; you can think of them as "environment containers". Here we'll create a fresh enclave.
+
+Run the following:
+
+```
+kurtosis enclave add
+```
+
+:::info
+This may take a few seconds as Kurtosis downloads its Docker images for the first time; subsequent runs will be much faster.
+:::
+
+You'll see an output similar to the following:
+
+```
+INFO[2022-11-29T20:38:17-03:00] Creating new enclave...
+INFO[2022-11-29T20:38:21-03:00] =====================================================
+INFO[2022-11-29T20:38:21-03:00] ||          Created enclave: summer-sound          ||
+INFO[2022-11-29T20:38:21-03:00] =====================================================
+```
+
+Now, type the following but don't press ENTER yet:
+
+```
+kurtosis enclave inspect
+```
+
+If [you have tab completion installed][installing-tab-complete], you can now press TAB to tab-complete your enclave's ID (which will be different than `summer-sound`).
+
+If you don't have tab completion installed, you'll need to aste the enclave ID from the `Created enclave:` line outputted above (yours will be different than `summer-sound`).
+
+Press ENTER, and you should receive an output like so:
+
+```
+Enclave ID:                           summer-sound
+Enclave Status:                       RUNNING
+Creation Time:                        Tue, 29 Nov 2022 20:38:17 -03
+API Container Status:                 RUNNING
+API Container Host GRPC Port:         127.0.0.1:60083
+API Container Host GRPC Proxy Port:   127.0.0.1:60084
+
+========================================= Kurtosis Modules =========================================
+GUID   ID   Ports
+
+========================================== User Services ==========================================
+GUID   ID   Ports   Status
+
+```
+
+`kurtosis enclave inspect` is the way to investigate an enclave.
+
+Run the following to store your enclave ID in a variable, replacing `YOUR_ENCLAVE_ID_HERE` with your enclave's ID.
+
+```
+ENCLAVE_ID="YOUR_ENCLAVE_ID_HERE"
+```
+
+:::tip
+You can also use tab completion to enter your enclave's ID in the following commands.
+:::
+
+Step Three: Start A Service
+---------------------------
+Distributed applications are composed of [services][services-explanation]. Here we'll start a simple service, and see some of the options Kurtosis has for debugging.
+
+Enter this command:
+
+```
+kurtosis service "$ENCLAVE_ID" my-nginx nginx --ports http=80
+```
+
+You should see output similar to the following:
+
+```
+Service ID: my-nginx
+Ports Bindings:
+   http:   80/tcp -> 127.0.0.1:60215
+```
+
+Now inspect your enclave again:
+
+```
+kurtosis enclave inspect "$ENCLAVE_ID"
+```
+
+You should see a new service with the service ID `my-nginx` in your enclave:
+
+```
+Enclave ID:                           summer-sound
+Enclave Status:                       RUNNING
+Creation Time:                        Tue, 29 Nov 2022 20:38:17 -03
+API Container Status:                 RUNNING
+API Container Host GRPC Port:         127.0.0.1:60083
+API Container Host GRPC Proxy Port:   127.0.0.1:60084
+
+========================================= Kurtosis Modules =========================================
+GUID   ID   Ports
+
+========================================== User Services ==========================================
+GUID                  ID         Ports                             Status
+my-nginx-1669765644   my-nginx   http: 80/tcp -> 127.0.0.1:60215   RUNNING
+```
+
+Kurtosis binds all service ports to ephemeral ports on your local machine. Copy the `127.0.0.1:XXXXX` address into your browser (yours will be different), and you should see a welcome message from your NginX service running inside the enclave you created.
+
+Now enter the following but don't press ENTER yet:
+
+```
+kurtosis service shell "$ENCLAVE_ID"
+```
+
+If you have tab completion installed, press TAB. The service GUID of the NginX service will be completed (which in this case was `my-nginx-1669765644`, but yours will be different).
+
+If you don't have tab completion installed, paste in the service GUID of the NginX service from the `enclave inspect` output above (which was `my-nginx-1669765644`, but yours will be different).
+
+Press ENTER, and you'll be logged in to a shell on the container:
+
+```
+Found bash on container; creating bash shell...
+root@071e0fe49fab:/#
+```
+
+Kurtosis will try to give you a `bash` shell, but will drop down to `sh` if `bash` doesn't exist on the container.
+
+Feel free to explore, and press Ctrl-C when you're done.
+
+Now enter the following but don't press ENTER:
+
+```
+kurtosis service logs -f "$ENCLAVE_ID"
+```
+
+Once again, you can use tab completion to fill the service GUID if you have it enabled. If not, you'll need to copy-paste the service GUID as the last argument.
+
+Press ENTER, and you'll see a live-updating stream of the service's logs:
+
+```
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2022/11/29 23:47:27 [notice] 1#1: using the "epoll" event method
+2022/11/29 23:47:27 [notice] 1#1: nginx/1.23.2
+2022/11/29 23:47:27 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6)
+2022/11/29 23:47:27 [notice] 1#1: OS: Linux 5.10.104-linuxkit
+2022/11/29 23:47:27 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2022/11/29 23:47:27 [notice] 1#1: start worker processes
+2022/11/29 23:47:27 [notice] 1#1: start worker process 29
+2022/11/29 23:47:27 [notice] 1#1: start worker process 30
+2022/11/29 23:47:27 [notice] 1#1: start worker process 31
+2022/11/29 23:47:27 [notice] 1#1: start worker process 32
+2022/11/29 23:47:27 [notice] 1#1: start worker process 33
+2022/11/29 23:47:27 [notice] 1#1: start worker process 34
+172.17.0.1 - - [29/Nov/2022:23:50:50 +0000] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
+172.17.0.1 - - [29/Nov/2022:23:50:51 +0000] "GET /favicon.ico HTTP/1.1" 404 555 "http://127.0.0.1:60215/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" "-"
+2022/11/29 23:50:51 [error] 29#29: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:60215", referrer: "http://127.0.0.1:60215/"
+```
+
+You can reload your browser window showing the NginX welcome page to see new log entries appear.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 The instructions below will walk you through spinning up an Ethereum network in a Kurtosis sandbox, interacting with it, and migrating the logic into a test. By the end of this tutorial, you will have a rudimentary Ethereum test in Typescript that you can begin to modify on your own.
 
 
@@ -331,3 +555,6 @@ The test will pass, indicating that our test set up an Ethereum network and ran 
 <!-- TODO explain Debug mode, host port bindings, and setting debug log level -->
 
 [neverthrow]: https://www.npmjs.com/package/neverthrow
+[installing-tab-complete]: ./using-the-cli.md#adding-tab-completion
+[enclaves-explanation]: ../explanations/architecture.md#enclaves
+[services-explanation]: ../explanations/architecture.md#services
