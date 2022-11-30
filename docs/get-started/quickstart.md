@@ -14,7 +14,7 @@ All code blocks can be copied by hovering over the code block and clicking the c
 Step One: Set Up Prerequisites
 ------------------------------
 ### Install Docker
-Verify that you have the Docker daemon installed and running on your local machine by running (you can copy this code by hovering over it and clicking the clipboard in the top-right corner):
+Verify that you have the Docker daemon installed and running on your local machine:
 
 ```
 docker image ls
