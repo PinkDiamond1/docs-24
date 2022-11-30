@@ -60,9 +60,47 @@ Destroys enclaves in the Kurtosis engine.
 **Returns**
 * `RemovedEnclaveIds`: A set of the removed enclave IDs.
 
+### `getServiceLogs(EnclaveID enclaveId, Set<ServiceGUID> serviceGuids, Boolean shouldFollowLogs) -> ServiceLogsStreamContent serviceLogsStreamContent`
+Get and start a service container logs stream (showed in ascending order, with the oldest line first) from services identified by their GUID.
+
+**Args**
+* `enclaveId`: ID of the services' enclave.
+* `serviceGuids`: A set of service GUIDs identifying the services from which logs should be retrieved.
+* `shouldFollowLogs`: If it's true, the stream will constantly send the new log lines. if it's false, the stream will be closed after the last created log line is sent.
+
+**Returns**
+* `serviceLogsStreamContent`: The [ServiceLogsStreamContent][servicelogsstreamcontent] object which wrap all the information coming from the logs stream.
+
+ServiceLogsStreamContent
+------------------------
+This class is the representation of the content sent during a service logs stream communication. This wrapper includes the service's logs content and the not found service GUIDs.
+
+### `getServiceLogsByServiceGuids() ->  Map<ServiceGUID, Array<ServiceLog>> serviceLogsByServiceGuids`
+Returns the user service logs content grouped by the service's GUID.
+
+**Returns**
+* `serviceLogsByServiceGuids`: A map containing a list of the [ServiceLog][servicelog] objects grouped by service GUID.
+
+### `getNotFoundServiceGuids() -> Set<ServiceGUID> notFoundServiceGuids`
+Returns the not found service GUIDs. The GUIDs may not be found either because they don't exist, or because the services haven't sent any logs.
+
+**Returns**
+* `notFoundServiceGuids`: A set of not found service GUIDs
+
+ServiceLog
+----------
+This class represent single service's log line information
+
+### `getContent() -> String content`
+
+**Returns**
+* `content`: The log line string content
 
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
 
 [enclavecontext]: /api/kurtosis-core#enclavecontext
 [enclavecontext_repartitionnetwork]: /api/kurtosis-core#repartitionnetworkmappartitionid-setserviceid-partitionservices-mappartitionid-mappartitionid-partitionconnectionpartitionconnection-partitionconnections-partitionconnectionpartitionconnection-defaultconnection
+
+[servicelogsstreamcontent]: #servicelogsstreamcontent
+[servicelog]: #servicelog
