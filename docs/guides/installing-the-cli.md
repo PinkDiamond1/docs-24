@@ -65,7 +65,7 @@ Once you're done, [the quickstart is a great place to get started](/quickstart).
 
 Metrics Election
 ----------------
-The first time you run the Kurtosis CLI, you'll be asked to make an election about whether you'd like to send anonymized product analytics metrics. Our reasons for doing this, and how we strive to do this ethically, can be found [here](/reference/metrics-philosophy).
+The first time you run the Kurtosis CLI, you'll be asked to make an election about whether you'd like to send anonymized product analytics metrics. Our reasons for doing this, and how we strive to do this ethically, can be found [here](/explanations/metrics-philosophy).
 
 If you're running the CLI in a CI environment, see [these instructions](/ci) to see how to make the metrics election non-interactively.
 

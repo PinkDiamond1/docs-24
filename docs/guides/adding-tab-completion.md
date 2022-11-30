@@ -1,7 +1,6 @@
 ---
 title: Adding Tab Completion
 sidebar_label: Adding Tab Completion
-sidebar_position: 1
 ---
 
 <!-- NOTE TO KURTOSIS DEVS: 

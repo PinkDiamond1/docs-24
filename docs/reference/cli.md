@@ -1,6 +1,6 @@
 ---
-title: CLI Commands
-sidebar_label: CLI Commands
+title: CLI
+sidebar_label: CLI
 slug: /cli
 sidebar_position: 1
 ---
@@ -20,7 +20,7 @@ Kurtosis supports tab-completion, and we strongly recommend [installing it][addi
 :::
 
 ### Initialize configuration
-When the Kurtosis CLI is executed for the first time on a machine, we ask you to make a choice about whether [you'd like to send anonymized usage metrics to help us make the product better](/reference/metrics-philosophy). To make this election non-interactively, you can run either:
+When the Kurtosis CLI is executed for the first time on a machine, we ask you to make a choice about whether [you'd like to send anonymized usage metrics to help us make the product better](/explanations/metrics-philosophy). To make this election non-interactively, you can run either:
 
 ```bash
 kurtosis config init send-metrics
