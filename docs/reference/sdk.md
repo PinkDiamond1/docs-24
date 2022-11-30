@@ -598,4 +598,4 @@ the `Float64` method on the `json.Number` first, so above would look like `{{pri
   
 [templateanddata]: #templateanddata
 
-[kurtosiscontext_createenclave]: /api/kurtosis-engine#createenclaveenclaveid-enclaveid-boolean-ispartitioningenabled---enclavecontextenclavecontext-enclavecontext
+[kurtosiscontext_createenclave]: #createenclaveenclaveid-enclaveid-boolean-ispartitioningenabled---enclavecontextenclavecontext-enclavecontext

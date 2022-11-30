@@ -704,7 +704,7 @@ Conclusion
 In this tutorial we've seen:
 
 - Environments as a first-class concept - easy to create, access, and destroy
-- Two ways of manipulating the contents of an environment, [through the CLI][using-the-cli-reference] and [through Starlark][starlark-instructions-reference]
+- Two ways of manipulating the contents of an environment, [through the CLI][cli-reference] and [through Starlark][starlark-instructions-reference]
 - Referencing external resources in Starlark
 - Publishing & consuming environment definitions through the concept of [Kurtosis packages][packages-reference]
 - Parameterizing environment definitions through the concept of [runnable package][runnable-packages-reference]
@@ -732,7 +732,7 @@ These are just the basics of Kurtosis. To dive deeper, you can now:
 [runnable-packages-reference]: ./reference/packages.md#runnable-packages
 [locators-reference]: ./reference/locators.md
 [reusable-environment-definitions-reference]: ./explanations/reusable-environment-definitions.md
-[using-the-cli-reference]: ./reference/cli-commands.md
+[cli-reference]: ./reference/cli.md
 [kurtosis-managed-packages]: https://github.com/kurtosis-tech?q=in%3Aname+package&type=all&language=&sort=
 [wild-kurtosis-packages]: https://github.com/search?q=filename%3Akurtosis.yml&type=code
 [architecture-explanation]: ./explanations/architecture.md
