@@ -31,7 +31,7 @@ This Kurtosis-provided class is the lowest-level representation of a Kurtosis en
 ### `getEnclaveId() -> EnclaveID`
 Gets the ID of the enclave that this [EnclaveContext][enclavecontext] object represents.
 
-### `loadModule(String moduleId, String image, String serializedParams) -> [ModuleContext][modulecontext] moduleContext`
+### `loadModule(String moduleId, String image, String serializedParams) -> ModuleContext moduleContext`
 Starts a new Kurtosis module (configured using the serialized params) inside the enclave, which makes it available for use.
 
 **Args**
@@ -51,7 +51,7 @@ Stops and removes a Kurtosis module from the enclave.
 
 * `moduleId`: The ID of the module to remove.
 
-### `getModuleContext(String moduleId) -> [ModuleContext][modulecontext] moduleContext`
+### `getModuleContext(String moduleId) -> ModuleContext moduleContext`
 Gets the [ModuleContext][modulecontext] associated with an already-running module container identified by the given ID.
 
 **Args**
@@ -70,7 +70,7 @@ Downloads the given files artifacts to the Kurtosis engine, associating them wit
 
 * `filesArtifactUrls`: A map of files_artifact_id -> url, where the ID is how the artifact will be referenced in [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints] and the URL is the URL on the web where the files artifact should be downloaded from.
 
-### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, Func(String ipAddr) -> [ContainerConfig][containerconfig] containerConfigSupplier) -> ([ServiceContext][servicecontext] serviceContext)`
+### `addServiceToPartition(ServiceID serviceId, PartitionID partitionId, Func(String ipAddr) -> ContainerConfig containerConfigSupplier) -> ServiceContext serviceContext`
 Starts a new service in the enclave with the given service ID, inside the partition with the given ID, using the given config supplier.
 
 **Args**
@@ -83,10 +83,10 @@ Starts a new service in the enclave with the given service ID, inside the partit
 
 * `serviceContext`: The [ServiceContext][servicecontext] representation of a service running in a Docker container. Port information can be found in `ServiceContext.GetPublicPorts()`. The port spec strings that the service declared (as defined in [ContainerConfig.usedPorts][containerconfig_usedports]), mapped to the port on the host machine where the port has been bound to. This allows you to make requests to a service running in Kurtosis by making requests to a port on your local machine. If a port was not bound to a host machine port, it will not be present in the map (and if no ports were bound to host machine ports, the map will be empty).
 
-### `addService(ServiceID serviceId,  Func(String ipAddr) -> [ContainerConfig][containerconfig] containerConfigSupplier) -> ([ServiceContext][servicecontext] serviceContext)`
+### `addService(ServiceID serviceId, Func(String ipAddr) -> ContainerConfig containerConfigSupplier) -> ServiceContext serviceContext`
 Convenience wrapper around [EnclaveContext.addServiceToPartition][enclavecontext_addservicetopartition], that adds the service to the default partition. Note that if the enclave has been repartitioned and the default partition doesn't exist anymore, this method will fail.
 
-### `getServiceContext(ServiceID serviceId) -> [ServiceContext][servicecontext]`
+### `getServiceContext(ServiceID serviceId) -> ServiceContext serviceContext`
 Gets relevant information about a service (identified by the given service ID) that is running in the enclave.
 
 **Args**
@@ -105,7 +105,7 @@ Stops the container with the given service ID and removes it from the enclave.
 * `serviceId`: The ID of the service to remove.
 * `containerStopTimeoutSeconds`: The number of seconds to wait for the container to gracefully stop before hard-killing it.
 
-### `repartitionNetwork(Map<PartitionID, Set<ServiceID>> partitionServices, Map<PartitionID, Map<PartitionID, [PartitionConnection][partitionconnection]>> partitionConnections, [PartitionConnection][partitionconnection] defaultConnection)`
+### `repartitionNetwork(Map<PartitionID, Set<ServiceID>> partitionServices, Map<PartitionID, Map<PartitionID, PartitionConnection>> partitionConnections, PartitionConnection defaultConnection)`
 Repartitions the enclave so that the connections between services match the specified new state. All services currently in the enclave must be allocated to a new partition.
 
 **NOTE: For this to work, partitioning must be turned on when the Enclave is created with [KurtosisContext.createEnclave()][kurtosiscontext_createenclave].**
@@ -114,7 +114,7 @@ Repartitions the enclave so that the connections between services match the spec
 
 * `partitionServices`: A definition of the new partitions in the enclave, and the services allocated to each partition. A service can only be allocated to a single partition.
 * `partitionConnections`: Definitions of the connection state between the new partitions. If a connection between two partitions isn't defined in this map, the default connection will be used. Connections are not directional, so an error will be thrown if the same connection is defined twice (e.g. `Map[A][B] = someConnection`, and `Map[B][A] = otherConnection`).
-* `defaultConnection`: The network state between two partitions that will be used if the connection isn't defined in the partition connections map.
+* `defaultConnection`: The default [PartitionConnection][partitionconnection] corresponding to the network state between two partitions that will be used if the connection isn't defined in the partition connections map.
 
 ### `waitForHttpGetEndpointAvailability(ServiceID serviceId, uint32 port, String path, String requestBody, uint32 initialDelayMilliseconds, uint32 retries, uint32 retriesDelayMilliseconds, String bodyText)`
 Waits until a service endpoint is available by making requests to the endpoint using the given parameters, and the HTTP GET method. An error is thrown if the number of retries is exceeded.
@@ -260,7 +260,7 @@ Defines environment variables that should be set inside the Docker container run
 Allows you to set an allocation for CPU resources available in the underlying host container of a service. The metric used to measure `cpuAllocation`  is `millicpus`, 1000 millicpus is equivalent to 1 CPU on the underlying machine. This metric is identical [Docker's measure of `cpus`](https://docs.docker.com/config/containers/resource_constraints/#:~:text=Description-,%2D%2Dcpus%3D%3Cvalue%3E,-Specify%20how%20much) and [Kubernetes measure of `cpus` for limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu). Setting `cpuAllocationMillicpus=1500` is equivalent to setting `cpus=1.5` in Docker and `cpus=1.5` or `cpus=1500m` in Kubernetes. If set, the value must be a nonzero positive integer. If unset, there will be no constraints on CPU usage of the host container. 
 
 ### `uint64 memoryAllocationMegabytes`
-Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)` docs.
+Allows you to set an allocation for memory resources available in the underlying host container of a service. The metric used to measure `memoryAllocation` is `megabytes`. Setting `memoryAllocation=1000` is equivalent to setting the memory limit of the underlying host machine to `1e9 bytes` or `1GB`. If set, the value must be a nonzero positive integer of at least `6 megabytes` as Docker requires this as a minimum. If unset, there will be no constraints on memory usage of the host container. For information on memory limits in your underlying container engine, view [Docker](https://docs.docker.com/config/containers/resource_constraints/)'s and [Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) docs.
 
 
 ContainerConfigBuilder
