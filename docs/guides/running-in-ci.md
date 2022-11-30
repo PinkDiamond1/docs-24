@@ -43,10 +43,10 @@ Step Five: Capturing Enclave Output
 Naturally, if your job fails you'll want to see what was going on inside of Kurtosis at the time of failure. The `kurtosis enclave dump` command allows us to capture container logs & specs from an enclave, so that we can dump the state of the enclaves and attach them to the CI job for further debugging. The specifics of how to attach files to a CI job from within the job will vary depending on which CI provider you're using, but will look something like the following (which is for CircleCI):
 
 ```yaml
-      # Run our custom logic (in this case, executing a module), but don't exit immediately if it fails so that
+      # Run our custom logic (in this case, running a package), but don't exit immediately if it fails so that
       # we can upload the 'enclave dump' results before the CI job ends
       - run: |
-          if ! kurtosis module exec --enclave-id my-enclave my-org/my-image --execute-params '{"someParam":"someValue"}'; then
+          if ! kurtosis run --enclave-id my-enclave github.com/kurtosis-tech/datastore-army-package; then
             touch /tmp/testsuite-failed
           fi
 
