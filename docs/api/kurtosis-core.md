@@ -62,6 +62,47 @@ Gets the [ModuleContext][modulecontext] associated with an already-running modul
 
 * `moduleContext`: The [ModuleContext][modulecontext] representation of the running module container, which allows execution of the module's execute function (if it exists).
 
+### `runStarlarkScript(String serializedStarlarkScript, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+
+Run a provided Starlark script inside the enclave.
+
+**Args**
+
+* `serializedStartosisScript`: The Startosis script provided as a string
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+
+### `runStarlarkPackage(String packageRootPath, String serializedParams, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+
+Run a provided Starlark script inside the enclave.
+
+**Args**
+
+* `packageRootPath`: The path to the root of the package
+* `serializedParams`: The parameters to pass to the package for the run. It should be a serialized JSON string.
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+
+### `runRemoteStarlarkPackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<RunStarlarkResponseLine> responseLines, Error error)`
+
+Run a Starlark script hosted in a remote github.com repo inside the enclave.
+
+**Args**
+
+* `packageId`: The ID of the package pointing to the github.com repo hosting the package. For example `github.com/kurtosistech/datastore-army-package`
+* `serializedParams`: The parameters to pass to the package for the run. It should be a serialized JSON string.
+* `dryRun`: When set to true, the Kurtosis instructions are not executed.
+
+**Returns**
+
+* `responseLines`: A stream of [RunStarlarkResponseLine][runstarlarkreponseline] objects
+
 <!-- TODO DELETE THIS!!! -->
 ### `registerFilesArtifacts(Map<FilesArtifactID, String> filesArtifactUrls)`
 Downloads the given files artifacts to the Kurtosis engine, associating them with the given IDs, so they can be mounted inside a service's filespace at creation time via [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints].
@@ -352,6 +393,12 @@ The data that needs to be rendered in the template. This will be converted into 
 [enclavecontext_rendertemplates]: #rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths
 
 [partitionconnection]: #partitionconnection
+
+[starlarkrunresponseline]: #starlarkrunresponseline
+[starlarkinstruction]: #starlarkinstruction
+[starlarkinstructionresult]: #starlarkinstructionresult
+[starlarkerror]: #starlarkerror
+[starlarkrunprogress]: #starlarkrunprogress
 
 [servicecontext]: #servicecontext
 [servicecontext_getpublicports]: #getpublicports---mapportid-portspec
