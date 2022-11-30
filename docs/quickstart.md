@@ -2,7 +2,6 @@
 title: Kurtosis Quickstart
 sidebar_label: Quickstart
 slug: /quickstart
-sidebar_position: 2
 ---
 
 These instructions will give you a brief quickstart of Kurtosis. They should take 15 minutes.
@@ -11,7 +10,7 @@ These instructions will give you a brief quickstart of Kurtosis. They should tak
 All code blocks can be copied by hovering over the code block and clicking the clipboard icon that appears on the right.
 :::
 
-Step One: Set Up Prerequisites
+Set Up Prerequisites
 ------------------------------
 ### Install Docker
 Verify that you have the Docker daemon installed and running on your local machine:
@@ -44,7 +43,7 @@ Follow the steps [on this installation page](/install) to install the CLI, or up
 We strongly recommend [installing tab completion][installing-tab-complete]; you'll find it very useful!
 :::
 
-Step Two: Create An Enclave
+Create An Enclave
 ---------------------------
 Kurtosis [enclaves][enclaves-explanation] are where your environments live; you can think of them as "environment containers". Here we'll create a fresh enclave.
 
@@ -123,7 +122,7 @@ ENCLAVE_ID="YOUR_ENCLAVE_ID_HERE"
 You can also use tab completion to enter your enclave's ID in the following commands.
 :::
 
-Step Three: Start A Service
+Start A Service
 ---------------------------
 Distributed applications are composed of [services][services-explanation]. Here we'll start a simple service, and see some of the options Kurtosis has for debugging.
 
@@ -234,7 +233,7 @@ kurtosis enclave dump "$ENCLAVE_ID" enclave-output
 
 Kurtosis will dump a snapshot of the enclave's logs and container specs to the `enclave-output` directory. This can be useful for quickly sharing debugging information with your coworkers.
 
-Step Four: Write A Simple Starlark Script
+Write A Simple Starlark Script
 -----------------------------------
 We've used the CLI and some debugging tools, so let's start using [Kurtosis' Starlark environment definition language][starlark-explanation].
 
@@ -322,7 +321,7 @@ my-nginx-1669834142   my-nginx   http: 80/tcp -> 127.0.0.1:63684   RUNNING
 
 Just like the service added via the CLI, the same Kurtosis debugging tools are available for enclaves created via Starlark.
 
-Step Five: Write A Starlark App
+Write A Starlark App
 -----------------------------------
 Now that you've seen the basics, let's define an app with a dependency between two services.
 
@@ -434,8 +433,8 @@ Kurtosis read this plan, [ran pre-flight validation on it][multi-phase-runs-refe
 
 These instructions are just the beginning, however - there are [many more instructions available][starlark-instructions-reference].
 
-Step Six: An Interlude
------------------------
+Interlude
+---------
 We've started a few enclaves at this point, and `kurtosis enclave ls` will display something like the following:
 
 ```
@@ -461,7 +460,7 @@ Before we continue, let's review what we've learned so far. We've:
 1. Used Starlark to define an infrastructure-as-code environment
 1. Defined a simple app that contained service dependencies and template-rendering
 
-Step Seven: Use Resources In Starlark
+Use Resources In Starlark
 -----------------------------------
 It would be very cumbersome if your entire environment definition needed to fit in a single Starlark file, and we already see how the NginX config template makes the Starlark harder to read. Let's fix this.
 
@@ -558,7 +557,7 @@ kurtosis run .
 
 This will create the same `hello-world` and `my-nginx` services, but using external resources.
 
-Step Eight: Parameterize Your Package
+Parameterize Your Package
 -------------------------------------
 Notice that the `run` function in the `main.star` has an `args` argument. This allows you to parameterize your Kurtosis package.
 
@@ -642,7 +641,7 @@ Each one of these NginX services works identically.
 
 Note that we used the `hasattr` Starlark builtin to check if `args.nginx_count` exists, so the package will continue to work if you omit the `--args` flag to `kurtosis run`.
 
-Step Nine: Publish & Consume Your Package
+Publish & Consume Your Package
 ------------------------------------------
 [Kurtosis packages][packages-reference] are designed to be trivial to share and consume, so let's do so now.
 
@@ -722,21 +721,18 @@ These are just the basics of Kurtosis. To dive deeper, you can now:
 
 
 <!------------------------------- ONLY LINKS BELOW HERE ------------------------------------->
-[installing-tab-complete]: ../guides/adding-tab-completion.md
-[enclaves-explanation]: ../explanations/architecture.md#enclaves
-[services-explanation]: ../explanations/architecture.md#services
-[starlark-explanation]: ../explanations/starlark.md
-[starlark-instructions-reference]: ../reference/starlark-instructions.md
-[multi-phase-runs-reference]: ../reference/multi-phase-runs.md
-[kurtosis-yml-reference]: ../reference/kurtosis-yml.md
-[packages-reference]: ../reference/packages.md
-[runnable-packages-reference]: ../reference/packages.md#runnable-packages
-[locators-reference]: ../reference/locators.md
-[reusable-environment-definitions-reference]: ../explanations/reusable-environment-definitions.md
-
-<!-- TODO MOVE THIS OT REFERENCE -->
-[using-the-cli-reference]: ./using-the-cli.md
-
+[installing-tab-complete]: ./guides/adding-tab-completion.md
+[enclaves-explanation]: ./explanations/architecture.md#enclaves
+[services-explanation]: ./explanations/architecture.md#services
+[starlark-explanation]: ./explanations/starlark.md
+[starlark-instructions-reference]: ./reference/starlark-instructions.md
+[multi-phase-runs-reference]: ./reference/multi-phase-runs.md
+[kurtosis-yml-reference]: ./reference/kurtosis-yml.md
+[packages-reference]: ./reference/packages.md
+[runnable-packages-reference]: ./reference/packages.md#runnable-packages
+[locators-reference]: ./reference/locators.md
+[reusable-environment-definitions-reference]: ./explanations/reusable-environment-definitions.md
+[using-the-cli-reference]: ./reference/cli-commands.md
 [kurtosis-managed-packages]: https://github.com/kurtosis-tech?q=in%3Aname+package&type=all&language=&sort=
 [wild-kurtosis-packages]: https://github.com/search?q=filename%3Akurtosis.yml&type=code
-[architecture-explanation]: ../explanations/architecture.md
+[architecture-explanation]: ./explanations/architecture.md
