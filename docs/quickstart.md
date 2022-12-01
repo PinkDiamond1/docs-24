@@ -80,6 +80,10 @@ If [you have tab completion installed][installing-tab-complete], you can now pre
 
 If you don't have tab completion installed, you'll need to paste the enclave ID from the `Created enclave:` line outputted above (yours will be different than `wandering-frog`).
 
+:::tip
+[All enclave ID arguments][cli-reference] can be tab-completed.
+:::
+
 Press ENTER, and you should receive an output like so:
 
 ```
@@ -118,9 +122,7 @@ Now run the following to store your enclave ID in a variable, replacing `YOUR_EN
 ENCLAVE_ID="YOUR_ENCLAVE_ID_HERE"
 ```
 
-:::tip
-You can also use tab completion to enter your enclave's ID in the following commands.
-:::
+We'll use this variable so that you can continue to copy-and-paste code blocks in the next section.
 
 Start A Service
 ---------------------------
@@ -175,6 +177,10 @@ kurtosis service shell "$ENCLAVE_ID"
 If you have tab completion installed, press TAB. The service GUID of the NginX service will be completed (which in this case was `my-nginx-1669833787`, but yours will be different).
 
 If you don't have tab completion installed, paste in the service GUID of the NginX service from the `enclave inspect` output above (which was `my-nginx-1669833787`, but yours will be different).
+
+:::tip
+Like enclave IDs, [all service GUID arguments][cli-reference] can be tab-completed.
+:::
 
 Press ENTER, and you'll be logged in to a shell on the container:
 
@@ -286,7 +292,7 @@ Remove the `--dry-run` flag and execute the script:
 kurtosis run main.star
 ```
 
-The output will look similar to the dry run, but the `add_service` command now returns output:
+The output will look similar to the dry run, but the `add_service` instruction now returns information about the service it started:
 
 ```
 INFO[2022-11-30T15:48:59-03:00] Creating a new enclave for Starlark to run inside...
@@ -688,7 +694,8 @@ Next to the `kurtosis.yml`, add a `main.star`, replacing `YOUR-GITHUB-USERNAME` 
 ```python
 my_package = import_module("github.com/YOUR-GITHUB-USERNAME/my-kurtosis-package/main.star")
 
-my_package.run(struct(nginx_count = 3))
+def run(args):
+    my_package.run(struct(nginx_count = 3))
 ```
 
 Finally, run it by referencing the directory containing the new `kurtosis.yml`:
