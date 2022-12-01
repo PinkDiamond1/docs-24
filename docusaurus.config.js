@@ -74,9 +74,9 @@ const config = {
             activeBasePath: '/sdk'
           },
           {
-            href: 'https://www.kurtosis.com/careers',
+            href: 'https://github.com/kurtosis-tech/docs/issues/new',
             position: 'right',
-            label: `Join Us - We're Hiring`,
+            label: 'Report Docs Issue',
           },
         ],
       },
