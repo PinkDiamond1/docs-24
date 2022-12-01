@@ -1,7 +1,6 @@
 ---
 title: Locators
 sidebar_label: Locators
-sidebar_position: 4
 ---
 
 A locator is a URL-like string used to locate a resource inside [a Kurtosis package][packages]. For example, this locator:

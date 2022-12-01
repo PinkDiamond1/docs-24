@@ -1,14 +1,14 @@
 ---
-title: Installation
-sidebar_label: Installation
+title: Installing The CLI
+sidebar_label: Installing The CLI
 slug: /install
 sidebar_position: 1
 ---
 
-[Interacting with Kurtosis](/cli) is done via a CLI. The instructions below will walk you through installing it.
+Interacting with Kurtosis is done via [a CLI](/cli). The instructions below will walk you through installing it.
 
 :::tip
-The CLI supports tab completion. After you install using one of the methods below, follow [these instructions](/cli#adding-tab-completion) to enable tab completion.
+Kurtosis supports tab completion, and we strongly recommend [installing it][installing-tab-completion] after you install the CLI.
 :::
 
 <details>
@@ -65,7 +65,7 @@ Once you're done, [the quickstart is a great place to get started](/quickstart).
 
 Metrics Election
 ----------------
-The first time you run the Kurtosis CLI, you'll be asked to make an election about whether you'd like to send anonymized product analytics metrics. Our reasons for doing this, and how we strive to do this ethically, can be found [here](/reference/metrics-philosophy).
+The first time you run the Kurtosis CLI, you'll be asked to make an election about whether you'd like to send anonymized product analytics metrics. Our reasons for doing this, and how we strive to do this ethically, can be found [here](/explanations/metrics-philosophy).
 
 If you're running the CLI in a CI environment, see [these instructions](/ci) to see how to make the metrics election non-interactively.
 
@@ -113,6 +113,6 @@ Download the appropriate artifact from [the release artifacts page][release-arti
 </details>
 
 <!-------------------------- ONLY LINKS BELOW HERE ---------------------------->
-
+[installing-tab-completion]: ./adding-tab-completion.md
 [release-artifacts]: https://github.com/kurtosis-tech/kurtosis-cli-release-artifacts/releases
 [cli-changelog]: https://docs.kurtosistech.com/kurtosis-cli/changelog

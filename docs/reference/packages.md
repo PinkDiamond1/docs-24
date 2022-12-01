@@ -1,7 +1,6 @@
 ---
 title: Packages
 sidebar_label: Packages
-sidebar_position: 2
 ---
 
 <!-- TODO Add more information here when dependencies are specified in the kurtosis.yml -->
@@ -15,7 +14,7 @@ A Kurtosis package is a:
 
 Kurtosis packages are the system by which Starlark scripts can include external resources.
 
-Kurtosis packages are shared simply by pushing to GitHub.
+Kurtosis packages are shared simply by pushing to GitHub (e.g. [these are the packages we administer][kurtosis-managed-packages]).
 
 For example, a directory structure like so:
 
@@ -81,3 +80,4 @@ kurtosis run github.com/me/my-package --args '{"name": "Joseph"}'
 <!-------------------- ONLY LINKS BELOW HERE -------------------------->
 [kurtosis-yml]: ./kurtosis-yml.md
 [locators]: ./locators.md
+[kurtosis-managed-packages]: https://github.com/kurtosis-tech?q=package+in%3Aname&type=all&language=&sort=

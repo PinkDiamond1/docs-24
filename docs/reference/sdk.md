@@ -1,28 +1,107 @@
 ---
-title: Kurtosis Core API
-sidebar_label: Kurtosis Core
-hide_table_of_contents: true
+title: SDK
+sidebar_label: SDK
+slug: /sdk
+sidebar_position: 2
+toc_min_heading_level: 2
+toc_max_heading_level: 2
 ---
 
-This documentation describes how to interact with the Kurtosis API from within a testnet. It includes information about starting services, stopping services, repartitioning the network, etc. Note that any comments specific to a language implementation will be found in the code comments.
+This page documents the objects and functions contained in [the Kurtosis SDK][kurtosis-sdk-repo].
 
+:::tip
+The sidebar on the right can be used to quickly navigate classes.
+:::
 
-ModuleContext
--------------
-This Kurtosis-provided class is the lowest-level representation of a Kurtosis module - a Docker container with a connection to the Kurtosis engine that responds to commands.
+KurtosisContext
+---------------
+A connection to a Kurtosis engine, used for manipulating enclaves.
 
-### `execute(String serializedParams) -> String serializedResult`
-Some modules are considered executable, meaning they respond to an "execute" command. This function will send the execute command to the module with the given serialized args, returning the serialized result. The serialization format of args & response will depend on the module. If the module isn't executable (i.e. doesn't respond to an "execute" command) then an error will be thrown.
+### `createEnclave(EnclaveID enclaveId, boolean isPartitioningEnabled) -> [EnclaveContext][enclavecontext] enclaveContext`
+Creates a new Kurtosis enclave using the given parameters.
 
 **Args**
-
-* `serializedParams`: Serialized data containing args to the module's execute function. Consult the documentation for the module you're using to determine what this should contain.
+* `enclaveId`: The ID to give the new enclave.
+* `isPartitioningEnabled`: If set to true, the enclave will be set up to allow for repartitioning. This will make service addition & removal take slightly longer, but allow for calls to [EnclaveContext.repartitionNetwork][enclavecontext_repartitionnetwork].
 
 **Returns**
+* `enclaveContext`: An [EnclaveContext][enclavecontext] object representing the new enclave.
 
-* `serializedResult`: Serialized data containing the results of executing the module. Consult the documentation for the module you're using to determine what this will contain.
+### `getEnclaveContext(EnclaveID enclaveId) -> [EnclaveContext][enclavecontext] enclaveContext`
+Gets the [EnclaveContext][enclavecontext] object for the given enclave ID.
 
+**Args**
+* `enclaveId`: The ID of the enclave to retrieve the context for.
 
+**Returns**
+* `enclaveContext`: The [EnclaveContext][enclavecontext] representation of the enclave.
+
+### `getEnclaves() -> Set<EnclaveID> enclaveIds`
+Gets the IDs of the enclaves that the Kurtosis engine knows about.
+
+**Returns**
+* `enclaveIds`: A set of the enclave IDs that the Kurtosis is aware of.
+
+### `stopEnclave(EnclaveID enclaveId)`
+Stops the enclave with the given ID, but doesn't destroy the enclave objects (containers, networks, etc.) so they can be further examined.
+
+**NOTE:** Any [EnclaveContext][enclavecontext] objects representing the stopped enclave will become unusable.
+
+**Args**
+* `enclaveId`: ID of the enclave to stop.
+
+### `destroyEnclave(EnclaveID enclaveId)`
+Stops the enclave with the given ID and destroys the enclave objects (containers, networks, etc.).
+
+**NOTE:** Any [EnclaveContext][enclavecontext] objects representing the stopped enclave will become unusable.
+
+**Args**
+* `enclaveId`: ID of the enclave to destroy.
+
+### `clean(boolean shouldCleanAll) -> Set<EnclaveID> RemovedEnclaveIds`
+Destroys enclaves in the Kurtosis engine.
+
+**Args**
+* `shouldCleanAll`: If set to true, destroys running enclaves in addition to stopped ones.
+
+**Returns**
+* `RemovedEnclaveIds`: A set of the removed enclave IDs.
+
+### `getServiceLogs(EnclaveID enclaveId, Set<ServiceGUID> serviceGuids, Boolean shouldFollowLogs) -> ServiceLogsStreamContent serviceLogsStreamContent`
+Get and start a service container logs stream (showed in ascending order, with the oldest line first) from services identified by their GUID.
+
+**Args**
+* `enclaveId`: ID of the services' enclave.
+* `serviceGuids`: A set of service GUIDs identifying the services from which logs should be retrieved.
+* `shouldFollowLogs`: If it's true, the stream will constantly send the new log lines. if it's false, the stream will be closed after the last created log line is sent.
+
+**Returns**
+* `serviceLogsStreamContent`: The [ServiceLogsStreamContent][servicelogsstreamcontent] object which wrap all the information coming from the logs stream.
+
+ServiceLogsStreamContent
+------------------------
+This class is the representation of the content sent during a service logs stream communication. This wrapper includes the service's logs content and the not found service GUIDs.
+
+### `getServiceLogsByServiceGuids() ->  Map<ServiceGUID, Array<ServiceLog>> serviceLogsByServiceGuids`
+Returns the user service logs content grouped by the service's GUID.
+
+**Returns**
+* `serviceLogsByServiceGuids`: A map containing a list of the [ServiceLog][servicelog] objects grouped by service GUID.
+
+### `getNotFoundServiceGuids() -> Set<ServiceGUID> notFoundServiceGuids`
+Returns the not found service GUIDs. The GUIDs may not be found either because they don't exist, or because the services haven't sent any logs.
+
+**Returns**
+* `notFoundServiceGuids`: A set of not found service GUIDs
+
+ServiceLog
+----------
+This class represent single service's log line information
+
+### `getContent() -> String content`
+
+**Returns**
+* `content`: The log line string content
 
 EnclaveContext
 --------------
@@ -32,6 +111,8 @@ This Kurtosis-provided class is the lowest-level representation of a Kurtosis en
 Gets the ID of the enclave that this [EnclaveContext][enclavecontext] object represents.
 
 ### `loadModule(String moduleId, String image, String serializedParams) -> ModuleContext moduleContext`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Starts a new Kurtosis module (configured using the serialized params) inside the enclave, which makes it available for use.
 
 **Args**
@@ -45,6 +126,8 @@ Starts a new Kurtosis module (configured using the serialized params) inside the
 * `moduleContext`: The [ModuleContext][modulecontext] representation of the running module container, which allows execution of the execute function (if it exists).
 
 ### `unloadModule(String moduleId)`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Stops and removes a Kurtosis module from the enclave.
 
 **Args**
@@ -52,6 +135,8 @@ Stops and removes a Kurtosis module from the enclave.
 * `moduleId`: The ID of the module to remove.
 
 ### `getModuleContext(String moduleId) -> ModuleContext moduleContext`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Gets the [ModuleContext][modulecontext] associated with an already-running module container identified by the given ID.
 
 **Args**
@@ -208,6 +293,8 @@ Gets the IDs of the current services in the enclave.
 * `serviceIds`: A map of objects containing a mapping of ID -> GUID for all the services inside the enclave
 
 ### `getModules() -> Set<ModuleID> moduleIds`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
 Gets the IDs of the Kurtosis modules that have been loaded into the enclave.
 
 **Returns**
@@ -276,6 +363,25 @@ The destination relative filepaths are relative to the root of the archive that 
 **Returns**
 
 * `uuid`: A unique ID as a string identifying the archived rendered templates, which can be used in [ContainerConfig.filesArtifactMountpoints][containerconfig_filesartifactmountpoints].
+
+ModuleContext
+-------------
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
+This Kurtosis-provided class is the lowest-level representation of a Kurtosis module - a Docker container with a connection to the Kurtosis engine that responds to commands.
+
+### `execute(String serializedParams) -> String serializedResult`
+**DEPRECATED: Use `runStarlarkScript` and `runStarlarkPackage` instead**
+
+Some modules are considered executable, meaning they respond to an "execute" command. This function will send the execute command to the module with the given serialized args, returning the serialized result. The serialization format of args & response will depend on the module. If the module isn't executable (i.e. doesn't respond to an "execute" command) then an error will be thrown.
+
+**Args**
+
+* `serializedParams`: Serialized data containing args to the module's execute function. Consult the documentation for the module you're using to determine what this should contain.
+
+**Returns**
+
+* `serializedResult`: Serialized data containing the results of executing the module. Consult the documentation for the module you're using to determine what this will contain.
 
 PartitionConnection
 -------------------
@@ -464,8 +570,15 @@ Note, because of how we handle floating point numbers & large integers, if you p
 printed in the decimal notation by default. If you want to use modifiers like `{{printf .%2f | .MyFloat}}`, you'll have to use
 the `Float64` method on the `json.Number` first, so above would look like `{{printf .2%f | .MyFloat.Float64}}`.
 
+<!-------------------------------- ONLY LINKS BELOW HERE ------------------------>
+
 <!-- TODO Make the function definition not include args or return values, so we don't get these huge ugly links that break if we change the function signature -->
 <!-- TODO make the reference names a) be properly-cased (e.g. "Service.isAvailable" rather than "service_isavailable") and b) have an underscore in front of them, so they're easy to find-replace without accidentally over-replacing -->
+
+[kurtosis-sdk-repo]: https://github.com/kurtosis-tech/kurtosis-sdk
+
+[servicelogsstreamcontent]: #servicelogsstreamcontent
+[servicelog]: #servicelog
 
 [containerconfig]: #containerconfig
 [containerconfig_usedports]: #mapportid-portspec-usedports
@@ -497,4 +610,4 @@ the `Float64` method on the `json.Number` first, so above would look like `{{pri
   
 [templateanddata]: #templateanddata
 
-[kurtosiscontext_createenclave]: /api/kurtosis-engine#createenclaveenclaveid-enclaveid-boolean-ispartitioningenabled---enclavecontextenclavecontext-enclavecontext
+[kurtosiscontext_createenclave]: #createenclaveenclaveid-enclaveid-boolean-ispartitioningenabled---enclavecontextenclavecontext-enclavecontext

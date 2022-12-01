@@ -2,7 +2,6 @@
 title: Running Kurtosis in CI
 sidebar_label: Running in CI
 slug: /ci
-sidebar_position: 1
 ---
 
 Running Kurtosis on your local machine is nice, but executing it as part of CI is even better. This guide will walk you through modifying your CI config file to use Kurtosis in your CI environment:
@@ -13,7 +12,7 @@ You'll need the Kurtosis CLI inside your CI environment. This can be accomplishe
 
 Step Two: Initialize The Configuration
 --------------------------------------
-When the Kurtosis CLI is executed for the first time on a machine, we ask you to make a choice about whether you'd like to send anonymized usage metrics to help us make the product better (explanation of why we do this, and how we strive to do this ethically, [here](/reference/metrics-philosophy)). CI environments are non-interactive, so this prompt would cause the CLI running in CI to hang until the CI job times out.
+When the Kurtosis CLI is executed for the first time on a machine, we ask you to make a choice about whether you'd like to send anonymized usage metrics to help us make the product better (explanation of why we do this, and how we strive to do this ethically, [here](/explanations/metrics-philosophy)). CI environments are non-interactive, so this prompt would cause the CLI running in CI to hang until the CI job times out.
 
 To solve this problem, the Kurtosis CLI includes the `config init` subcommand to non-interactively initialize the CLI's configuration. This one-time call will save your election just as if you'd answered the prompt, so that when the CLI is run the prompt won't be displayed.
 
@@ -33,7 +32,7 @@ if you'd prefer not to send metrics.
 
 Step Three: Start The Engine
 ----------------------------
-You'll need the Kurtosis engine to be running to use [the engine API](/api/kurtosis-engine) (which you're likely using in your tests that use Kurtosis). Add `kurtosis engine start` in your CI config file after the CLI installation commands so that the engine API commands in your tests work properly.
+You'll need the Kurtosis engine to be running to interact with Kurtosis, both via the [CLI](/cli) and the [SDK](/sdk). Add `kurtosis engine start` in your CI config file after the CLI installation commands so that your Kurtosis commands work.
 
 Step Four: Run Your Custom Logic
 ---------------------------------
@@ -44,10 +43,10 @@ Step Five: Capturing Enclave Output
 Naturally, if your job fails you'll want to see what was going on inside of Kurtosis at the time of failure. The `kurtosis enclave dump` command allows us to capture container logs & specs from an enclave, so that we can dump the state of the enclaves and attach them to the CI job for further debugging. The specifics of how to attach files to a CI job from within the job will vary depending on which CI provider you're using, but will look something like the following (which is for CircleCI):
 
 ```yaml
-      # Run our custom logic (in this case, executing a module), but don't exit immediately if it fails so that
+      # Run our custom logic (in this case, running a package), but don't exit immediately if it fails so that
       # we can upload the 'enclave dump' results before the CI job ends
       - run: |
-          if ! kurtosis module exec --enclave-id my-enclave my-org/my-image --execute-params '{"someParam":"someValue"}'; then
+          if ! kurtosis run --enclave-id my-enclave github.com/kurtosis-tech/datastore-army-package; then
             touch /tmp/testsuite-failed
           fi
 
@@ -72,5 +71,5 @@ Naturally, if your job fails you'll want to see what was going on inside of Kurt
 
 Example
 -------
-- [CircleCI](https://github.com/kurtosis-tech/onboarding-ethereum-testsuite/blob/master/.circleci/config.yml#L33)
+- [CircleCI](https://github.com/kurtosis-tech/eth2-package/blob/master/.circleci/config.yml#L19)
 - More CI examples coming soon...

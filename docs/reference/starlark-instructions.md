@@ -1,6 +1,7 @@
 ---
 title: Starlark Instructions
 sidebar_label: Starlark Instructions
+sidebar_position: 3
 ---
 
 This page lists out the Kurtosis instructions that are available in Starlark.
