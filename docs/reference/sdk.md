@@ -509,9 +509,9 @@ StarlarkRunProgress
 StarlarkRunResult
 -----------------
 
-`StarlarkRunResult` is the object returned by the blocking functions to run Starlark code. It is similar to [RunStarlarkResponseLine][runstarlarkresponseline] expect that it is not a union object:
+`StarlarkRunResult` is the object returned by the blocking functions to run Starlark code. It is similar to [RunStarlarkResponseLine][runstarlarkresponseline] except that it is not a union object:
 
-* `instructions`: the [StarlarkInstruction][starlarkinstruction] that were run
+* `instructions`: the [Starlark Instruction][starlarkinstruction] that were run
 
 * `insterpretationError`: a potential Starlark Interpretation error (see [StarlarkError][starlarkerror]
 
