@@ -372,7 +372,7 @@ assert(
 
 ### extract
 
-The `extract` instruction evaluates a JQ-like string against a JSON string value, extracting its field.
+The `extract` instruction evaluates a jq-like string against a JSON string value, extracting its field.
 
 ```python
 value = extract(
@@ -398,6 +398,18 @@ value = extract(
     extractor = ".id"
 )
 ```
+
+ As we allow `jq` like strings you can write more complex queries using [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) to manipulate the extracted string like below.
+ 
+ ```python
+ # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]]}}
+ value = extract(
+    input = get_response.body,
+    extractor = '.result.foo | .[0] | split ("/") | .[1]'
+)
+print(value)
+# This would print "world", without quotes
+ ```
 
 ### import_module
 
