@@ -402,7 +402,7 @@ value = extract(
  As we allow `jq` like strings you can write more complex queries using [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) to manipulate the extracted string like below.
  
  ```python
- # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]]}}
+ # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]}}
  value = extract(
     input = get_response.body,
     extractor = '.result.foo | .[0] | split ("/") | .[1]'
