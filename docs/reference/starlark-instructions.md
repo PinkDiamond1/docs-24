@@ -399,7 +399,7 @@ value = extract(
 )
 ```
 
- As we allow `jq` like strings you can write more complex queries using [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) to manipulate the extracted string like below.
+NOTE: the extractor string is passed to [jq](https://stedolan.github.io/jq/), so you can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
  
  ```python
  # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]}}
