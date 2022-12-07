@@ -185,7 +185,7 @@ print(response.code)
 If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
 
 The instruction returns a `struct` which is a [future reference][future-references-reference]
-that contains the attribute `output` which contains the output of the execution of the command and `code` which contains the exit code of the command.
+that contains the attribute `output` which contains the output of the execution of the command and `code` which contains the exit code.
 
 ### render_templates
 
