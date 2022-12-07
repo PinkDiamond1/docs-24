@@ -162,7 +162,7 @@ remove_service(
 The `exec` instruction executes commands on a given service as if they were running in a shell on the container.
 
 ```python
-exec(
+response = exec(
     # The service ID to execute the command on.
     # MANDATORY
     service_id = "my_service",
@@ -176,9 +176,16 @@ exec(
     # OPTIONAL (Default: 0)
     expected_exit_code = 0
 )
+
+print(response.body)
+print(response.code)
+
 ```
 
 If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
+
+The instruction returns a `struct` which is a [future reference][future-references-reference]
+that contains the attribute `output` which contains the output of the execution of the command and `code` which contains the exit code of the command.
 
 ### render_templates
 
