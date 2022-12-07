@@ -177,7 +177,7 @@ response = exec(
     expected_exit_code = 0
 )
 
-print(response.body)
+print(response.output)
 print(response.code)
 
 ```
