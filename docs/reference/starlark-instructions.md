@@ -310,8 +310,8 @@ get_request_recipe = struct(
     method = "GET",
 
     # The extract dictionary takes in key-value pairs where:
-    # Key: is a way you reffer to the extraction later on
-    # Value: is a 'jq' string
+    # Key is a way you refer to the extraction later on
+    # Value is a 'jq' string that contains logic to extract from response body
     # OPTIONAL
     extract = {
         "extracted-field": ".name.id"
@@ -403,6 +403,47 @@ assert(
     assertion = "=="
     target_value = 200
 )
+```
+
+### wait
+
+The `wait` instruction fails the Starlark script with an execution error if the assertion does not succeed in a given period of time.
+
+```python
+# This fails in runtime if response["code"] != 200 for each request in a 5 minute time span
+response = wait(
+    # The recipe that will be run until assert passes.
+    # MANDATORY
+    recipe = get_request_recipe
+
+    # The field of the recipe's result that will be asserted
+    # MANDATORY
+    field = "code"
+
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
+    # MANDATORY
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = 200
+
+    # The interval value is the initial interval suggestion for the command to wait between calls
+    # It follows a exponential backoff process, where the i-th backoff interval is rand(0.5, 1.5)*interval*2^i
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # Defaults to 500 milliseconds
+    # OPTIONAL
+    interval = "1s"
+
+    # The timeout value is the maximum time that the command waits for the assertion to be true
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # Defaults to 15 minutes
+    # OPTIONAL
+    timeout = "5m"
+)
+# If this point of the code is reached, the assertion has passed therefore the print statement will print "200"
+print(response["code"])
 ```
 
 ### import_module
