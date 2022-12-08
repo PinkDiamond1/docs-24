@@ -285,9 +285,9 @@ contents = read_file(
     src = "github.com/kurtosis-tech/datastore-army-package/README.md"
 )
  ```
-### get_value
+### request
 
-The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+The `request` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
 
 For GET requests:
 
@@ -308,12 +308,21 @@ get_request_recipe = struct(
     # The method is GET for this example
     # MANDATORY
     method = "GET",
+
+    # The extract dictionary takes in key-value pairs where:
+    # Key: is a way you reffer to the extraction later on
+    # Value: is a 'jq' string
+    # OPTIONAL
+    extract = {
+        "extracted-field": ".name.id"
+    }
 )
-get_response = get_value(
+get_response = request(
     recipe = get_request_recipe
 )
-print(get_response.body) # Prints the body of the request
-print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["body"]) # Prints the body of the request
+print(get_response["code"]) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["extract.extracted-field"]) # Prints the result of running ".name.id" query, that is saved with key "extracted-field"
 ```
 
 For POST requests:
@@ -341,11 +350,31 @@ post_request_recipe = struct(
 
     # The body of the request
     # MANDATORY
-    body = "text body"
+    body = "text body",
+
+    # The method is GET for this example
+    # OPTIONAL
+    extract = {}
 )
-post_response = get_value(
+post_response = request(
     recipe = post_request_recipe
 )
+```
+
+NOTE: You can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
+ 
+ ```python
+ # Assuming response["body"] looks like {"result": {"foo": ["hello/world/welcome"]}}
+post_request_recipe = struct(
+    ...
+    extract = {
+        "second-element-from-list-head": '.result.foo | .[0] | split ("/") | .[1]' # 
+    }
+)
+response = request(
+    recipe = post_request_recipe
+)
+# response["extract.second-element-from-list-head"] is "world"
 ```
 
 ### assert
@@ -370,53 +399,11 @@ assert(
 
 assert(
     # Value can also be a runtime value derived from a `get_value` call
-    value = response.body
+    value = response["body"]
     assertion = "=="
     target_value = 200
 )
 ```
-
-
-### extract
-
-The `extract` instruction evaluates a jq-like string against a JSON string value, extracting its field.
-
-```python
-value = extract(
-    # The input is a JSON string.
-    # MANDATORY
-    input = "{'key': 'my_value'}",
-
-    # The extractor is a JQ-like string.
-    # MANDATORY
-    extractor = ".key"
-)
-print(value) # Prints 'my_value'
-```
-
-Extracts can also be chained after a `get_value` call:
-
-```python
-get_response = get_value(
-    recipe = get_request_recipe
-)
-value = extract(
-    input = get_response.body,
-    extractor = ".id"
-)
-```
-
-NOTE: the extractor string is passed to [jq](https://stedolan.github.io/jq/), so you can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
- 
- ```python
- # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]}}
- value = extract(
-    input = get_response.body,
-    extractor = '.result.foo | .[0] | split ("/") | .[1]'
-)
-print(value)
-# This would print "world", without quotes
- ```
 
 ### import_module
 
