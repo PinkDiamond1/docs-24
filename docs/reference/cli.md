@@ -83,14 +83,14 @@ A [runnable Kurtosis package][packages-reference] published to GitHub can be run
 kurtosis run github.com/package-author/package-repo
 ```
 
-Arguments can be provided to a Kurtosis package (either local or from GitHub) by passing a JSON-serialized object with the `--args` flag:
+Arguments can be provided to a Kurtosis package (either local or from GitHub) by passing a JSON-serialized object with args argument, which is the second positional argument you pass to `kurtosis run` like:
 
 ```bash
 # Local package
-kurtosis run /path/to/package/on/your/machine --args '{"company":"Kurtosis"}'
+kurtosis run /path/to/package/on/your/machine '{"company":"Kurtosis"}'
 
 # GitHub package
-kurtosis run github.com/package-author/package-repo --args '{"company":"Kurtosis"}'
+kurtosis run github.com/package-author/package-repo '{"company":"Kurtosis"}'
 ```
 
 ### Create an enclave

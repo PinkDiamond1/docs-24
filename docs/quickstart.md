@@ -619,7 +619,7 @@ def run(args):
 Now run the package again, passing in a JSON object for args:
 
 ```bash
-kurtosis run . --args '{"nginx_count": 3}'
+kurtosis run . '{"nginx_count": 3}'
 ```
 
 After execution, inspecting the enclave will reveal that three NginX services have been started:
@@ -645,7 +645,7 @@ my-nginx-2-1669834975    my-nginx-2    http: 80/tcp -> 127.0.0.1:63820     RUNNI
 
 Each one of these NginX services works identically.
 
-Note that we used the `hasattr` Starlark builtin to check if `args.nginx_count` exists, so the package will continue to work if you omit the `--args` flag to `kurtosis run`.
+Note that we used the `hasattr` Starlark builtin to check if `args.nginx_count` exists, so the package will continue to work if you omit the `args` argument to `kurtosis run`.
 
 Publish & Consume Your Package
 ------------------------------------------
