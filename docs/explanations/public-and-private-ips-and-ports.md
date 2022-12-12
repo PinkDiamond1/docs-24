@@ -23,20 +23,20 @@ To simplify your work, Kurtosis allows you to connect to every private port of e
 
 ```
 ========================================== User Services ==========================================
-GUID                              ID                     Ports                                         Status
-cl-client-0-beacon-1670597432     cl-client-0-beacon     http: 4000/tcp -> 127.0.0.1:55947             RUNNING
-                                                         metrics: 5054/tcp -> 127.0.0.1:55948
-                                                         tcp-discovery: 9000/tcp -> 127.0.0.1:55949
-                                                         udp-discovery: 9000/udp -> 127.0.0.1:52875
-cl-client-0-validator-1670597459  cl-client-0-validator  http: 5042/tcp -> 127.0.0.1:55955             RUNNING
-                                                         metrics: 5064/tcp -> 127.0.0.1:55954
-el-client-0-1670597405            el-client-0            engine-rpc: 8551/tcp -> 127.0.0.1:55930       RUNNING
-                                                         rpc: 8545/tcp -> 127.0.0.1:55928
-                                                         tcp-discovery: 30303/tcp -> 127.0.0.1:55927
-                                                         udp-discovery: 30303/udp -> 127.0.0.1:57433
-                                                         ws: 8546/tcp -> 127.0.0.1:55929
-forkmon-1670597469                forkmon                http: 80/tcp -> 127.0.0.1:55962               RUNNING
-grafana-1670597488                grafana                http: 3000/tcp -> 127.0.0.1:55998             RUNNING
+GUID                     ID            Ports                                         Status
+cl-beacon-1670597432     cl-beacon     http: 4000/tcp -> 127.0.0.1:55947             RUNNING
+                                       metrics: 5054/tcp -> 127.0.0.1:55948
+                                       tcp-discovery: 9000/tcp -> 127.0.0.1:55949
+                                       udp-discovery: 9000/udp -> 127.0.0.1:52875
+cl-validator-1670597459  cl-validator  http: 5042/tcp -> 127.0.0.1:55955             RUNNING
+                                       metrics: 5064/tcp -> 127.0.0.1:55954
+el-1670597405            el            engine-rpc: 8551/tcp -> 127.0.0.1:55930       RUNNING
+                                       rpc: 8545/tcp -> 127.0.0.1:55928
+                                       tcp-discovery: 30303/tcp -> 127.0.0.1:55927
+                                       udp-discovery: 30303/udp -> 127.0.0.1:57433
+                                       ws: 8546/tcp -> 127.0.0.1:55929
+forkmon-1670597469       forkmon       http: 80/tcp -> 127.0.0.1:55962               RUNNING
+grafana-1670597488       grafana       http: 3000/tcp -> 127.0.0.1:55998             RUNNING
 ```
 
 The IP address used to reach these containers is your localhost address, `127.0.0.1`. This is the "public IP address" of each container in the cluster.
