@@ -285,9 +285,9 @@ contents = read_file(
     src = "github.com/kurtosis-tech/datastore-army-package/README.md"
 )
  ```
-### get_value
+### request
 
-The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+The `request` instruction executes either a POST or GET HTTP request, saving its result in a [future references][future-references-reference].
 
 For GET requests:
 
@@ -308,12 +308,21 @@ get_request_recipe = struct(
     # The method is GET for this example
     # MANDATORY
     method = "GET",
+
+    # The extract dictionary takes in key-value pairs where:
+    # Key is a way you refer to the extraction later on
+    # Value is a 'jq' string that contains logic to extract from response body
+    # OPTIONAL
+    extract = {
+        "extracted-field": ".name.id"
+    }
 )
-get_response = get_value(
+get_response = request(
     recipe = get_request_recipe
 )
-print(get_response.body) # Prints the body of the request
-print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["body"]) # Prints the body of the request
+print(get_response["code"]) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["extract.extracted-field"]) # Prints the result of running ".name.id" query, that is saved with key "extracted-field"
 ```
 
 For POST requests:
@@ -341,16 +350,36 @@ post_request_recipe = struct(
 
     # The body of the request
     # MANDATORY
-    body = "text body"
+    body = "text body",
+
+    # The method is GET for this example
+    # OPTIONAL (Default: {})
+    extract = {}
 )
-post_response = get_value(
+post_response = request(
     recipe = post_request_recipe
 )
 ```
 
+NOTE: You can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
+ 
+ ```python
+ # Assuming response["body"] looks like {"result": {"foo": ["hello/world/welcome"]}}
+post_request_recipe = struct(
+    ...
+    extract = {
+        "second-element-from-list-head": '.result.foo | .[0] | split ("/") | .[1]' # 
+    }
+)
+response = request(
+    recipe = post_request_recipe
+)
+# response["extract.second-element-from-list-head"] is "world"
+```
+
 ### assert
 
-The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
+The `assert` instruction fails the Starlark script or package with an execution error if the assertion defined fails.
 
 ```python
 assert(
@@ -370,53 +399,51 @@ assert(
 
 assert(
     # Value can also be a runtime value derived from a `get_value` call
-    value = response.body
+    value = response["body"]
     assertion = "=="
     target_value = 200
 )
 ```
 
+### wait
 
-### extract
-
-The `extract` instruction evaluates a jq-like string against a JSON string value, extracting its field.
-
-```python
-value = extract(
-    # The input is a JSON string.
-    # MANDATORY
-    input = "{'key': 'my_value'}",
-
-    # The extractor is a JQ-like string.
-    # MANDATORY
-    extractor = ".key"
-)
-print(value) # Prints 'my_value'
-```
-
-Extracts can also be chained after a `get_value` call:
+The `wait` instruction fails the Starlark script or package with an execution error if the assertion does not succeed in a given period of time.
+If it succedes, it returns a [future references][future-references-reference] with the last recipe run.
 
 ```python
-get_response = get_value(
+# This fails in runtime if response["code"] != 200 for each request in a 5 minute time span
+response = wait(
+    # The recipe that will be run until assert passes.
+    # MANDATORY
     recipe = get_request_recipe
-)
-value = extract(
-    input = get_response.body,
-    extractor = ".id"
-)
-```
 
-NOTE: the extractor string is passed to [jq](https://stedolan.github.io/jq/), so you can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
- 
- ```python
- # assuming response.body looks like {"result": {"foo": ["hello/world/welcome"]}}
- value = extract(
-    input = get_response.body,
-    extractor = '.result.foo | .[0] | split ("/") | .[1]'
+    # The field of the recipe's result that will be asserted
+    # MANDATORY
+    field = "code"
+
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
+    # MANDATORY
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = 200
+
+    # The interval value is the initial interval suggestion for the command to wait between calls
+    # It follows a exponential backoff process, where the i-th backoff interval is rand(0.5, 1.5)*interval*2^i
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # OPTIONAL (Default: "500ms")
+    interval = "1s"
+
+    # The timeout value is the maximum time that the command waits for the assertion to be true
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # OPTIONAL (Default: "15m")
+    timeout = "5m"
 )
-print(value)
-# This would print "world", without quotes
- ```
+# If this point of the code is reached, the assertion has passed therefore the print statement will print "200"
+print(response["code"])
+```
 
 ### import_module
 
