@@ -186,6 +186,12 @@ kurtosis service rm $THE_ENCLAVE_ID $THE_SERVICE_ID
 
 **NOTE:** To avoid destroying debugging information, Kurtosis will leave removed services inside the Docker engine. They will be stopped and won't show up in the list of active services in the enclave, but you'll still be able to access them (e.g. using `service logs`) by their service GUID (available via `enclave inspect`).
 
+### Upload files to an enclave
+Files can be stored as a [files artifact][files-artifacts] inside an enclave by uploading them:
+
+```bash
+kurtosis files upload $PATH_TO_FILES
+```
 
 ### Clean Kurtosis
 Kurtosis defaults to leaving enclave artifacts (containers, volumes, etc.) around so that you can refer back them for debugging. To clean up artifacts from stopped enclaves, run:
@@ -202,3 +208,4 @@ NOTE: This will not stop the Kurtosis engine itself! To do so, see "Stopping the
 [packages]: ../reference/packages.md
 [enclaves-explanation]: ../explanations/architecture.md#enclaves
 [adding-tab-completion]: ../guides/adding-tab-completion.md
+[files-artifacts]: ./files-artifacts.md
