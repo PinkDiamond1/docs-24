@@ -287,7 +287,7 @@ contents = read_file(
  ```
 ### request
 
-The `request` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+The `request` instruction executes either a POST or GET HTTP request, saving its result in a [future references][future-references-reference].
 
 For GET requests:
 
@@ -353,7 +353,7 @@ post_request_recipe = struct(
     body = "text body",
 
     # The method is GET for this example
-    # OPTIONAL
+    # OPTIONAL (Default: {})
     extract = {}
 )
 post_response = request(
@@ -379,7 +379,7 @@ response = request(
 
 ### assert
 
-The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
+The `assert` instruction fails the Starlark script or package with an execution error if the assertion defined fails.
 
 ```python
 assert(
@@ -407,7 +407,8 @@ assert(
 
 ### wait
 
-The `wait` instruction fails the Starlark script with an execution error if the assertion does not succeed in a given period of time.
+The `wait` instruction fails the Starlark script or package with an execution error if the assertion does not succeed in a given period of time.
+If it succedes, it returns a [future references][future-references-reference] with the last recipe run.
 
 ```python
 # This fails in runtime if response["code"] != 200 for each request in a 5 minute time span
@@ -432,14 +433,12 @@ response = wait(
     # The interval value is the initial interval suggestion for the command to wait between calls
     # It follows a exponential backoff process, where the i-th backoff interval is rand(0.5, 1.5)*interval*2^i
     # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
-    # Defaults to 500 milliseconds
-    # OPTIONAL
+    # OPTIONAL (Default: "500ms")
     interval = "1s"
 
     # The timeout value is the maximum time that the command waits for the assertion to be true
     # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
-    # Defaults to 15 minutes
-    # OPTIONAL
+    # OPTIONAL (Default: "15m")
     timeout = "5m"
 )
 # If this point of the code is reached, the assertion has passed therefore the print statement will print "200"
