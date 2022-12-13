@@ -71,10 +71,10 @@ def run(args):
     print("Hello, " + args.name)
 ```
 
-To pass parameters to the `run()` function, a JSON object should be given to the `--args` flag should be used when running the package:
+To pass parameters to the `run()` function, a JSON object should be passed as the second positional argument after the script or package path:
 
 ```
-kurtosis run github.com/me/my-package --args '{"name": "Joseph"}'
+kurtosis run github.com/me/my-package '{"name": "Joseph"}'
 ```
 
 <!-------------------- ONLY LINKS BELOW HERE -------------------------->
