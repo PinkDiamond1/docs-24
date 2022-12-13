@@ -4,11 +4,11 @@ sidebar_label: Starlark Types
 sidebar_position: 4
 ---
 
-This page lists out the Kurtosis instructions that are available in Starlark.
+This page lists out the Kurtosis types that are available in Starlark.
 
 ### PortSpec
 
-This `PortSpec` constructor creates a port mapping that container will listen on. 
+This `PortSpec` constructor creates a PortSpec object that encapsulates information pertaining to a port. 
 
 ```python
 port_spec = PortSpec(

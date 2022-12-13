@@ -115,20 +115,19 @@ service = add_service(
 
 The `add_service` function returns a `service` object that contains service information in the form of [future references][future-references-reference] that can be used later in the script. The `service` struct has:
 
-- An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address
-- A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on
+- An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address.
+- A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on.
 
-The value of the `ports` dictionary is an object created using `PortSpec`, more information can be found here: [PortSpec][starlark-types-port-spec]. 
+The `ports` dictionary accepts a key value pair, where `key` is user defined unique port identifier and `value` is a [PortSpec][starlark-types-port-spec] object.
 
-E.g.:
-
+Example:
 ```python
 dependency = add_service(
     service_id = "dependency",
     config = struct(
         image = "dependency",
         ports = {
-            "http": struct(number = 80),
+            "http": PortSpec(number = 80),
         },
     ),
 )
