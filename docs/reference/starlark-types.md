@@ -17,7 +17,7 @@ port_spec = PortSpec(
     number = 3000,
     
     # The port transport protocol (can be "TCP" or "UDP")
-    # Optional ( DEFAULT:"TCP")
+    # Optional (DEFAULT:"TCP")
     protocol = "TCP" 
 )
 ```
