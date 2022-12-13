@@ -62,7 +62,7 @@ service = add_service(
         # If no ports are provided, no ports will be exposed on the host machine, unless there is an EXPOSE in the Dockerfile
         # OPTIONAL (Default: {})
         ports = {
-            "grpc": struct(
+            "grpc": PortSpec(
                 # The port number.
                 # MANDATORY
                 number = 1234,
@@ -118,7 +118,7 @@ The `add_service` function returns a `service` object that contains service info
 - An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address
 - A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on
 
-The value of the `ports` dictionary is an object with two properties, `number` and `protocol`, which themselves are [future references][future-references-reference]. 
+The value of the `ports` dictionary is an object created using `PortSpec`, more information can be found here: [PortSpec][starlark-types-port-spec]. 
 
 E.g.:
 
@@ -482,3 +482,4 @@ in Kurtosis Starlark by default
 [locators]: ./locators.md
 [multi-phase-runs-reference]: ./multi-phase-runs.md
 [future-references-reference]: ./future-references.md
+[starlark-types-port-spec]: ./starlark-types.md#PortSpec
