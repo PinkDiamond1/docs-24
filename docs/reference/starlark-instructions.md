@@ -112,7 +112,7 @@ service = add_service(
         private_ip_address_placeholder = "KURTOSIS_IP_ADDRESS_PLACEHOLDER"
 )
 ```
-The `ports` dictionary argument accepts a key value pair, where `key` is user defined unique port identifier and `value` is a [PortSpec][starlark-types-port-spec] object.
+The `ports` dictionary argument accepts a key value pair, where `key` is a user defined unique port identifier and `value` is a [PortSpec][starlark-types-port-spec] object.
 
 The `add_service` function returns a `service` object that contains service information in the form of [future references][future-references-reference] that can be used later in the script. The `service` struct has:
 - An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address.

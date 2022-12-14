@@ -21,7 +21,7 @@ port_spec = PortSpec(
     protocol = "TCP" 
 )
 ```
-The above constructor returns a `PortSpec` object that contains port information in the form of [future reference][future-references-reference] and can be used with 
+The above constructor returns a `PortSpec` object that contains port information in the form of a [future reference][future-references-reference] and can be used with 
 [add_service][starlark-instructions-add-service] to create services.
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
