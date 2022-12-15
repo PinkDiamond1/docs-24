@@ -3,7 +3,7 @@ Kurtosis Docs
 
 >📖 Kurtosis documentation site codebase.
 >
->👉 Read at [docs.kurtosis.com](https://docs.kurtosis.com)
+>👉 Read at [docs.kurtosis.com][kurtosis-docs]
 
 ---
 
@@ -15,32 +15,28 @@ These docs strive to follow [the Diataxis framework](https://diataxis.fr/). In o
 - **Guides:** easily-digestible step-by-step workflows that we expect the user to refer back to whenever they need to complete a workflow.
 - **Reference:** easily-consumable reminders for users (e.g. API and syntax documentation, but NOT step-by-step guides!).
 
-### Installation
-
+### Local Development
+Install dependencies:
 ```shell
 $ yarn
 ```
 
-### Local Development
-
-```shell
-$ yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
+Validate and build the docs into the `build` directory (which can be served using any static content service):
 ```shell
 $ yarn build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Start a local development server and open a browser window; most changes are reflected live without having to restart the server:
+```shell
+$ yarn start
+```
 
-### Serve
-
+Serve the `build` directory. This is useful to verifying the production build locally.
 ```shell
 $ yarn serve
 ```
 
-This command serves `build` directory. This is useful to verifying the production build locally.
+When your PR merges into `master`, the documentation will automatically be rebuilt and republished to [our docs page][kurtosis-docs].
+
+<!------ ONLY LINKS BELOW HERE ------------>
+[kurtosis-docs]: https://docs.kurtosis.com
