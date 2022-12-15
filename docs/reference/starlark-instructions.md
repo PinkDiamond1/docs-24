@@ -161,7 +161,7 @@ remove_service(
 The `exec` instruction executes commands on a given service as if they were running in a shell on the container.
 
 ```python
-response = exec(
+exec_recipe = struct(
     # The service ID to execute the command on.
     # MANDATORY
     service_id = "my_service",
@@ -170,21 +170,29 @@ response = exec(
     # Each item corresponds to one shell argument, so ["echo", "Hello world"] behaves as if you ran "echo" "Hello world" in the shell.
     # MANDATORY
     command = ["echo", "Hello, world"],
-
-    # The expected exit code of the command.
-    # OPTIONAL (Default: 0)
-    expected_exit_code = 0
 )
+response = exec(exec_recipe)
 
-print(response.output)
-print(response.code)
-
+print(response["output"])
+print(response["code"])
 ```
 
-If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
+The instruction returns a `dict` which is a [future reference][future-references-reference]
+that contains the keys `output` which contains the output of the execution of the command and `code` which contains the exit code.
 
-The instruction returns a `struct` which is a [future reference][future-references-reference]
-that contains the attribute `output` which contains the output of the execution of the command and `code` which contains the exit code.
+They can be chained to `assert` and `wait`:
+
+```python
+exec_recipe = struct(
+    service_id = "my_service",
+    command = ["echo", "Hello, world"],
+)
+
+response = exec(exec_recipe)
+assert(response["output"], "==", 0)
+
+wait(exec_recipe, "output", "!=", "Greetings, world")
+```
 
 ### render_templates
 
