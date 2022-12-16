@@ -75,11 +75,11 @@ service = add_service(
 
         # Kurtosis enclaves can store gzipped TAR files, called "files artifacts", via functions like upload_files, render_templates, and store_files_from_service.
         # Each files artifact is identified by an ID which is returned when the files artifact is created.
-        # This map specifies files artifacts that should be mounted on the service container when it starts.
+        # This is a map from where the file should be mounted to the files artifacts that should be mounted on the service container when it starts.
         # OPTIONAL (Default: {})
         files = {
-            "files_artifact_1": "path/to/file/1",
-            "files_artifact_2": "path/to/file/2"
+            "path/to/file/1": "files_artifact_1",
+            "path/to/file/2": "files_artifact_2"
         },
 
         # The ENTRYPOINT statement hardcoded in a container image's Dockerfile might not be suitable for your needs.
