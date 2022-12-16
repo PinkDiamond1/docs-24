@@ -73,9 +73,8 @@ service = add_service(
             )
         },
 
-        # Kurtosis enclaves can store gzipped TAR files, called "files artifacts", via functions like upload_files, render_templates, and store_files_from_service.
-        # Each files artifact is identified by an ID which is returned when the files artifact is created.
-        # This is a map from where the file should be mounted to the files artifacts that should be mounted on the service container when it starts.
+        # A mapping of path_on_container_where_contents_will_be_mounted -> files_artifact_id_to_mount
+        # For more info on what a files artifact is, see below
         # OPTIONAL (Default: {})
         files = {
             "path/to/file/1": "files_artifact_1",
@@ -113,6 +112,10 @@ service = add_service(
 )
 ```
 The `ports` dictionary argument accepts a key value pair, where `key` is a user defined unique port identifier and `value` is a [PortSpec][starlark-types-port-spec] object.
+
+:::info
+See [here][files-artifacts] for more details on files artifacts.
+:::
 
 The `add_service` function returns a `service` object that contains service information in the form of [future references][future-references-reference] that can be used later in the script. The `service` struct has:
 - An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address.
@@ -196,7 +199,7 @@ wait(exec_recipe, "output", "!=", "Greetings, world")
 
 ### render_templates
 
-`render_templates` combines a template and data to produce a files artifact stored in the Kurtosis enclave. Files artifacts can be used with the `files` property in the service config of `add_service`, allowing for reuse of config files across services.
+`render_templates` combines a template and data to produce a [files artifact][files-artifacts]. Files artifacts can be used with the `files` property in the service config of `add_service`, allowing for reuse of config files across services.
 
 ```python
 # Example data to slot into the template
@@ -236,11 +239,11 @@ artifact_id = render_templates(
 )
 ```
 
-The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
+The return value is a [future reference][future-references-reference] to the ID of the [files artifact][files-artifacts] that was generated, which can be used with the `files` property of the service config of the `add_service` command.
 
 ### upload_files
 
-`upload_files` packages the files specified by the [locator][locators] into a files artifact that gets stored inside the enclave. This is particularly useful when a static file needs to be loaded to a service container.
+`upload_files` packages the files specified by the [locator][locators] into a [files artifact][files-artifacts] that gets stored inside the enclave. This is particularly useful when a static file needs to be loaded to a service container.
 
 ```python
 artifact_id = upload_files(
@@ -256,11 +259,11 @@ artifact_id = upload_files(
 )
 ```
 
-The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
+The return value is a [future reference][future-references-reference] to the ID of the [files artifact][files-artifacts] that was generated, which can be used with the `files` property of the service config of the `add_service` command.
 
 ### store_service_files
 
-Produces a files artifact by copying files or directories from an existing service in the enclave.
+Copies files or directories from an existing service in the enclave into a [files artifact][files-artifacts]. This is useful when work produced on one container is needed elsewhere.
 
 ```python
 artifact_id = store_service_files(
@@ -279,7 +282,7 @@ artifact_id = store_service_files(
 )
 ```
 
-The return value is a [future reference][future-references-reference] to the ID of the files artifact that was generated, which can be used with the `files` property of the service config of the `add_service` command.
+The return value is a [future reference][future-references-reference] to the ID of the [files artifact][files-artifacts] that was generated, which can be used with the `files` property of the service config of the `add_service` command.
 
 ### read_file
 
@@ -487,6 +490,7 @@ in Kurtosis Starlark by default
 
 <!--------------- ONLY LINKS BELOW THIS POINT ---------------------->
 [locators]: ./locators.md
+[files-artifacts]: ./files-artifacts.md
 [multi-phase-runs-reference]: ./multi-phase-runs.md
 [future-references-reference]: ./future-references.md
 [starlark-types-port-spec]: ./starlark-types.md#PortSpec
