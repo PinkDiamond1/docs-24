@@ -62,7 +62,7 @@ service = add_service(
         # If no ports are provided, no ports will be exposed on the host machine, unless there is an EXPOSE in the Dockerfile
         # OPTIONAL (Default: {})
         ports = {
-            "grpc": struct(
+            "grpc": PortSpec(
                 # The port number.
                 # MANDATORY
                 number = 1234,
@@ -73,12 +73,12 @@ service = add_service(
             )
         },
 
-        # A mapping of files_artifact_id -> path_on_container_where_contents_will_be_mounted
+        # A mapping of path_on_container_where_contents_will_be_mounted -> files_artifact_id_to_mount
         # For more info on what a files artifact is, see below
         # OPTIONAL (Default: {})
         files = {
-            "files_artifact_1": "path/to/file/1",
-            "files_artifact_2": "path/to/file/2"
+            "path/to/file/1": "files_artifact_1",
+            "path/to/file/2": "files_artifact_2"
         },
 
         # The ENTRYPOINT statement hardcoded in a container image's Dockerfile might not be suitable for your needs.
@@ -111,27 +111,26 @@ service = add_service(
         private_ip_address_placeholder = "KURTOSIS_IP_ADDRESS_PLACEHOLDER"
 )
 ```
+The `ports` dictionary argument accepts a key value pair, where `key` is a user defined unique port identifier and `value` is a [PortSpec][starlark-types-port-spec] object.
 
 :::info
 See [here][files-artifacts] for more details on files artifacts.
 :::
 
 The `add_service` function returns a `service` object that contains service information in the form of [future references][future-references-reference] that can be used later in the script. The `service` struct has:
+- An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address.
+- A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on.
 
-- An `ip_address` property representing [a future reference][future-references-reference] to the service's IP address
-- A `ports` dictionary containing [future reference][future-references-reference] information about each port that the service is listening on
+The value of the `ports` dictionary is an object with two properties, `number` and `protocol`, which themselves are [future references][future-references-reference].
 
-The value of the `ports` dictionary is an object with two properties, `number` and `protocol`, which themselves are [future references][future-references-reference]. 
-
-E.g.:
-
+Example:
 ```python
 dependency = add_service(
     service_id = "dependency",
     config = struct(
         image = "dependency",
         ports = {
-            "http": struct(number = 80),
+            "http": PortSpec(number = 80),
         },
     ),
 )
@@ -165,7 +164,7 @@ remove_service(
 The `exec` instruction executes commands on a given service as if they were running in a shell on the container.
 
 ```python
-exec(
+exec_recipe = struct(
     # The service ID to execute the command on.
     # MANDATORY
     service_id = "my_service",
@@ -174,14 +173,29 @@ exec(
     # Each item corresponds to one shell argument, so ["echo", "Hello world"] behaves as if you ran "echo" "Hello world" in the shell.
     # MANDATORY
     command = ["echo", "Hello, world"],
-
-    # The expected exit code of the command.
-    # OPTIONAL (Default: 0)
-    expected_exit_code = 0
 )
+response = exec(exec_recipe)
+
+print(response["output"])
+print(response["code"])
 ```
 
-If the `exec` results in an exit code other than `expected_exit_code`, the command will return an error [at execution time][multi-phase-runs-reference].
+The instruction returns a `dict` which is a [future reference][future-references-reference]
+that contains the keys `output` which contains the output of the execution of the command and `code` which contains the exit code.
+
+They can be chained to `assert` and `wait`:
+
+```python
+exec_recipe = struct(
+    service_id = "my_service",
+    command = ["echo", "Hello, world"],
+)
+
+response = exec(exec_recipe)
+assert(response["output"], "==", 0)
+
+wait(exec_recipe, "output", "!=", "Greetings, world")
+```
 
 ### render_templates
 
@@ -281,9 +295,9 @@ contents = read_file(
     src = "github.com/kurtosis-tech/datastore-army-package/README.md"
 )
  ```
-### get_value
+### request
 
-The `get_value` instruction executes either a POST or GET HTTP request, saving its result in a runtime variable.
+The `request` instruction executes either a POST or GET HTTP request, saving its result in a [future references][future-references-reference].
 
 For GET requests:
 
@@ -304,12 +318,21 @@ get_request_recipe = struct(
     # The method is GET for this example
     # MANDATORY
     method = "GET",
+
+    # The extract dictionary takes in key-value pairs where:
+    # Key is a way you refer to the extraction later on
+    # Value is a 'jq' string that contains logic to extract from response body
+    # OPTIONAL
+    extract = {
+        "extracted-field": ".name.id"
+    }
 )
-get_response = get_value(
+get_response = request(
     recipe = get_request_recipe
 )
-print(get_response.body) # Prints the body of the request
-print(get_response.code) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["body"]) # Prints the body of the request
+print(get_response["code"]) # Prints the result code of the request (e.g. 200, 500)
+print(get_response["extract.extracted-field"]) # Prints the result of running ".name.id" query, that is saved with key "extracted-field"
 ```
 
 For POST requests:
@@ -337,16 +360,36 @@ post_request_recipe = struct(
 
     # The body of the request
     # MANDATORY
-    body = "text body"
+    body = "text body",
+
+    # The method is GET for this example
+    # OPTIONAL (Default: {})
+    extract = {}
 )
-post_response = get_value(
+post_response = request(
     recipe = post_request_recipe
 )
 ```
 
+NOTE: You can use the power of `jq` during your extractions. For example, `jq`'s [regular expressions](https://devdocs.io/jq-regular-expressions-pcre/) can be used to manipulate the extracted strings like so:
+ 
+ ```python
+ # Assuming response["body"] looks like {"result": {"foo": ["hello/world/welcome"]}}
+post_request_recipe = struct(
+    ...
+    extract = {
+        "second-element-from-list-head": '.result.foo | .[0] | split ("/") | .[1]' # 
+    }
+)
+response = request(
+    recipe = post_request_recipe
+)
+# response["extract.second-element-from-list-head"] is "world"
+```
+
 ### assert
 
-The `assert` instruction fails the Starlark script with an execution error if the assertion defined fails.
+The `assert` instruction fails the Starlark script or package with an execution error if the assertion defined fails.
 
 ```python
 assert(
@@ -366,40 +409,50 @@ assert(
 
 assert(
     # Value can also be a runtime value derived from a `get_value` call
-    value = response.body
+    value = response["body"]
     assertion = "=="
     target_value = 200
 )
 ```
 
+### wait
 
-### extract
-
-The `extract` instruction evaluates a JQ-like string against a JSON string value, extracting its field.
-
-```python
-value = extract(
-    # The input is a JSON string.
-    # MANDATORY
-    input = "{'key': 'my_value'}",
-
-    # The extractor is a JQ-like string.
-    # MANDATORY
-    extractor = ".key"
-)
-print(value) # Prints 'my_value'
-```
-
-Extracts can also be chained after a `get_value` call:
+The `wait` instruction fails the Starlark script or package with an execution error if the assertion does not succeed in a given period of time.
+If it succedes, it returns a [future references][future-references-reference] with the last recipe run.
 
 ```python
-get_response = get_value(
+# This fails in runtime if response["code"] != 200 for each request in a 5 minute time span
+response = wait(
+    # The recipe that will be run until assert passes.
+    # MANDATORY
     recipe = get_request_recipe
+
+    # The field of the recipe's result that will be asserted
+    # MANDATORY
+    field = "code"
+
+    # The assertion is the comparison operation between value and target_value.
+    # Valid values are "==", "!=", ">=", "<=", ">", "<" or "IN" and "NOT_IN" (if target_value is list).
+    # MANDATORY
+    assertion = "=="
+
+    # The target value that value will be compared against.
+    # MANDATORY
+    target_value = 200
+
+    # The interval value is the initial interval suggestion for the command to wait between calls
+    # It follows a exponential backoff process, where the i-th backoff interval is rand(0.5, 1.5)*interval*2^i
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # OPTIONAL (Default: "500ms")
+    interval = "1s"
+
+    # The timeout value is the maximum time that the command waits for the assertion to be true
+    # Follows Go "time.Duration" format https://pkg.go.dev/time#ParseDuration
+    # OPTIONAL (Default: "15m")
+    timeout = "5m"
 )
-value = extract(
-    input = get_response.body,
-    extractor = ".id"
-)
+# If this point of the code is reached, the assertion has passed therefore the print statement will print "200"
+print(response["code"])
 ```
 
 ### import_module
@@ -440,3 +493,4 @@ in Kurtosis Starlark by default
 [files-artifacts]: ./files-artifacts.md
 [multi-phase-runs-reference]: ./multi-phase-runs.md
 [future-references-reference]: ./future-references.md
+[starlark-types-port-spec]: ./starlark-types.md#PortSpec

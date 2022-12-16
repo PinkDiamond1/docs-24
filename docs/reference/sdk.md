@@ -174,7 +174,7 @@ Run a provided Starlark script inside the enclave.
 
 * `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
 
-### `runRemoteStarlarkPackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
+### `runStarlarkRemotePackage(String packageId, String serializedParams, Boolean dryRun) -> (Stream<StarlarkRunResponseLine> responseLines, Error error)`
 
 Run a Starlark script hosted in a remote github.com repo inside the enclave.
 
@@ -187,6 +187,18 @@ Run a Starlark script hosted in a remote github.com repo inside the enclave.
 **Returns**
 
 * `responseLines`: A stream of [StarlarkRunResponseLine][starlarkrunresponseline] objects
+
+### `runStarlarkScriptBlocking(String serializedStarlarkScript, Boolean dryRun) -> (StarlarkRunResult runResult, Error error)`
+
+Convenience wrapper around [EnclaveContext.runStarlarkScript][enclavecontext_runstarlarkscript], that blocks until the execution of the script is finished and returns a single [StarlarkRunResult][starlarkrunresult] object containing the result of the run.
+
+### `runStarlarkPackageBlocking(String packageRootPath, String serializedParams, Boolean dryRun) -> (StarlarkRunResult runResult, Error error)`
+
+Convenience wrapper around [EnclaveContext.runStarlarkPackage][enclavecontext_runstarlarkpackage], that blocks until the execution of the package is finished and returns a single [StarlarkRunResult][starlarkrunresult] object containing the result of the run.
+
+### `runStarlarkRemotePackageBlocking(String packageId, String serializedParams, Boolean dryRun) -> (StarlarkRunResult runResult, Error error)`
+
+Convenience wrapper around [EnclaveContext.runStarlarkRemotePackage][enclavecontext_runstarlarkremotepackage], that blocks until the execution of the package is finished and returns a single [StarlarkRunResult][starlarkrunresult] object containing the result of the run.
 
 <!-- TODO DELETE THIS!!! -->
 ### `registerFilesArtifacts(Map<FilesArtifactID, String> filesArtifactUrls)`
@@ -494,6 +506,20 @@ StarlarkRunProgress
 
 * `currentStepInfo`: A string field with some information on the current step being executed.
 
+StarlarkRunResult
+-----------------
+
+`StarlarkRunResult` is the object returned by the blocking functions to run Starlark code. It is similar to [RunStarlarkResponseLine][runstarlarkresponseline] except that it is not a union object:
+
+* `instructions`: the [Starlark Instruction][starlarkinstruction] that were run
+
+* `insterpretationError`: a potential Starlark Interpretation error (see [StarlarkError][starlarkerror]
+
+* `validationErrors`: potential Starlark Validation errors (see [StarlarkError][starlarkerror]
+
+* `executionError`: a potential Starlark Execution error (see [StarlarkError][starlarkerror]
+
+* `runOutput`: The full output of the run, composed of the concatenated output for each instruction that was executed (separated by a newline)
 
 ServiceContext
 --------------
@@ -598,6 +624,10 @@ the `Float64` method on the `json.Number` first, so above would look like `{{pri
 [enclavecontext_rendertemplates]: #rendertemplatesmapstring-templateanddata-templateanddatabydestinationrelfilepaths
 
 [partitionconnection]: #partitionconnection
+
+[enclavecontext_runstarlarkscript]: #runstarlarkscriptstring-serializedstarlarkscript-boolean-dryrun---streamstarlarkrunresponseline-responselines-error-error
+[enclavecontext_runstarlarkpackage]: #runstarlarkpackagestring-packagerootpath-string-serializedparams-boolean-dryrun---streamstarlarkrunresponseline-responselines-error-error
+[enclavecontext_runstarlarkremotepackage]: #runstarlarkremotepackagestring-packageid-string-serializedparams-boolean-dryrun---streamstarlarkrunresponseline-responselines-error-error
 
 [starlarkrunresponseline]: #starlarkrunresponseline
 [starlarkinstruction]: #starlarkinstruction
