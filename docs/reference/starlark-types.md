@@ -16,9 +16,13 @@ port_spec = PortSpec(
     # MANDATORY
     number = 3000,
     
-    # The port transport protocol (can be "TCP" or "UDP")
+    # Transport protocol for the port (can be either "TCP" or "UDP")
     # Optional (DEFAULT:"TCP")
-    protocol = "TCP" 
+    transport_protocol = "TCP",
+
+    # Application protocol for the port
+    # Optional
+    application_protocol = "http"
 )
 ```
 The above constructor returns a `PortSpec` object that contains port information in the form of a [future reference][future-references-reference] and can be used with 
