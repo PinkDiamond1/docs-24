@@ -75,7 +75,7 @@ service = add_service(
 
         # Kurtosis enclaves can store gzipped TAR files, called "files artifacts", via functions like upload_files, render_templates, and store_files_from_service.
         # Each files artifact is identified by an ID which is returned when the files artifact is created.
-        # This is map a map from where the file should be mounted to the files artifacts that should be mounted on the service container when it starts.
+        # This is a map from where the file should be mounted to the files artifacts that should be mounted on the service container when it starts.
         # OPTIONAL (Default: {})
         files = {
             "path/to/file/1": "files_artifact_1",
