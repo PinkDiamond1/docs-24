@@ -9,10 +9,11 @@ A Kurtosis package is a:
 
 - A directory
 - Plus all its contents
-- That contains [a `kurtosis.yml` file][kurtosis-yml]
-- Which names the package via a [locator][locators] that points to the directory containing the `kurtosis.yml` file
+- That contains [a `kurtosis.yml` file][kurtosis-yml] with the package's name, which will be the [locator][locators] root for the package
 
 Kurtosis packages are the system by which Starlark scripts can include external resources.
+
+Note that, when developing locally, a Kurtosis package's `name` in the `kurtosis.yml` can be whatever you like (the GitHub repo need not even exist).
 
 Kurtosis packages are shared simply by pushing to GitHub (e.g. [these are the packages we administer][kurtosis-managed-packages]).
 

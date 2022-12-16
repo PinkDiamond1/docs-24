@@ -17,5 +17,7 @@ name: github.com/packageAuthor/packageRepoName
 Only packages at the root of the repo are currently supported (i.e. where the `kurtosis.yml` is at the root of the repo). Packages in subdirectories will be supported soon.
 :::
 
+Note that, if you're only running the package locally, the package `name` field can be anything. In other words, when running a package locally, the GitHub repository does not in fact need to exist.
+
 <!----------------------- ONLY LINKS BELOW HERE ----------------------------->
 [package]: ./packages.md
